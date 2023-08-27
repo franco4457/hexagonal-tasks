@@ -20,10 +20,7 @@ export interface IUser {
 
 export type IUserLoginInput = Pick<IUser, 'email' | 'username' | 'password'>
 
-export type IUserCreate = Pick<
-  IUser,
-  'email' | 'username' | 'password' | 'name' | 'lastname'
->
+export type IUserCreate = Pick<IUser, 'email' | 'username' | 'password' | 'name' | 'lastname'>
 
 export class UserEntity implements IUser {
   id: string
@@ -41,6 +38,7 @@ export class UserEntity implements IUser {
     this.password = password
     this.username = username
   }
+
   static create(props: IUserCreate): IUser {
     const id = randomUUID()
     const user = new UserEntity({ ...props, id })
