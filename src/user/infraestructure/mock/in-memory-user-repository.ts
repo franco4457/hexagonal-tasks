@@ -13,6 +13,12 @@ const inMemoryUsers: IUser[] = [
 ]
 
 export class InMemoryUserRepositorytory implements IUserRepository {
+  async getByEmail(email: string): Promise<IUser> {
+    const user = inMemoryUsers.find((user) => user.email === email)
+    if (user == null) throw new UserNotFound('User not found', 404)
+    return user
+  }
+
   async getAll(): Promise<IUser[]> {
     return inMemoryUsers
   }
@@ -25,7 +31,6 @@ export class InMemoryUserRepositorytory implements IUserRepository {
 
   async getById(id: string): Promise<IUser> {
     const user = inMemoryUsers.find((user) => user.id === id)
-    // TODO coustom Error
     if (user == null) throw new UserNotFound('User not found', 404)
     return user
   }

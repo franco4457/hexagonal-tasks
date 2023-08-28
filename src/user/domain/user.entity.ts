@@ -13,10 +13,7 @@ export interface IUser {
   //   updatedAt: Date
 }
 
-// export type IUserPublic = Omit<
-//   IUser,
-//   'id' | 'password' | 'createdAt' | 'updatedAt'
-// >
+export type IUserPublic = Omit<IUser, 'password'>
 
 export type IUserLoginInput = Pick<IUser, 'email' | 'username' | 'password'>
 
