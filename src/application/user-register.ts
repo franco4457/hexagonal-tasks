@@ -1,4 +1,4 @@
-import { type IUser, type IUserCreate, UserEntity, type IUserRepository } from '../domain'
+import { type IUser, type IUserCreate, UserEntity, type IUserRepository } from '../domain/user'
 
 export class UserRegister {
   constructor(private readonly userRepository: IUserRepository) {}

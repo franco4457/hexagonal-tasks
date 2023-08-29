@@ -1,8 +1,6 @@
-import { UserLogin, UserRegister } from '@/user/application'
-import { InMemoryUserRepository } from '@/user/infraestructure/mock'
-import { LoginController } from '../controllers/user/login.controller'
-import { RegisterController } from '../controllers/user/register.controller'
-import { GetUserController } from '../controllers/user/get-user.controller'
+import { UserLogin, UserRegister } from '@/application'
+import { InMemoryUserRepository } from '@/infraestructure/repsitory/mock'
+import { LoginController, RegisterController, GetUserController } from '../controllers/user'
 
 const inMemoryUserRepository = new InMemoryUserRepository()
 

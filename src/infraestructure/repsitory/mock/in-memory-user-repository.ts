@@ -1,5 +1,5 @@
-import { type IUser, type IUserCreate, type IUserRepository, UserEntity } from '@/user/domain'
-import { UserNotFound } from '@/user/domain/user.exceptions'
+import { type IUser, type IUserCreate, type IUserRepository, UserEntity } from '@/domain/user'
+import { UserNotFound } from '@/domain/user/user.exceptions'
 
 const inMemoryUsers: IUser[] = [
   {

@@ -16,8 +16,8 @@
   "license": "MIT",
   "scripts": {
     "build": "tsc && tsc-alias",
-    "start:express": "node build/src/api/v1/express/index.js",
-    "dev:express": "nodemon --exec ts-node --esm ./src/api/v1/express/index.ts",
+    "start:express": "node build/src/index.js",
+    "dev:express": "nodemon --exec ts-node --esm ./src/index.ts",
     "lint": "eslint --ext .jsx,.js,.ts,.tsx .",
     "test": "echo \"Error: no test specified\" && exit 1"
   },

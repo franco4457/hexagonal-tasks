@@ -1,4 +1,4 @@
-import { type IUserRepository } from '@/user/domain'
+import { type IUserRepository } from '@/domain/user'
 import { type Request, type Response } from 'express'
 
 export class GetUserController {
