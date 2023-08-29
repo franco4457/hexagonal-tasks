@@ -1,4 +1,4 @@
-import { type IUserPublic, type IUserLoginInput, type IUserRepository } from '../domain/user'
+import { type IUserPublic, type IUserLoginInput, type IUserRepository } from '@/domain/user'
 
 export class UserLogin {
   constructor(private readonly userRepository: IUserRepository) {}
