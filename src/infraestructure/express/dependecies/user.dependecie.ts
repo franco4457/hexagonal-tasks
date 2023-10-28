@@ -1,4 +1,4 @@
-import { UserLogin, UserRegister } from '@/application'
+import { UserLogin, UserRegister } from '@/application/user'
 import { InMemoryUserRepository } from '@/infraestructure/repsitory/mock'
 import { LoginController, RegisterController, GetUserController } from '../controllers/user'
 

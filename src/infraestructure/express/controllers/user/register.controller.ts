@@ -1,4 +1,4 @@
-import { type UserRegister } from '@/application'
+import { type UserRegister } from '@/application/user'
 import { type Request, type Response } from 'express'
 
 export class RegisterController {

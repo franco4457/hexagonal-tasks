@@ -1,4 +1,4 @@
-import { type UserLogin } from '@/application'
+import { type UserLogin } from '@/application/user'
 import { type Request, type Response } from 'express'
 
 export class LoginController {

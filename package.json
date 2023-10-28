@@ -19,6 +19,7 @@
     "start:express": "node build/src/index.js",
     "dev:express": "nodemon --exec ts-node --esm ./src/index.ts",
     "lint": "eslint --ext .jsx,.js,.ts,.tsx .",
+    "typecheck": "tsc --noEmit",
     "test": "vitest"
   },
   "devDependencies": {
