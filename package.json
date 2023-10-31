@@ -15,7 +15,7 @@
   "author": "franco4457",
   "license": "MIT",
   "scripts": {
-    "build": "tsc && tsc-alias",
+    "build": "tsc -p tsconfig.prod.json && tsc-alias",
     "start:express": "node build/src/index.js",
     "dev:express": "nodemon --exec ts-node --esm ./src/index.ts",
     "lint": "eslint --ext .jsx,.js,.ts,.tsx .",
