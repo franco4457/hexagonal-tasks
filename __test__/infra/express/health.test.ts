@@ -3,27 +3,27 @@ import request from 'supertest'
 import app from '@/infraestructure/express/app'
 
 describe('Health', () => {
-  it('GET', async () => {
+  it.concurrent('GET', async () => {
     const response = await request(app).get('/api/v1/health')
     expect(response.status).toBe(200)
     expect(response.body).toEqual({ message: 'OK' })
   })
-  it('POST', async () => {
+  it.concurrent('POST', async () => {
     const response = await request(app).post('/api/v1/health')
     expect(response.status).toBe(200)
     expect(response.body).toEqual({ message: 'OK' })
   })
-  it('PUT', async () => {
+  it.concurrent('PUT', async () => {
     const response = await request(app).put('/api/v1/health')
     expect(response.status).toBe(200)
     expect(response.body).toEqual({ message: 'OK' })
   })
-  it('PATCH', async () => {
+  it.concurrent('PATCH', async () => {
     const response = await request(app).patch('/api/v1/health')
     expect(response.status).toBe(200)
     expect(response.body).toEqual({ message: 'OK' })
   })
-  it('DELETE', async () => {
+  it.concurrent('DELETE', async () => {
     const response = await request(app).delete('/api/v1/health')
     expect(response.status).toBe(200)
     expect(response.body).toEqual({ message: 'OK' })
