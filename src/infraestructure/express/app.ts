@@ -10,5 +10,18 @@ app.use((req, _res, next) => {
 app.use(express.json())
 
 app.use('/api/v1', mainRouter)
+export class ApiExpress {
+  constructor(private readonly app: ReturnType<typeof express>) {}
+  getInstance(): ReturnType<typeof express> {
+    return this.app
+  }
 
-export default app
+  start(port: number | string, host: string): void {
+    this.app.listen(port, () => {
+      console.log('--------------------')
+      console.log(`[EXPRESS] Server listen on ${host}`)
+      console.log('--------------------')
+    })
+  }
+}
+export default new ApiExpress(app)
