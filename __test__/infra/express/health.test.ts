@@ -1,6 +1,7 @@
 import request from 'supertest'
 
-import app from '@/infraestructure/express/app'
+import api from '@/infraestructure/express/app'
+const app = api.getInstance()
 
 describe('Health', () => {
   it.concurrent('GET', async () => {
