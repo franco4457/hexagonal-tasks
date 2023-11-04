@@ -8,7 +8,7 @@ export interface ITask {
   userId: IUser['id'] | null
 }
 
-export type ITaskInput = Omit<Task, 'id' | 'userId'>
+export type ITaskInput = Omit<ITask, 'id' | 'userId'>
 
 export class Task implements ITask {
   id: string
