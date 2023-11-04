@@ -1,7 +1,7 @@
 import { type IUserCreate } from './../../src/domain/user/user.entity'
 import { UserLogin, UserRegister } from '@/application/user'
 import { type IUserLoginInput } from '@/domain/user'
-import { InMemoryUserRepository } from '@/infraestructure/repsitory/mock'
+import { InMemoryUserRepository } from '@/infraestructure/repsitory/in-memory'
 describe('user', () => {
   it('login user', async () => {
     const userMock: IUserLoginInput = {
