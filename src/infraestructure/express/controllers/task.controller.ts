@@ -9,7 +9,6 @@ export class TaskController {
 
   async create(req: Request, res: Response): Promise<void> {
     const { userId, title, description } = req.body
-
     const task = await this.createTask.create({ task: { title, description }, userId })
     res.status(201).json(task)
   }

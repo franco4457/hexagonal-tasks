@@ -1,6 +1,6 @@
 import { type TaskRepository } from '@/domain/task'
 import e from 'express'
-import { TaskController } from '../controllers/task'
+import { TaskController } from '../controllers/task.controller'
 
 export class TaskRouter {
   private readonly taskRouter = e.Router()
@@ -10,7 +10,7 @@ export class TaskRouter {
   }
 
   start(): e.Router {
-    this.taskRouter.post('/', this.taskController.createTask.bind(this.taskController))
+    this.taskRouter.post('/', this.taskController.create.bind(this.taskController))
     return this.taskRouter
   }
 }
