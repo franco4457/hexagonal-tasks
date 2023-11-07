@@ -3,14 +3,7 @@ import { type TaskRepository } from '@/domain/task'
 import { type IUserRepository } from '@/domain/user'
 import express from 'express'
 import { InMemoryTaskRepository, InMemoryUserRepository } from '../repsitory/in-memory'
-
-interface IApiBuilder {
-  reset: () => IApiBuilder
-  setTaskRepository: (taskRepository: TaskRepository) => IApiBuilder
-  setUserRepository: (userRepository: IUserRepository) => IApiBuilder
-  build: () => any
-}
-
+import type { IApiBuilder } from '@/application/api/builder'
 export class ApiBuilderExpress implements IApiBuilder {
   private api: ApiExpress
   private taskRepository!: TaskRepository | null
