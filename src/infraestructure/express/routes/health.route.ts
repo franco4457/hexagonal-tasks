@@ -17,3 +17,9 @@ healthRouter.patch('', (_req, res) => {
 healthRouter.delete('', (_req, res) => {
   res.json({ message: 'OK' })
 })
+
+export class HealtRouter {
+  start(): e.Router {
+    return healthRouter
+  }
+}
