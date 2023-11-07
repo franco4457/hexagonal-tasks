@@ -1,4 +1,5 @@
-import { type ApiExpress, createInMemoryApi } from './api-builder'
+import type { ApiExpress } from './api'
+import { createInMemoryApi } from './dependecies/in-memory'
 
 export class Applicaction {
   private api!: ApiExpress
