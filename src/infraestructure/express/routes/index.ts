@@ -1,15 +1,9 @@
+import type { IUserRepository } from '@/domain/user'
+import type { TaskRepository } from '@/domain/task'
 import e from 'express'
-import { UserRouter, userRouter } from './user.route'
+import { UserRouter } from './user.route'
 import { healthRouter } from './health.route'
 import { TaskRouter } from './task.route'
-import { type IUserRepository } from '@/domain/user'
-import { type TaskRepository } from '@/domain/task'
-
-export const mainRouter = e.Router()
-
-mainRouter.use('/health', healthRouter)
-mainRouter.use('/user', userRouter)
-
 export class MainRouter {
   private readonly mainRouter = e.Router()
   private readonly userRouter: UserRouter
