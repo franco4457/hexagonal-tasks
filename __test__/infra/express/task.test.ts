@@ -17,4 +17,14 @@ describe('Task', () => {
     expect(task).toHaveProperty('description')
     expect(task).toHaveProperty('userId')
   })
+  it.concurrent('GET /task', async () => {
+    const res = await request(app).get('/api/v1/task')
+    expect(res.status).toBe(200)
+    const { tasks } = res.body
+    expect(tasks).toHaveLength(1)
+    expect(tasks[0]).toHaveProperty('id')
+    expect(tasks[0]).toHaveProperty('title')
+    expect(tasks[0]).toHaveProperty('description')
+    expect(tasks[0]).toHaveProperty('userId')
+  })
 })
