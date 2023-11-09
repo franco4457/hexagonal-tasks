@@ -15,9 +15,10 @@
   "author": "franco4457",
   "license": "MIT",
   "scripts": {
-    "build": "tsc -p tsconfig.prod.json && tsc-alias",
+    "build": "tsup",
+    "build:tsup": "tsup",
     "start:express": "node build/src/index.js",
-    "dev:express": "nodemon --exec ts-node --esm ./src/index.ts",
+    "dev:express": "tsup --watch --onSuccess \"node dist/index.js\"",
     "lint": "eslint --ext .jsx,.js,.ts,.tsx .",
     "typecheck": "tsc --noEmit",
     "test": "vitest"
@@ -38,6 +39,7 @@
     "ts-node": "^10.9.1",
     "tsc-alias": "^1.8.7",
     "tsconfig-paths": "^4.2.0",
+    "tsup": "^7.2.0",
     "typescript": "^5.2.2",
     "vitest": "^0.34.3"
   },
