@@ -10,6 +10,7 @@ export class TaskRouter {
   }
 
   start(): e.Router {
+    this.taskRouter.get('/', this.taskController.getAll.bind(this.taskController))
     this.taskRouter.post('/', this.taskController.create.bind(this.taskController))
     return this.taskRouter
   }
