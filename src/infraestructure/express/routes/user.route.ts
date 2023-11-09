@@ -1,22 +1,18 @@
 import e from 'express'
-import {
-  getUserController,
-  loginController,
-  registerController
-} from '../dependecies/user.dependecie'
 import { type IUserRepository } from '@/domain/user'
-
-export const userRouter = e.Router()
-
-userRouter.get('/', getUserController.all.bind(getUserController))
-
-userRouter.post('/login', loginController.run.bind(loginController))
-userRouter.post('/register', registerController.run.bind(registerController))
-
+import { UserController } from '../controllers/user.controller'
 export class UserRouter {
-  constructor(private readonly userRepository: IUserRepository) {}
+  private readonly userRouter = e.Router()
+  private readonly userController
+  constructor(private readonly userRepository: IUserRepository) {
+    this.userController = new UserController(this.userRepository)
+  }
 
   start(): e.Router {
-    return userRouter
+    this.userRouter.get('/', this.userController.getAll.bind(this.userController))
+
+    this.userRouter.post('/register', this.userController.register.bind(this.userController))
+    this.userRouter.post('/login', this.userController.login.bind(this.userController))
+    return this.userRouter
   }
 }
