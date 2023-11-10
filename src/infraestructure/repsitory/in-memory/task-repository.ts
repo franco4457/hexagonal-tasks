@@ -8,6 +8,10 @@ export class InMemoryTaskRepository implements TaskRepository {
     return this.tasks
   }
 
+  async getTasksByUserId(userId: IUser['id']): Promise<ITask[]> {
+    return this.tasks.filter((task) => task.userId === userId)
+  }
+
   async getTask(id: string): Promise<Task> {
     const task = this.tasks.find((task) => task.id === id)
     if (task == null) {
