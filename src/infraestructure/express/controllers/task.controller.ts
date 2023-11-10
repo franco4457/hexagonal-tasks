@@ -20,4 +20,10 @@ export class TaskController {
     const tasks = await this.listTasks.getAll()
     res.status(200).json({ tasks })
   }
+
+  async getByUserId(req: Request, res: Response): Promise<void> {
+    const { userId } = req.params
+    const tasks = await this.listTasks.getByUserId(userId)
+    res.status(200).json({ tasks })
+  }
 }
