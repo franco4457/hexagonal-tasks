@@ -5,4 +5,8 @@ export class ListTasks {
   async getAll(): Promise<ITask[]> {
     return await this.taskRepository.getTasks()
   }
+
+  async getByUserId(userId: string): Promise<ITask[]> {
+    return await this.taskRepository.getTasksByUserId(userId)
+  }
 }
