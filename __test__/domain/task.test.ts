@@ -41,4 +41,36 @@ describe('task', () => {
       expect(task.userId).toBe(`userId-${i}`)
     })
   })
+  it.concurrent('List task by user id', async () => {
+    const taskRepository = new InMemoryTaskRepository()
+    const createTask = new CreateTask(taskRepository)
+    await Promise.all([
+      ...Array.from({ length: 10 }, (_, i) => i).map(
+        async (i) =>
+          await createTask.create({
+            task: { title: `test-title-${i}`, description: `test-desc-${i}` },
+            userId: `userId-${i}`
+          })
+      ),
+      createTask.create({
+        task: { title: 'test-title-10', description: 'test-desc-10' },
+        userId: 'userId-0'
+      })
+    ])
+    const listTasks = new ListTasks(taskRepository)
+    const tasks = await listTasks.getByUserId('userId-0')
+    expect(tasks).toBeInstanceOf(Array)
+    expect(tasks).toHaveLength(2)
+    const [task, task2] = tasks
+    expect(task).toBeInstanceOf(Task)
+    expect(task.title).toBe('test-title-0')
+    expect(task.description).toBe('test-desc-0')
+    expect(task.id).toBeTypeOf('string')
+    expect(task.userId).toBe('userId-0')
+    expect(task2).toBeInstanceOf(Task)
+    expect(task2.title).toBe('test-title-10')
+    expect(task2.description).toBe('test-desc-10')
+    expect(task2.id).toBeTypeOf('string')
+    expect(task2.userId).toBe('userId-0')
+  })
 })
