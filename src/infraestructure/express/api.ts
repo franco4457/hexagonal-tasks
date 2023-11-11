@@ -1,3 +1,4 @@
+import { mainErrorHanlder } from './errors'
 import type { MainRouter } from './routes/index'
 import express from 'express'
 
@@ -20,6 +21,9 @@ export class ApiExpress {
     this.app.use(express.json())
 
     this.app.use('/api/v1', mainRouter.start())
+
+    this.app.use(mainErrorHanlder)
+
     return this.app
   }
 
