@@ -38,7 +38,7 @@ describe('User', () => {
     }
     const res = await request(app)
       .post('/api/v1/user/register')
-      .send({ pasword: '123567', ...testUser })
+      .send({ password: '123567', ...testUser })
     expect(res.status).toBe(200)
     const {
       user: { id, ...user }
