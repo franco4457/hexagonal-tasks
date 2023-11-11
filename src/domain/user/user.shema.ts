@@ -12,7 +12,7 @@ export const UserSchema = z.object({
 
 export const validateUser = async (user: unknown): Promise<IUserCreate> => {
   try {
-    const result = await UserSchema.parseAsync(user)
+    const result = await UserSchema.omit({ id: true }).parseAsync(user)
     return result
   } catch (error) {
     console.log('Validate user', error)
