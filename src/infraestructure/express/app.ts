@@ -1,10 +1,11 @@
 import type { ApiExpress } from './api'
-import { createInMemoryApi } from './dependecies/in-memory'
-
+import { createInMemoryApi, createMongoApi } from './dependecies'
+import { DIALECT } from '@/config'
 export class Applicaction {
   private api!: ApiExpress
   bootstrap(): ApiExpress {
-    this.api = createInMemoryApi()
+    if (DIALECT === 'MONGODB') this.api = createMongoApi()
+    else this.api = createInMemoryApi()
     return this.api
   }
 }
