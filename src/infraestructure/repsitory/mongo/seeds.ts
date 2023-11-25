@@ -12,6 +12,7 @@ export const testMongoSeeds = async (): Promise<void> => {
     await Promise.all([
       UserModel.create({
         id: 'asd',
+        _id: 'asd',
         email: 'example@mail.com',
         lastname: 'tester',
         name: 'test',

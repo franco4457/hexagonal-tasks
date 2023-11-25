@@ -75,7 +75,7 @@ export class MongoUserRepository implements IUserRepository {
     try {
       const newUser = User.create(user)
       await this.conn()
-      const repoUser = await UserModel.create(newUser)
+      const repoUser = await UserModel.create({ ...newUser, _id: newUser.id })
       const userPublic = {
         id: repoUser.id,
         email: repoUser.email,
