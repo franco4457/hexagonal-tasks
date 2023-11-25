@@ -1,3 +1,4 @@
+import { loggerRequest } from '../logger'
 import { mainErrorHanlder } from './errors'
 import type { MainRouter } from './routes/index'
 import express from 'express'
@@ -14,7 +15,7 @@ export class ApiExpress {
 
   build(mainRouter: MainRouter): any {
     this.app.use((req, _res, next) => {
-      console.log('Request received: ', '\x1b[36m', req.method, '\x1b[35m', req.path, '\x1b[0m')
+      loggerRequest(req.method, req.path)
       next()
     })
 
