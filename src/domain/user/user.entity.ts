@@ -6,35 +6,34 @@ export interface IUser {
   lastname: string
   username: string
   email: string
+}
+
+export interface IPrivateUser extends IUser {
   password: string
 }
 
-export type IUserPublic = Omit<IUser, 'password'>
+export type IUserLoginInput = Pick<IPrivateUser, 'email' | 'username' | 'password'>
 
-export type IUserLoginInput = Pick<IUser, 'email' | 'username' | 'password'>
+export type IUserCreate = Pick<IUser, 'name' | 'lastname'> & IUserLoginInput
 
-export type IUserCreate = Pick<IUser, 'email' | 'username' | 'password' | 'name' | 'lastname'>
+export class User implements IUser {
+  readonly id: string
+  readonly name: string
+  readonly lastname: string
+  readonly username: string
+  readonly email: string
 
-export class UserEntity implements IUser {
-  id: string
-  name: string
-  lastname: string
-  username: string
-  email: string
-  password: string
-
-  constructor({ email, id, lastname, name, password, username }: IUser) {
+  constructor({ email, id, lastname, name, username }: IUser) {
     this.id = id
     this.email = email
     this.lastname = lastname
     this.name = name
-    this.password = password
     this.username = username
   }
 
   static create(props: IUserCreate): IUser {
     const id = randomUUID()
-    const user = new UserEntity({ ...props, id })
+    const user = new User({ ...props, id })
     return user
   }
 }
