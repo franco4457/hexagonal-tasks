@@ -1,6 +1,5 @@
-import { type IUserCreate } from './../../src/domain/user/user.entity'
 import { UserLogin, UserRegister } from '@/application/user'
-import { type IUserLoginInput } from '@/domain/user'
+import { type IUserLoginInput, type IUserCreate, User } from '@/domain/user'
 import { InMemoryUserRepository } from '@/infraestructure/repsitory/in-memory'
 describe('user', () => {
   it('login user', async () => {
@@ -20,7 +19,8 @@ describe('user', () => {
 
     const userLogin = new UserLogin(inMemoryUserRepository)
     const user = await userLogin.login(userMock)
-    expect(expectResult).toStrictEqual(user)
+    expect(expectResult).toEqual(user)
+    expect(user).instanceOf(User)
   })
   it('register user', async () => {
     const newUser: IUserCreate = {
@@ -47,5 +47,8 @@ describe('user', () => {
     expect(expectResult.lastname).toEqual(user.lastname)
     expect(expectResult.username).toEqual(user.username)
     expect(user.id).toBeTypeOf('string')
+    // @ts-expect-error password is private
+    expect(user.password).toBeUndefined()
+    expect(user).instanceOf(User)
   })
 })
