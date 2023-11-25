@@ -1,7 +1,7 @@
 import request from 'supertest'
 
 import api from '@/infraestructure/express/app'
-const app = api.getInstance()
+const app = (await api).getInstance()
 
 describe('Task', () => {
   it.concurrent('POST /task', async () => {
