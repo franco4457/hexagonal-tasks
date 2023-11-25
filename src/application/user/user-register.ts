@@ -1,13 +1,14 @@
-import { UserEntity, validateUser } from '@/domain/user'
-import type { IUserRepository, IUserPublic } from '@/domain/user'
+import { User, validateUser } from '@/domain/user'
+import type { IUserRepository, IUser } from '@/domain/user'
 
 export class UserRegister {
   constructor(private readonly userRepository: IUserRepository) {}
 
-  async register(props: unknown): Promise<IUserPublic> {
+  async register(props: unknown): Promise<IUser> {
     const userInput = await validateUser(props)
-    const user = UserEntity.create(userInput)
-    const userRepo = await this.userRepository.create(user)
-    return userRepo
+    const user = User.create(userInput)
+    await this.userRepository.create({ ...user, password: userInput.password })
+
+    return user
   }
 }
