@@ -69,7 +69,7 @@ export class MongoTaskRepository implements TaskRepository {
   create = async (newTask: ITaskInput): Promise<Task> => {
     try {
       const task = new Task(newTask)
-      await this.taskModel.create(task)
+      await this.taskModel.create({ ...task, _id: task.id })
       return task
     } catch (error) {
       console.log('MONGO_TASK create', error)

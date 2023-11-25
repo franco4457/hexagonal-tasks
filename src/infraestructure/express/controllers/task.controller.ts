@@ -1,7 +1,7 @@
 import { ListTasks } from '@/application/task/list-tasks'
 import { CreateTask } from '@/application/task/task-create'
 import { type TaskRepository } from '@/domain/task'
-import { type Request, type Response } from 'express'
+import { type NextFunction, type Request, type Response } from 'express'
 export class TaskController {
   private readonly createTask: CreateTask
   private readonly listTasks: ListTasks
@@ -10,10 +10,14 @@ export class TaskController {
     this.listTasks = new ListTasks(this.taskRepository)
   }
 
-  async create(req: Request, res: Response): Promise<void> {
-    const { userId, title, description } = req.body
-    const task = await this.createTask.create({ task: { title, description }, userId })
-    res.status(201).json({ task })
+  async create(req: Request, res: Response, next: NextFunction): Promise<void> {
+    try {
+      const { userId, title, description } = req.body
+      const task = await this.createTask.create({ task: { title, description }, userId })
+      res.status(201).json({ task })
+    } catch (error) {
+      next(error)
+    }
   }
 
   async getAll(_req: Request, res: Response): Promise<void> {
