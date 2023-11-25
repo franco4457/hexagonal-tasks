@@ -1,4 +1,4 @@
-import { UserEntity, type IUserCreate, type IUserPublic, type IUserRepository } from '@/domain/user'
+import { User, type IUserCreate, type IUser, type IUserRepository } from '@/domain/user'
 import { conn } from '../connect'
 import type mongoose from 'mongoose'
 import { UserModel } from './model'
@@ -12,7 +12,7 @@ export class MongoUserRepository implements IUserRepository {
     return this.mongoose
   }
 
-  getById = async (id: string): Promise<IUserPublic> => {
+  getById = async (id: string): Promise<IUser> => {
     try {
       await this.conn()
       const repoUser = await UserModel.findById(id)
@@ -23,7 +23,7 @@ export class MongoUserRepository implements IUserRepository {
         name: repoUser.name,
         lastname: repoUser.lastname,
         username: repoUser.username
-      } satisfies IUserPublic
+      } satisfies IUser
       return user
     } catch (error) {
       console.log('MONGO_USER getById', error)
@@ -31,7 +31,7 @@ export class MongoUserRepository implements IUserRepository {
     }
   }
 
-  getByEmail = async (email: string): Promise<IUserPublic> => {
+  getByEmail = async (email: string): Promise<IUser> => {
     try {
       await this.conn()
       const repoUser = await UserModel.findOne({ email })
@@ -42,7 +42,7 @@ export class MongoUserRepository implements IUserRepository {
         name: repoUser.name,
         lastname: repoUser.lastname,
         username: repoUser.username
-      } satisfies IUserPublic
+      } satisfies IUser
       return user
     } catch (error) {
       console.log('MONGO_USER getByEmail', error)
@@ -50,7 +50,7 @@ export class MongoUserRepository implements IUserRepository {
     }
   }
 
-  getAll = async (): Promise<IUserPublic[]> => {
+  getAll = async (): Promise<IUser[]> => {
     try {
       await this.conn()
       const repoUsers = await UserModel.find()
@@ -62,7 +62,7 @@ export class MongoUserRepository implements IUserRepository {
             name: repoUser.name,
             lastname: repoUser.lastname,
             username: repoUser.username
-          } satisfies IUserPublic)
+          } satisfies IUser)
       )
       return users
     } catch (error) {
@@ -71,9 +71,9 @@ export class MongoUserRepository implements IUserRepository {
     }
   }
 
-  create = async (user: IUserCreate): Promise<IUserPublic> => {
+  create = async (user: IUserCreate): Promise<IUser> => {
     try {
-      const newUser = UserEntity.create(user)
+      const newUser = User.create(user)
       await this.conn()
       const repoUser = await UserModel.create(newUser)
       const userPublic = {
@@ -82,7 +82,7 @@ export class MongoUserRepository implements IUserRepository {
         name: repoUser.name,
         lastname: repoUser.lastname,
         username: repoUser.username
-      } satisfies IUserPublic
+      } satisfies IUser
       return userPublic
     } catch (error) {
       console.log('MONGO_USER create', error)

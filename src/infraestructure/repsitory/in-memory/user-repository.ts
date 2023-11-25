@@ -1,14 +1,8 @@
-import {
-  type IUser,
-  type IUserCreate,
-  type IUserRepository,
-  UserEntity,
-  type IUserPublic
-} from '@/domain/user'
+import { type IUserCreate, type IUserRepository, User, type IPrivateUser } from '@/domain/user'
 import { UserNotFound } from '@/domain/user/user.exceptions'
 
 export class InMemoryUserRepository implements IUserRepository {
-  private readonly users: IUser[] = [
+  private readonly users: IPrivateUser[] = [
     {
       id: 'asd',
       email: 'example@mail.com',
@@ -19,24 +13,24 @@ export class InMemoryUserRepository implements IUserRepository {
     }
   ]
 
-  async getByEmail(email: string): Promise<IUserPublic> {
+  async getByEmail(email: string): Promise<User> {
     const user = this.users.find((user) => user.email === email)
     if (user == null) throw new UserNotFound('User not found', 404)
-    const { password: _, ...userPublic } = user
-    return userPublic
+
+    return new User(user)
   }
 
-  async getAll(): Promise<IUserPublic[]> {
-    return this.users.map(({ password: _, ...user }) => ({ ...user }))
+  async getAll(): Promise<User[]> {
+    return this.users.map((user) => new User(user))
   }
 
-  async create(user: IUserCreate): Promise<IUserPublic> {
-    const { password, ...newUser } = UserEntity.create(user)
-    this.users.push({ password, ...newUser })
+  async create(user: IUserCreate): Promise<User> {
+    const newUser = User.create(user)
+    this.users.push({ ...newUser, password: user.password })
     return newUser
   }
 
-  async getById(id: string): Promise<IUserPublic> {
+  async getById(id: string): Promise<User> {
     const user = this.users.find((user) => user.id === id)
     if (user == null) throw new UserNotFound('User not found', 404)
     return user
