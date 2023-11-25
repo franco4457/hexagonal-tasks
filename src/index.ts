@@ -1,4 +1,4 @@
 import app from '@/infraestructure/express/app'
 import { PORT, HOST } from '@/config'
 
-app.start(PORT, HOST)
+;(await app).start(PORT, HOST)
