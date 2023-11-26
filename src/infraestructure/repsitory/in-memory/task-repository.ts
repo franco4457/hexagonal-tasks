@@ -2,7 +2,7 @@ import { Task, type ITaskInput, type TaskRepository, type ITask } from '@/domain
 import { type IUser } from '@/domain/user'
 
 export class InMemoryTaskRepository implements TaskRepository {
-  private readonly tasks: ITask[] = []
+  private readonly tasks: Task[] = []
 
   async getTasks(): Promise<ITask[]> {
     return this.tasks
@@ -21,9 +21,7 @@ export class InMemoryTaskRepository implements TaskRepository {
   }
 
   async create(newTask: ITaskInput): Promise<Task> {
-    const task = new Task({
-      ...newTask
-    })
+    const task = Task.create(newTask)
     this.tasks.push(task)
     return task
   }
@@ -33,8 +31,7 @@ export class InMemoryTaskRepository implements TaskRepository {
     if (indexTask === -1) {
       throw new Error('Task not found')
     }
-    const newTask = new Task(this.tasks[indexTask])
-    newTask.setUser(userId)
-    this.tasks[indexTask] = newTask
+
+    this.tasks[indexTask].setUser(userId)
   }
 }
