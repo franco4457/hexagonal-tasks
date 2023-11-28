@@ -1,7 +1,7 @@
-export class UserNotFound extends Error {
-  statusCode: number
-  constructor(message: string, statusCode: number) {
-    super(message)
-    this.statusCode = statusCode
+import { NotFound } from '../core/exeptions'
+import type { IUser } from './user.entity'
+export class UserNotFound extends NotFound {
+  constructor(value: string, field: keyof IUser = 'id') {
+    super(`User with ${field}: ${value} not found`)
   }
 }
