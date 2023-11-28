@@ -15,7 +15,7 @@ export class InMemoryUserRepository implements IUserRepository {
 
   async getByEmail(email: string): Promise<User> {
     const user = this.users.find((user) => user.email === email)
-    if (user == null) throw new UserNotFound('User not found', 404)
+    if (user == null) throw new UserNotFound(email, 'email')
 
     return new User(user)
   }
@@ -32,7 +32,7 @@ export class InMemoryUserRepository implements IUserRepository {
 
   async getById(id: string): Promise<User> {
     const user = this.users.find((user) => user.id === id)
-    if (user == null) throw new UserNotFound('User not found', 404)
+    if (user == null) throw new UserNotFound(id)
     return user
   }
 }

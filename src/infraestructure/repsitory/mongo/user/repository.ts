@@ -1,4 +1,10 @@
-import { User, type IUserCreate, type IUser, type IUserRepository } from '@/domain/user'
+import {
+  User,
+  type IUserCreate,
+  type IUser,
+  type IUserRepository,
+  UserNotFound
+} from '@/domain/user'
 import { conn } from '../connect'
 import type mongoose from 'mongoose'
 import { UserModel } from './model'
@@ -16,7 +22,7 @@ export class MongoUserRepository implements IUserRepository {
     try {
       await this.conn()
       const repoUser = await UserModel.findById(id)
-      if (repoUser == null) throw new Error('User not found')
+      if (repoUser == null) throw new UserNotFound(id)
       const user = {
         id: repoUser.id,
         email: repoUser.email,
@@ -35,7 +41,7 @@ export class MongoUserRepository implements IUserRepository {
     try {
       await this.conn()
       const repoUser = await UserModel.findOne({ email })
-      if (repoUser == null) throw new Error('User not found')
+      if (repoUser == null) throw new UserNotFound(email, 'email')
       const user = {
         id: repoUser.id,
         email: repoUser.email,
