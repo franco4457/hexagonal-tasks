@@ -1,5 +1,5 @@
 import { type IUserCreate, type IUserRepository, User, type IPrivateUser } from '@/domain/user'
-import { UserNotFound } from '@/domain/user/user.exceptions'
+import { UserAlreadyExist, UserNotFound } from '@/domain/user/user.exceptions'
 
 export class InMemoryUserRepository implements IUserRepository {
   private readonly users: IPrivateUser[] = [
@@ -13,6 +13,10 @@ export class InMemoryUserRepository implements IUserRepository {
     }
   ]
 
+  constructor(users?: IPrivateUser[]) {
+    if (users != null) this.users = users
+  }
+
   async getByEmail(email: string): Promise<User> {
     const user = this.users.find((user) => user.email === email)
     if (user == null) throw new UserNotFound(email, 'email')
@@ -25,6 +29,9 @@ export class InMemoryUserRepository implements IUserRepository {
   }
 
   async create(user: IUserCreate): Promise<User> {
+    if (this.users.some((u) => u.email === user.email)) {
+      throw new UserAlreadyExist(user.email, 'email')
+    }
     const newUser = User.create(user)
     this.users.push({ ...newUser, password: user.password })
     return newUser
