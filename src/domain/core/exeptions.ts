@@ -21,3 +21,9 @@ export class NotFound extends DomainError {
     super(message, 404)
   }
 }
+
+export class AlreadyExist extends DomainError {
+  constructor(message: string) {
+    super(message, 409)
+  }
+}
