@@ -11,8 +11,13 @@ export class DomainError extends Error {
 export class ValidationError extends DomainError {
   issues: ZodIssue[] = []
   constructor(message: string, issues?: ZodIssue[]) {
-    super(message, 400)
-    if (issues != null) this.issues = issues
+    if (issues != null) {
+      const message = JSON.stringify(issues.map((issue) => issue.message))
+      super(message, 400)
+      this.issues = issues
+    } else {
+      super(message, 400)
+    }
   }
 }
 
