@@ -1,3 +1,5 @@
+import type { ZodIssue } from 'zod'
+
 export class DomainError extends Error {
   statusCode = 500
   constructor(message: string, statusCode?: number) {
@@ -7,8 +9,10 @@ export class DomainError extends Error {
 }
 
 export class ValidationError extends DomainError {
-  constructor(message: string) {
+  issues: ZodIssue[] = []
+  constructor(message: string, issues?: ZodIssue[]) {
     super(message, 400)
+    if (issues != null) this.issues = issues
   }
 }
 
