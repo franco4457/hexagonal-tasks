@@ -8,7 +8,7 @@ export class InMemoryUserRepository implements IUserRepository {
       email: 'example@mail.com',
       lastname: 'tester',
       name: 'test',
-      password: '1234',
+      password: 'Pass1234',
       username: 'tested'
     }
   ]
@@ -21,6 +21,13 @@ export class InMemoryUserRepository implements IUserRepository {
     const user = this.users.find((user) => user.email === email)
     if (user == null) throw new UserNotFound(email, 'email')
 
+    return new User(user)
+  }
+
+  async findAndValidate(email: string, password: string): Promise<User> {
+    const user = this.users.find((user) => user.email === email)
+    if (user == null) throw new UserNotFound(email, 'email')
+    if (user.password !== password) throw new UserNotFound(email, 'email')
     return new User(user)
   }
 

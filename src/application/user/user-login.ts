@@ -4,7 +4,7 @@ export class UserLogin {
   constructor(private readonly userRepository: IUserRepository) {}
 
   async login(props: IUserLoginInput): Promise<User> {
-    // TODO validate password
-    return await this.userRepository.getByEmail(props.email)
+    const user = await this.userRepository.findAndValidate(props.email, props.password)
+    return user
   }
 }
