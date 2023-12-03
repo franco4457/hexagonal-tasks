@@ -73,4 +73,47 @@ describe('task', () => {
     expect(task2.id).toBeTypeOf('string')
     expect(task2.userId).toBe('userId-0')
   })
+  it.concurrent('should throw error when create task don`t send correct ', async () => {
+    const taskRepository = new InMemoryTaskRepository()
+    const createTask = new CreateTask(taskRepository)
+    await expect(
+      createTask.create({
+        // @ts-expect-error test
+        task: {},
+        userId: 'userId'
+      })
+    ).rejects.toThrowError('["Title is required","Description is required"]')
+  })
+  it('should throw error when create task don`t send correct types ', async () => {
+    const taskRepository = new InMemoryTaskRepository()
+    const createTask = new CreateTask(taskRepository)
+    await expect(
+      createTask.create({
+        task: {
+          // @ts-expect-error test
+          title: 0,
+          // @ts-expect-error test
+          description: 0
+        },
+        userId: 'userId'
+      })
+    ).rejects.toThrowError(
+      '["Expected string, received number","Expected string, received number"]'
+    )
+  })
+  it('should throw error when create task don`t send correct lengths', async () => {
+    const taskRepository = new InMemoryTaskRepository()
+    const createTask = new CreateTask(taskRepository)
+    await expect(
+      createTask.create({
+        task: {
+          title: 't',
+          description: 'd'
+        },
+        userId: 'userId'
+      })
+    ).rejects.toThrowError(
+      '["Title should be at least 3 characters","Description should be at least 3 characters"]'
+    )
+  })
 })
