@@ -18,7 +18,7 @@ describe('User', () => {
   it.concurrent('POST /user/login', async () => {
     const res = await request(app).post('/api/v1/user/login').send({
       email: 'example@mail.com',
-      password: '1234'
+      password: 'Pass1234'
     })
     expect(res.status).toBe(200)
     const { user } = res.body
@@ -38,7 +38,7 @@ describe('User', () => {
     }
     const res = await request(app)
       .post('/api/v1/user/register')
-      .send({ password: '123567', ...testUser })
+      .send({ password: 'Pass1234', ...testUser })
     expect(res.status).toBe(200)
     const {
       user: { id, ...user }
