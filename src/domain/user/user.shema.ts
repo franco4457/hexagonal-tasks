@@ -1,7 +1,7 @@
 import z from 'zod'
 import { type IUserCreate } from './user.entity'
-import { ValidationError } from '../core/exeptions'
 import { customErrorMap } from '../core'
+import { InvalidUser } from './user.exceptions'
 
 export const UserSchema = z.object({
   id: z.string().uuid({ message: 'Invalid id' }),
@@ -48,8 +48,8 @@ export const validateUser = async (user: unknown): Promise<IUserCreate> => {
   } catch (error) {
     if (error instanceof z.ZodError) {
       // console.log('Validate user', error.message)
-      throw new ValidationError('Invalid user', error.issues)
+      throw new InvalidUser(error.issues)
     }
-    throw new ValidationError('Invalid user')
+    throw new InvalidUser()
   }
 }
