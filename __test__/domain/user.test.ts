@@ -17,7 +17,7 @@ const userMock: IUserLoginInput = {
   password: 'Pass1234'
 }
 describe('User', () => {
-  it('login user', async () => {
+  it.concurrent('login user', async () => {
     const expectResult = {
       id: 'asd',
       email: 'example@mail.com',
@@ -32,14 +32,14 @@ describe('User', () => {
     expect(expectResult).toEqual(user)
     expect(user).instanceOf(User)
   })
-  it('should throw error when user not found', async () => {
+  it.concurrent('should throw error when user not found', async () => {
     const inMemoryUserRepository = new InMemoryUserRepository()
 
     const userLogin = new UserLogin(inMemoryUserRepository)
     const user = userLogin.login({ ...userMock, email: 'lalala' })
     await expect(user).rejects.toThrow('User with email: lalala not found')
   })
-  it('should throw error when password is invalid', async () => {
+  it.concurrent('should throw error when password is invalid', async () => {
     const inMemoryUserRepository = new InMemoryUserRepository()
 
     const userLogin = new UserLogin(inMemoryUserRepository)
@@ -47,7 +47,7 @@ describe('User', () => {
     // Throw same error to avoid security issues
     await expect(user).rejects.toThrow('User with email: example@mail.com not found')
   })
-  it('register user', async () => {
+  it.concurrent('register user', async () => {
     const expectResult: IUserCreate = { ...newUser }
 
     const inMemoryUserRepository = new InMemoryUserRepository()
@@ -63,7 +63,7 @@ describe('User', () => {
     expect(user.password).toBeUndefined()
     expect(user).instanceOf(User)
   })
-  it('should thorw a validation error if dont send required fields', async () => {
+  it.concurrent('should thorw a validation error if dont send required fields', async () => {
     const inMemoryUserRepository = new InMemoryUserRepository()
     const userRegister = new UserRegister(inMemoryUserRepository)
     const register = userRegister.register({})
@@ -73,7 +73,7 @@ describe('User', () => {
       '["Name is required","Lastname is required","Username is required","Email is required","Password is required"]'
     )
   })
-  it('should thorw a validation error if send invalid fields', async () => {
+  it.concurrent('should thorw a validation error if send invalid fields', async () => {
     const inMemoryUserRepository = new InMemoryUserRepository()
     const userRegister = new UserRegister(inMemoryUserRepository)
     const register = userRegister.register({
@@ -89,7 +89,7 @@ describe('User', () => {
       '["Invalid type on On \'name\'. expected string, received number","Invalid type on On \'lastname\'. expected string, received object","Invalid type on On \'username\'. expected string, received number","Invalid type on On \'email\'. expected string, received array","Invalid type on On \'password\'. expected string, received number"]'
     )
   })
-  it('should throw error when user already exists', async () => {
+  it.concurrent('should throw error when user already exists', async () => {
     const inMemoryUserRepository = new InMemoryUserRepository([{ ...newUser, id: 'asd' }])
     const userRegister = new UserRegister(inMemoryUserRepository)
     await expect(userRegister.register(newUser)).rejects.toThrow(
