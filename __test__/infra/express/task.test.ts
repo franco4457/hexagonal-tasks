@@ -1,6 +1,7 @@
 import request from 'supertest'
 
 import api from '@/infraestructure/express/app'
+import { randomUUID } from 'node:crypto'
 const app = (await api).getInstance()
 
 describe('Task', () => {
@@ -8,7 +9,7 @@ describe('Task', () => {
     const res = await request(app).post('/api/v1/task').send({
       title: 'title',
       description: 'description',
-      userId: 'asd'
+      userId: randomUUID()
     })
     expect(res.status).toBe(201)
     const { task } = res.body
