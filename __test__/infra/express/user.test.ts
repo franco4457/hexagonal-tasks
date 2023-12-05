@@ -2,7 +2,16 @@ import request from 'supertest'
 
 import api from '@/infraestructure/express/app'
 const app = (await api).getInstance()
-
+const testUser = {
+  email: 'test@email.com',
+  name: 'test1',
+  lastname: 'tester2',
+  username: 'tested1'
+}
+const testLogin = {
+  email: 'example@mail.com',
+  password: 'Pass1234'
+}
 describe('User', () => {
   it.concurrent('GET /user', async () => {
     const res = await request(app).get('/api/v1/user')
@@ -16,10 +25,7 @@ describe('User', () => {
     expect(res.body.users[0]).not.toHaveProperty('password')
   })
   it.concurrent('POST /user/login', async () => {
-    const res = await request(app).post('/api/v1/user/login').send({
-      email: 'example@mail.com',
-      password: 'Pass1234'
-    })
+    const res = await request(app).post('/api/v1/user/login').send(testLogin)
     expect(res.status).toBe(200)
     const { user } = res.body
     expect(user).toHaveProperty('id')
@@ -29,13 +35,32 @@ describe('User', () => {
     expect(user).toHaveProperty('username')
     expect(user).not.toHaveProperty('password')
   })
+  it('POST /user/login - error not found user', async () => {
+    const res = await request(app)
+      .post('/api/v1/user/login')
+      .send({ ...testLogin, email: 'lalala' })
+    expect(res.status).toBe(404)
+    expect(res.body).toEqual({
+      error: true,
+      name: 'Not Found',
+      message: 'User with email: lalala not found'
+    })
+  })
+  it.concurrent('POST /user/login - error invalid password', async () => {
+    const res = await request(app)
+      .post('/api/v1/user/login')
+      .send({ ...testLogin, password: 'invalid' })
+    // should throw same error to avoid security issues
+    expect(res.status).toBe(404)
+    expect(res.body).toEqual({
+      error: true,
+      name: 'Not Found',
+      message: 'User with email: example@mail.com not found'
+    })
+    // check if only password is invalid
+    expect((await request(app).post('/api/v1/user/login').send(testLogin)).status).toBe(200)
+  })
   it.concurrent('POST /user/register', async () => {
-    const testUser = {
-      email: 'test@email.com',
-      name: 'test1',
-      lastname: 'tester2',
-      username: 'tested1'
-    }
     const res = await request(app)
       .post('/api/v1/user/register')
       .send({ password: 'Pass1234', ...testUser })
@@ -156,6 +181,20 @@ describe('User', () => {
         "Invalid type on On 'password'. expected string, received number"
       ],
       message: 'Invalid user'
+    })
+  })
+  it.concurrent('POST /user/register - error user already exist', async () => {
+    await request(app)
+      .post('/api/v1/user/register')
+      .send({ password: 'Pass1234', ...testUser })
+    const res = await request(app)
+      .post('/api/v1/user/register')
+      .send({ password: 'Pass1234', ...testUser })
+    expect(res.status).toBe(409)
+    expect(res.body).toEqual({
+      error: true,
+      name: 'Already exist',
+      message: 'User with email: test@email.com already exist'
     })
   })
 })
