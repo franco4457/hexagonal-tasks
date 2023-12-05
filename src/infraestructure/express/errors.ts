@@ -1,10 +1,11 @@
+import { DomainError, ValidationError } from '@/domain/core'
 import { type ErrorRequestHandler } from 'express'
-import { ZodError } from 'zod'
 
 export const mainErrorHanlder: ErrorRequestHandler = (err, _req, res, _next) => {
-  console.log(err)
-  if (err instanceof ZodError) {
-    res.status(422).json({ error: true, message: JSON.parse(err.message) })
+  if (!(err instanceof DomainError)) res.status(500).json({ error: true, message: err.message })
+  const { statusCode, ...resErr } = err
+  res.status(statusCode)
+  if (err instanceof ValidationError) {
+    res.json({ error: true, ...resErr, errors: JSON.parse(err.message), message: err.name })
   }
-  res.status(500).json({ error: true, message: err.message })
 }
