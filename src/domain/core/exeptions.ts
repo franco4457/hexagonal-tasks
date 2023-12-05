@@ -1,9 +1,14 @@
 import type { ZodIssue } from 'zod'
 
 export class DomainError extends Error {
-  statusCode = 500
-  constructor(message: string, statusCode?: number) {
+  statusCode: number = 500
+  name: string
+  constructor(
+    message: string,
+    { name = 'DOMAIN_ERROR', statusCode = 500 }: { name?: string; statusCode?: number } = {}
+  ) {
     super(message)
+    this.name = name
     if (statusCode != null) this.statusCode = statusCode
   }
 }
@@ -12,23 +17,23 @@ export class ValidationError extends DomainError {
   issues: ZodIssue[] = []
   constructor(message: string, issues?: ZodIssue[]) {
     if (issues != null) {
-      const message = JSON.stringify(issues.map((issue) => issue.message))
-      super(message, 400)
+      const zMessage = JSON.stringify(issues.map((issue) => issue.message))
+      super(zMessage, { statusCode: 422, name: message })
       this.issues = issues
     } else {
-      super(message, 400)
+      super(message, { name: 'Validation error', statusCode: 422 })
     }
   }
 }
 
 export class NotFound extends DomainError {
   constructor(message: string) {
-    super(message, 404)
+    super(message, { name: 'Not Found', statusCode: 404 })
   }
 }
 
 export class AlreadyExist extends DomainError {
   constructor(message: string) {
-    super(message, 409)
+    super(message, { name: 'Already exist', statusCode: 409 })
   }
 }
