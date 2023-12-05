@@ -46,4 +46,116 @@ describe('User', () => {
     expect(id).toBeDefined()
     expect(user).toEqual(testUser)
   })
+  it.concurrent('POST /user/register - error missing fields', async () => {
+    const res = await request(app).post('/api/v1/user/register').send({})
+    expect(res.status).toBe(422)
+    expect(res.body).toEqual({
+      error: true,
+      name: 'Invalid user',
+      issues: [
+        {
+          code: 'invalid_type',
+          expected: 'string',
+          received: 'undefined',
+          path: ['name'],
+          message: 'Name is required'
+        },
+        {
+          code: 'invalid_type',
+          expected: 'string',
+          received: 'undefined',
+          path: ['lastname'],
+          message: 'Lastname is required'
+        },
+        {
+          code: 'invalid_type',
+          expected: 'string',
+          received: 'undefined',
+          path: ['username'],
+          message: 'Username is required'
+        },
+        {
+          code: 'invalid_type',
+          expected: 'string',
+          received: 'undefined',
+          path: ['email'],
+          message: 'Email is required'
+        },
+        {
+          code: 'invalid_type',
+          expected: 'string',
+          received: 'undefined',
+          path: ['password'],
+          message: 'Password is required'
+        }
+      ],
+      errors: [
+        'Name is required',
+        'Lastname is required',
+        'Username is required',
+        'Email is required',
+        'Password is required'
+      ],
+      message: 'Invalid user'
+    })
+  })
+  it.concurrent('POST /user/register - error invalid types', async () => {
+    const res = await request(app).post('/api/v1/user/register').send({
+      name: 1,
+      lastname: {},
+      username: 10,
+      email: [],
+      password: 11.5
+    })
+    expect(res.status).toBe(422)
+    expect(res.body).toEqual({
+      error: true,
+      name: 'Invalid user',
+      issues: [
+        {
+          code: 'invalid_type',
+          expected: 'string',
+          received: 'number',
+          path: ['name'],
+          message: "Invalid type on On 'name'. expected string, received number"
+        },
+        {
+          code: 'invalid_type',
+          expected: 'string',
+          received: 'object',
+          path: ['lastname'],
+          message: "Invalid type on On 'lastname'. expected string, received object"
+        },
+        {
+          code: 'invalid_type',
+          expected: 'string',
+          received: 'number',
+          path: ['username'],
+          message: "Invalid type on On 'username'. expected string, received number"
+        },
+        {
+          code: 'invalid_type',
+          expected: 'string',
+          received: 'array',
+          path: ['email'],
+          message: "Invalid type on On 'email'. expected string, received array"
+        },
+        {
+          code: 'invalid_type',
+          expected: 'string',
+          received: 'number',
+          path: ['password'],
+          message: "Invalid type on On 'password'. expected string, received number"
+        }
+      ],
+      errors: [
+        "Invalid type on On 'name'. expected string, received number",
+        "Invalid type on On 'lastname'. expected string, received object",
+        "Invalid type on On 'username'. expected string, received number",
+        "Invalid type on On 'email'. expected string, received array",
+        "Invalid type on On 'password'. expected string, received number"
+      ],
+      message: 'Invalid user'
+    })
+  })
 })
