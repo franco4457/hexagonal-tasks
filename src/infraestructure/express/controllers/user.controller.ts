@@ -20,14 +20,22 @@ export class UserController {
     }
   }
 
-  async login(req: Request, res: Response): Promise<void> {
+  async login(req: Request, res: Response, next: NextFunction): Promise<void> {
     const body = req.body
-    const user = await this.userLogin.login(body)
-    res.status(200).json({ user })
+    try {
+      const user = await this.userLogin.login(body)
+      res.status(200).json({ user })
+    } catch (error) {
+      next(error)
+    }
   }
 
-  async getAll(_req: Request, res: Response): Promise<void> {
-    const users = await this.userRepostory.getAll()
-    res.status(200).json({ users })
+  async getAll(_req: Request, res: Response, next: NextFunction): Promise<void> {
+    try {
+      const users = await this.userRepostory.getAll()
+      res.status(200).json({ users })
+    } catch (error) {
+      next(error)
+    }
   }
 }
