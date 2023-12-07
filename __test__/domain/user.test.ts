@@ -19,7 +19,7 @@ const userMock: IUserLoginInput = {
 describe('User', () => {
   it.concurrent('login user', async () => {
     const expectResult = {
-      id: 'asd',
+      id: 'c2d7e0e0-4e0a-4b7a-8c7e-2a9a9b0a3b1a',
       email: 'example@mail.com',
       lastname: 'tester',
       name: 'test',
