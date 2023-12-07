@@ -1,8 +1,15 @@
-import { Task, type ITaskInput, type TaskRepository, type ITask } from '@/domain/task'
-import { type IUser } from '@/domain/user'
+import { Task, type ITaskInput, TaskRepository, type ITask } from '@/domain/task'
+import { type IUserRepository, type IUser, UserNotFound } from '@/domain/user'
 
-export class InMemoryTaskRepository implements TaskRepository {
+export class InMemoryTaskRepository extends TaskRepository {
   private readonly tasks: Task[] = []
+  constructor({
+    tasks = [],
+    aggregates = {}
+  }: { tasks?: Task[]; aggregates?: { userRepo?: IUserRepository } } = {}) {
+    super({ aggregates })
+    this.tasks = tasks
+  }
 
   async getTasks(): Promise<ITask[]> {
     return this.tasks
@@ -31,7 +38,10 @@ export class InMemoryTaskRepository implements TaskRepository {
     if (indexTask === -1) {
       throw new Error('Task not found')
     }
-
-    this.tasks[indexTask].setUser(userId)
+    const user = await this.aggregates.userRepo?.getById(userId)
+    if (user == null) {
+      throw new UserNotFound(userId)
+    }
+    this.tasks[indexTask].setUser(user.id)
   }
 }
