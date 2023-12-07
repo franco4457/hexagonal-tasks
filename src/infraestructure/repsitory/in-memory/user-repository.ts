@@ -4,7 +4,7 @@ import { UserAlreadyExist, UserNotFound } from '@/domain/user/user.exceptions'
 export class InMemoryUserRepository implements IUserRepository {
   private readonly users: IPrivateUser[] = [
     {
-      id: 'asd',
+      id: 'c2d7e0e0-4e0a-4b7a-8c7e-2a9a9b0a3b1a',
       email: 'example@mail.com',
       lastname: 'tester',
       name: 'test',
