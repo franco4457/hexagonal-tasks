@@ -85,7 +85,6 @@ describe('Task', () => {
       userId: '123'
     })
     expect(res.status).toBe(422)
-    console.log(res.body)
     expect(res.body).toEqual({
       error: true,
       name: 'Invalid User ID',
