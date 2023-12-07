@@ -1,13 +1,12 @@
 import request from 'supertest'
 
 import api from '@/infraestructure/express/app'
-import { randomUUID } from 'node:crypto'
 const app = (await api).getInstance()
 
 const testTask = {
   title: 'title',
   description: 'description',
-  userId: randomUUID()
+  userId: 'c2d7e0e0-4e0a-4b7a-8c7e-2a9a9b0a3b1a'
 }
 
 describe('Task', () => {
