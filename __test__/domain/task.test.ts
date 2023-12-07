@@ -1,14 +1,38 @@
 import { ListTasks } from './../../src/application/task/list-tasks'
 import { CreateTask } from '@/application/task/task-create'
 import { Task } from '@/domain/task'
-import { InMemoryTaskRepository } from '@/infraestructure/repsitory/in-memory'
-import { randomUUID } from 'node:crypto'
+import {
+  InMemoryTaskRepository,
+  InMemoryUserRepository
+} from '@/infraestructure/repsitory/in-memory'
 
-const testUUID = randomUUID()
+const testUUID = 'c2d7e0e0-4e0a-4b7a-8c7e-2a9a9b0a3b1a'
+const testUser = {
+  email: 'new@mail.com',
+  username: 'newUser',
+  password: 'Pass1234',
+  name: 'new-user',
+  lastname: 'user-new'
+}
+const userRepo = new InMemoryUserRepository([
+  {
+    id: testUUID,
+    ...testUser
+  }
+])
+
+const loadedRepo = new InMemoryUserRepository([
+  ...Array.from({ length: 10 }, (_, i) => i).map((i) => ({
+    id: testUUID.slice(0, -1) + i,
+    ...testUser
+  }))
+])
 
 describe('task', () => {
   it.concurrent('Create task', async () => {
-    const taskRepository = new InMemoryTaskRepository()
+    const taskRepository = new InMemoryTaskRepository({
+      aggregates: { userRepo }
+    })
     const createTask = new CreateTask(taskRepository)
     const task = await createTask.create({
       task: { title: 'title', description: 'description' },
@@ -21,7 +45,7 @@ describe('task', () => {
     expect(task.userId).toBe(testUUID)
   })
   it.concurrent('List task', async () => {
-    const taskRepository = new InMemoryTaskRepository()
+    const taskRepository = new InMemoryTaskRepository({ aggregates: { userRepo: loadedRepo } })
     const createTask = new CreateTask(taskRepository)
     await Promise.all(
       Array.from({ length: 10 }, (_, i) => i).map(
@@ -45,7 +69,7 @@ describe('task', () => {
     })
   })
   it.concurrent('List task by user id', async () => {
-    const taskRepository = new InMemoryTaskRepository()
+    const taskRepository = new InMemoryTaskRepository({ aggregates: { userRepo: loadedRepo } })
     const createTask = new CreateTask(taskRepository)
     await Promise.all([
       ...Array.from({ length: 10 }, (_, i) => i).map(
