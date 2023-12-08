@@ -102,6 +102,19 @@ describe('Task', () => {
       message: 'Invalid User ID'
     })
   })
+  it.concurrent('POST /task - error user not found', async () => {
+    const res = await request(app).post('/api/v1/task').send({
+      title: 'title',
+      description: 'description',
+      userId: 'c2d7e0e0-4e0a-4b7a-8c7e-2a9a9b0a3b1b'
+    })
+    expect(res.status).toBe(404)
+    expect(res.body).toEqual({
+      error: true,
+      name: 'Not Found',
+      message: 'User with id: c2d7e0e0-4e0a-4b7a-8c7e-2a9a9b0a3b1b not found'
+    })
+  })
   it.concurrent('GET /task', async () => {
     const res = await request(app).get('/api/v1/task')
     expect(res.status).toBe(200)
