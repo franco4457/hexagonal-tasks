@@ -1,12 +1,13 @@
 import { TaskRepository, Task, type ITask, type ITaskInput } from '@/domain/task'
 import { conn } from '../connect'
 import { TaskModel } from './model'
+import { type IUserRepository } from '@/domain/user'
 
 export class MongoTaskRepository extends TaskRepository {
   private taskModel!: typeof TaskModel
 
-  constructor() {
-    super()
+  constructor({ aggregates = {} }: { aggregates?: { userRepo?: IUserRepository } } = {}) {
+    super({ aggregates })
     if (this.taskModel != null) {
       return this
     }
@@ -84,11 +85,13 @@ export class MongoTaskRepository extends TaskRepository {
 
   setUser = async (id: string, userId: string): Promise<void> => {
     try {
-      const repoTask = await this.taskModel.findByIdAndUpdate(id, { userId })
+      const user = await this.aggregates?.userRepo?.getById(userId)
+      if (user == null) throw new Error('User not found')
+      const repoTask = await this.taskModel.findByIdAndUpdate(id, { userId: user.id })
       if (repoTask == null) throw new Error('Task not found')
     } catch (error) {
-      console.log('MONGO_TASK setUser', error)
-      throw new Error('Unable to set user')
+      await this.taskModel.deleteOne({ _id: id })
+      throw error
     }
   }
 }

@@ -10,8 +10,8 @@ import { NODE_ENV } from '@/config'
 export const createMongoApi = async (): Promise<ApiExpress> => {
   if (NODE_ENV === 'test') await testMongoSeeds()
   const apiBuilder = new ApiBuilderExpress()
-  const taskRepository = new MongoTaskRepository()
   const userRepository = new MongoUserRepository()
+  const taskRepository = new MongoTaskRepository({ aggregates: { userRepo: userRepository } })
   apiBuilder.setTaskRepository(taskRepository)
   apiBuilder.setUserRepository(userRepository)
   return apiBuilder.build()

@@ -33,7 +33,7 @@ export class MongoUserRepository implements IUserRepository {
       return user
     } catch (error) {
       console.log('MONGO_USER getById', error)
-      throw new Error('Unable to get user')
+      throw error
     }
   }
 
