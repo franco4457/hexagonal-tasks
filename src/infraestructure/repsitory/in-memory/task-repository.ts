@@ -38,10 +38,15 @@ export class InMemoryTaskRepository extends TaskRepository {
     if (indexTask === -1) {
       throw new Error('Task not found')
     }
-    const user = await this.aggregates.userRepo?.getById(userId)
-    if (user == null) {
-      throw new UserNotFound(userId)
+    try {
+      const user = await this.aggregates.userRepo?.getById(userId)
+      if (user == null) {
+        throw new UserNotFound(userId)
+      }
+      this.tasks[indexTask].setUser(user.id)
+    } catch (error) {
+      this.tasks.splice(indexTask, 1)
+      throw error
     }
-    this.tasks[indexTask].setUser(user.id)
   }
 }
