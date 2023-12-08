@@ -95,4 +95,17 @@ export class MongoUserRepository implements IUserRepository {
       throw new Error('Unable to create user')
     }
   }
+
+  findAndValidate = async (email: string, password: string): Promise<IUser> => {
+    const repoUser = await UserModel.findOne({ email, password })
+    if (repoUser == null) throw new UserNotFound(email, 'email')
+    const user = {
+      id: repoUser.id,
+      email: repoUser.email,
+      name: repoUser.name,
+      lastname: repoUser.lastname,
+      username: repoUser.username
+    } satisfies IUser
+    return user
+  }
 }

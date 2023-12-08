@@ -1,11 +1,16 @@
-import { type TaskRepository, Task, type ITask, type ITaskInput } from '@/domain/task'
+import { TaskRepository, Task, type ITask, type ITaskInput } from '@/domain/task'
 import { conn } from '../connect'
 import { TaskModel } from './model'
 
-export class MongoTaskRepository implements TaskRepository {
+export class MongoTaskRepository extends TaskRepository {
   private taskModel!: typeof TaskModel
 
   constructor() {
+    super()
+    if (this.taskModel != null) {
+      return this
+    }
+
     conn()
       .then(() => {
         this.taskModel = TaskModel
