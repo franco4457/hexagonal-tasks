@@ -23,7 +23,7 @@ export class Task implements ITask {
   }
 
   static create = (task: ITaskInput): Task => {
-    const id = randomUUID() as string
+    const id = randomUUID()
     return new Task({ ...task, id, userId: null })
   }
 
