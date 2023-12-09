@@ -3,7 +3,8 @@ import {
   type IUserCreate,
   type IUser,
   type IUserRepository,
-  UserNotFound
+  UserNotFound,
+  UserAlreadyExist
 } from '@/domain/user'
 import { conn } from '../connect'
 import type mongoose from 'mongoose'
@@ -79,6 +80,8 @@ export class MongoUserRepository implements IUserRepository {
 
   create = async (user: IUserCreate): Promise<IUser> => {
     try {
+      const exist = await UserModel.findOne({ email: user.email })
+      if (exist != null) throw new UserAlreadyExist(user.email, 'email')
       const newUser = User.create(user)
       await this.conn()
       const repoUser = await UserModel.create({ ...newUser, _id: newUser.id })
@@ -92,7 +95,7 @@ export class MongoUserRepository implements IUserRepository {
       return userPublic
     } catch (error) {
       console.log('MONGO_USER create', error)
-      throw new Error('Unable to create user')
+      throw error
     }
   }
 
