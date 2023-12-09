@@ -1,4 +1,4 @@
-import { Task, type ITaskInput, TaskRepository, type ITask } from '@/domain/task'
+import { Task, type ITaskInput, TaskRepository } from '@/domain/task'
 import { type IUserRepository, type IUser, UserNotFound } from '@/domain/user'
 
 export class InMemoryTaskRepository extends TaskRepository {
@@ -11,11 +11,11 @@ export class InMemoryTaskRepository extends TaskRepository {
     this.tasks = tasks
   }
 
-  async getTasks(): Promise<ITask[]> {
+  async getTasks(): Promise<Task[]> {
     return this.tasks
   }
 
-  async getTasksByUserId(userId: IUser['id']): Promise<ITask[]> {
+  async getTasksByUserId(userId: IUser['id']): Promise<Task[]> {
     return this.tasks.filter((task) => task.userId === userId)
   }
 

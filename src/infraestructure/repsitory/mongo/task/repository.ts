@@ -1,4 +1,4 @@
-import { TaskRepository, Task, type ITask, type ITaskInput } from '@/domain/task'
+import { TaskRepository, Task, type ITaskInput } from '@/domain/task'
 import { conn } from '../connect'
 import { TaskModel } from './model'
 import { type IUserRepository } from '@/domain/user'
@@ -22,17 +22,17 @@ export class MongoTaskRepository extends TaskRepository {
       })
   }
 
-  getTasks = async (): Promise<ITask[]> => {
+  getTasks = async (): Promise<Task[]> => {
     try {
       const repoTasks = await this.taskModel.find()
       const tasks = repoTasks.map(
         (repoTask) =>
-          ({
+          new Task({
             id: repoTask.id,
             title: repoTask.title,
             description: repoTask.description,
             userId: repoTask.userId
-          } satisfies ITask)
+          })
       )
       return tasks
     } catch (error) {
@@ -41,17 +41,17 @@ export class MongoTaskRepository extends TaskRepository {
     }
   }
 
-  getTasksByUserId = async (userId: string): Promise<ITask[]> => {
+  getTasksByUserId = async (userId: string): Promise<Task[]> => {
     try {
       const repoTasks = await this.taskModel.find({ userId })
       const tasks = repoTasks.map(
         (repoTask) =>
-          ({
+          new Task({
             id: repoTask.id,
             title: repoTask.title,
             description: repoTask.description,
             userId: repoTask.userId
-          } satisfies ITask)
+          })
       )
       return tasks
     } catch (error) {
