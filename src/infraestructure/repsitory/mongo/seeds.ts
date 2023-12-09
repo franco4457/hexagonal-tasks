@@ -16,7 +16,7 @@ export const testMongoSeeds = async (): Promise<void> => {
         email: 'example@mail.com',
         lastname: 'tester',
         name: 'test',
-        password: '1234',
+        password: 'Pass1234',
         username: 'tested'
       })
     ])
