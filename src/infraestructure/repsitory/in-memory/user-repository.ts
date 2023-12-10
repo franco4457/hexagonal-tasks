@@ -1,7 +1,7 @@
-import { type IUserCreate, type IUserRepository, User, type IPrivateUser } from '@/domain/user'
+import { type IUserCreate, UserRepository, User, type IPrivateUser } from '@/domain/user'
 import { UserAlreadyExist, UserNotFound } from '@/domain/user/user.exceptions'
 
-export class InMemoryUserRepository implements IUserRepository {
+export class InMemoryUserRepository extends UserRepository {
   private readonly users: IPrivateUser[] = [
     {
       id: 'c2d7e0e0-4e0a-4b7a-8c7e-2a9a9b0a3b1a',
@@ -14,28 +14,29 @@ export class InMemoryUserRepository implements IUserRepository {
   ]
 
   constructor(users?: IPrivateUser[]) {
+    super()
     if (users != null) this.users = users
   }
 
-  async getByEmail(email: string): Promise<User> {
+  getByEmail = async (email: string): Promise<User> => {
     const user = this.users.find((user) => user.email === email)
     if (user == null) throw new UserNotFound(email, 'email')
 
     return new User(user)
   }
 
-  async findAndValidate(email: string, password: string): Promise<User> {
+  findAndValidate = async (email: string, password: string): Promise<User> => {
     const user = this.users.find((user) => user.email === email)
     if (user == null) throw new UserNotFound(email, 'email')
     if (user.password !== password) throw new UserNotFound(email, 'email')
     return new User(user)
   }
 
-  async getAll(): Promise<User[]> {
+  getAll = async (): Promise<User[]> => {
     return this.users.map((user) => new User(user))
   }
 
-  async create(user: IUserCreate): Promise<User> {
+  create = async (user: IUserCreate): Promise<User> => {
     if (this.users.some((u) => u.email === user.email)) {
       throw new UserAlreadyExist(user.email, 'email')
     }
@@ -44,7 +45,7 @@ export class InMemoryUserRepository implements IUserRepository {
     return newUser
   }
 
-  async getById(id: string): Promise<User> {
+  getById = async (id: string): Promise<User> => {
     const user = this.users.find((user) => user.id === id)
     if (user == null) throw new UserNotFound(id)
     return user

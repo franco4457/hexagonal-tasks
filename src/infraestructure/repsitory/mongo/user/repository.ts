@@ -1,16 +1,15 @@
 import {
   User,
   type IUserCreate,
-  type IUser,
-  type IUserRepository,
   UserNotFound,
-  UserAlreadyExist
+  UserAlreadyExist,
+  UserRepository
 } from '@/domain/user'
 import { conn } from '../connect'
 import type mongoose from 'mongoose'
 import { UserModel } from './model'
 
-export class MongoUserRepository implements IUserRepository {
+export class MongoUserRepository extends UserRepository {
   private mongoose: typeof mongoose | null = null
 
   private readonly conn = async (): Promise<typeof mongoose> => {
@@ -19,18 +18,18 @@ export class MongoUserRepository implements IUserRepository {
     return this.mongoose
   }
 
-  getById = async (id: string): Promise<IUser> => {
+  getById = async (id: string): Promise<User> => {
     try {
       await this.conn()
       const repoUser = await UserModel.findById(id)
       if (repoUser == null) throw new UserNotFound(id)
-      const user = {
+      const user = new User({
         id: repoUser.id,
         email: repoUser.email,
         name: repoUser.name,
         lastname: repoUser.lastname,
         username: repoUser.username
-      } satisfies IUser
+      })
       return user
     } catch (error) {
       console.log('MONGO_USER getById', error)
@@ -38,18 +37,18 @@ export class MongoUserRepository implements IUserRepository {
     }
   }
 
-  getByEmail = async (email: string): Promise<IUser> => {
+  getByEmail = async (email: string): Promise<User> => {
     try {
       await this.conn()
       const repoUser = await UserModel.findOne({ email })
       if (repoUser == null) throw new UserNotFound(email, 'email')
-      const user = {
+      const user = new User({
         id: repoUser.id,
         email: repoUser.email,
         name: repoUser.name,
         lastname: repoUser.lastname,
         username: repoUser.username
-      } satisfies IUser
+      })
       return user
     } catch (error) {
       console.log('MONGO_USER getByEmail', error)
@@ -57,19 +56,19 @@ export class MongoUserRepository implements IUserRepository {
     }
   }
 
-  getAll = async (): Promise<IUser[]> => {
+  getAll = async (): Promise<User[]> => {
     try {
       await this.conn()
       const repoUsers = await UserModel.find()
       const users = repoUsers.map(
         (repoUser) =>
-          ({
+          new User({
             id: repoUser.id,
             email: repoUser.email,
             name: repoUser.name,
             lastname: repoUser.lastname,
             username: repoUser.username
-          } satisfies IUser)
+          })
       )
       return users
     } catch (error) {
@@ -78,20 +77,20 @@ export class MongoUserRepository implements IUserRepository {
     }
   }
 
-  create = async (user: IUserCreate): Promise<IUser> => {
+  create = async (user: IUserCreate): Promise<User> => {
     try {
       const exist = await UserModel.findOne({ email: user.email })
       if (exist != null) throw new UserAlreadyExist(user.email, 'email')
       const newUser = User.create(user)
       await this.conn()
       const repoUser = await UserModel.create({ ...newUser, _id: newUser.id })
-      const userPublic = {
+      const userPublic = new User({
         id: repoUser.id,
         email: repoUser.email,
         name: repoUser.name,
         lastname: repoUser.lastname,
         username: repoUser.username
-      } satisfies IUser
+      })
       return userPublic
     } catch (error) {
       console.log('MONGO_USER create', error)
@@ -99,16 +98,16 @@ export class MongoUserRepository implements IUserRepository {
     }
   }
 
-  findAndValidate = async (email: string, password: string): Promise<IUser> => {
+  findAndValidate = async (email: string, password: string): Promise<User> => {
     const repoUser = await UserModel.findOne({ email, password })
     if (repoUser == null) throw new UserNotFound(email, 'email')
-    const user = {
+    const user = new User({
       id: repoUser.id,
       email: repoUser.email,
       name: repoUser.name,
       lastname: repoUser.lastname,
       username: repoUser.username
-    } satisfies IUser
+    })
     return user
   }
 }
