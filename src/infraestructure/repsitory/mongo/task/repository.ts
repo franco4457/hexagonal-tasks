@@ -1,8 +1,7 @@
-import { TaskRepository, Task, type ITaskInput } from '@/domain/task'
+import { TaskRepository, Task, type ITaskInput, TaskNotFound } from '@/domain/task'
 import { conn } from '../connect'
 import { TaskModel } from './model'
 import { type IUserRepository } from '@/domain/user'
-import { TaskNotFound } from '@/domain/task/task.exceptions'
 
 export class MongoTaskRepository extends TaskRepository {
   private taskModel!: typeof TaskModel

@@ -1,5 +1,4 @@
-import { Task, type ITaskInput, TaskRepository } from '@/domain/task'
-import { TaskNotFound } from '@/domain/task/task.exceptions'
+import { Task, type ITaskInput, TaskRepository, TaskNotFound } from '@/domain/task'
 import { type IUserRepository, type IUser, UserNotFound } from '@/domain/user'
 
 export class InMemoryTaskRepository extends TaskRepository {
