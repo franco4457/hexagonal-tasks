@@ -1,4 +1,5 @@
 import { Task, type ITaskInput, TaskRepository } from '@/domain/task'
+import { TaskNotFound } from '@/domain/task/task.exceptions'
 import { type IUserRepository, type IUser, UserNotFound } from '@/domain/user'
 
 export class InMemoryTaskRepository extends TaskRepository {
@@ -22,7 +23,7 @@ export class InMemoryTaskRepository extends TaskRepository {
   async getTask(id: string): Promise<Task> {
     const task = this.tasks.find((task) => task.id === id)
     if (task == null) {
-      throw new Error('Task not found')
+      throw new TaskNotFound(id)
     }
     return new Task(task)
   }
@@ -36,7 +37,7 @@ export class InMemoryTaskRepository extends TaskRepository {
   async setUser(id: Task['id'], userId: IUser['id']): Promise<void> {
     const indexTask = this.tasks.findIndex((task) => task.id === id)
     if (indexTask === -1) {
-      throw new Error('Task not found')
+      throw new TaskNotFound(id)
     }
     try {
       const user = await this.aggregates.userRepo?.getById(userId)
