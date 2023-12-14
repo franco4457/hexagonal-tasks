@@ -2,6 +2,7 @@ import { TaskRepository, Task, type ITaskInput } from '@/domain/task'
 import { conn } from '../connect'
 import { TaskModel } from './model'
 import { type IUserRepository } from '@/domain/user'
+import { TaskNotFound } from '@/domain/task/task.exceptions'
 
 export class MongoTaskRepository extends TaskRepository {
   private taskModel!: typeof TaskModel
@@ -63,7 +64,7 @@ export class MongoTaskRepository extends TaskRepository {
   getTask = async (id: string): Promise<Task> => {
     try {
       const repoTask = await this.taskModel.findById(id)
-      if (repoTask == null) throw new Error('Task not found')
+      if (repoTask == null) throw new TaskNotFound(id)
       const task = new Task(repoTask)
       return task
     } catch (error) {
@@ -88,7 +89,7 @@ export class MongoTaskRepository extends TaskRepository {
       const user = await this.aggregates?.userRepo?.getById(userId)
       if (user == null) throw new Error('User not found')
       const repoTask = await this.taskModel.findByIdAndUpdate(id, { userId: user.id })
-      if (repoTask == null) throw new Error('Task not found')
+      if (repoTask == null) throw new TaskNotFound(id)
     } catch (error) {
       await this.taskModel.deleteOne({ _id: id })
       throw error
