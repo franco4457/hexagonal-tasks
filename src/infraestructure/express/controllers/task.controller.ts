@@ -20,14 +20,22 @@ export class TaskController {
     }
   }
 
-  async getAll(_req: Request, res: Response): Promise<void> {
-    const tasks = await this.listTasks.getAll()
-    res.status(200).json({ tasks })
+  async getAll(_req: Request, res: Response, next: NextFunction): Promise<void> {
+    try {
+      const tasks = await this.listTasks.getAll()
+      res.status(200).json({ tasks })
+    } catch (error) {
+      next(error)
+    }
   }
 
-  async getByUserId(req: Request, res: Response): Promise<void> {
-    const { userId } = req.params
-    const tasks = await this.listTasks.getByUserId(userId)
-    res.status(200).json({ tasks })
+  async getByUserId(req: Request, res: Response, next: NextFunction): Promise<void> {
+    try {
+      const { userId } = req.params
+      const tasks = await this.listTasks.getByUserId(userId)
+      res.status(200).json({ tasks })
+    } catch (error) {
+      next(error)
+    }
   }
 }
