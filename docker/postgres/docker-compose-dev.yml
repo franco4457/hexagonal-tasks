@@ -1,0 +1,25 @@
+version: '3.9'
+services:
+  hextasks-dev:
+    build:
+      context: ../..
+      dockerfile: ./docker/postgres/Dockerfile
+      target: dev
+    ports:
+      - '3000:3000'
+    links:
+      - postgres
+    depends_on:
+      - postgres
+    volumes:
+      - ../..:/home/app
+    environment:
+      - DIALECT=POSTGRES
+      - DB_URL=postgres://admin:secret@postgres:5433/hextasks
+  postgres:
+    image: postgres
+    ports:
+      - '5433:5432'
+    environment:
+      - POSTGRES_PASSWORD=admin
+      - POSTGRES_DB=hextasks
