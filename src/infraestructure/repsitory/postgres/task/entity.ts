@@ -2,15 +2,15 @@ import { type ITask } from '@/domain/task'
 import { Column, PrimaryColumn } from 'typeorm'
 
 export class TaskEntity implements ITask {
-  @PrimaryColumn()
+  @PrimaryColumn('uuid')
   id!: string
 
-  @Column()
+  @Column('varchar', { nullable: false, length: 50 })
   title!: string
 
-  @Column()
+  @Column('varchar', { nullable: false, length: 50 })
   description!: string
 
-  @Column()
+  @Column('varchar', { nullable: true, length: 50 })
   userId!: string | null
 }
