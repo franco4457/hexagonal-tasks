@@ -15,11 +15,9 @@ services:
       - ../..:/home/app
     environment:
       - DIALECT=POSTGRES
-      - DB_URL=postgres://admin:secret@postgres:5433/hextasks
+      - DB_URL=postgres://postgres:admin@postgres:5432/hextasks
   postgres:
     image: postgres
-    ports:
-      - '5433:5432'
     environment:
       - POSTGRES_PASSWORD=admin
       - POSTGRES_DB=hextasks

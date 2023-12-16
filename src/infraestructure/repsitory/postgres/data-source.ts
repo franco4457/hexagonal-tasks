@@ -2,15 +2,11 @@ import 'reflect-metadata'
 import { DataSource } from 'typeorm'
 import { UserEntity } from './user/entity'
 import { TaskEntity } from './task/entity'
+import { DB_URL } from '@/config'
 
 export const PostgresDataSource = new DataSource({
   type: 'postgres',
-  host: 'postgres',
-  port: 5432,
-  username: 'postgres',
-  password: 'admin',
-  database: 'postgres',
-  synchronize: true,
+  url: DB_URL,
   entities: [UserEntity, TaskEntity],
   logging: false
 })
