@@ -33,9 +33,10 @@ export class PostgresUserRepository extends UserRepository {
     return users.map((user) => new User(user))
   }
 
-  create = async (user: IUserCreate): Promise<User> => {
-    const newUser = User.create(user)
-    const userEntity = new UserEntity({ ...newUser, password: user.password })
+  create = async ({ password, ...user }: IUserCreate): Promise<User> => {
+    const newUser = User.create({ password, ...user })
+    const userEntity = new UserEntity()
+    Object.assign(userEntity, { password, ...newUser })
     await this.userRepo.save(userEntity)
     return newUser
   }

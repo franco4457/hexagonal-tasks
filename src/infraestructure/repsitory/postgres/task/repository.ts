@@ -56,7 +56,8 @@ export class PostgresTaskRepository extends TaskRepository {
   async create(newTask: ITaskInput): Promise<Task> {
     try {
       const task = Task.create(newTask)
-      const taskEntity = new TaskEntity(task)
+      const taskEntity = new TaskEntity()
+      Object.assign(taskEntity, task)
       await this.taskRepo.save(taskEntity)
       return task
     } catch (error) {
