@@ -1,24 +1,16 @@
 import { type ITask } from '@/domain/task'
-import { Column, ManyToOne, PrimaryColumn } from 'typeorm'
-import { UserEntity } from '../user/entity'
+import { Column, PrimaryColumn } from 'typeorm'
 
 export class TaskEntity implements ITask {
   @PrimaryColumn()
-  id: string
+  id!: string
 
   @Column()
-  title: string
+  title!: string
 
   @Column()
-  description: string
+  description!: string
 
-  @ManyToOne(() => UserEntity, (user) => user.id)
-  userId: string | null
-
-  constructor(task: ITask) {
-    this.id = task.id
-    this.title = task.title
-    this.description = task.description
-    this.userId = task.userId
-  }
+  @Column()
+  userId!: string | null
 }
