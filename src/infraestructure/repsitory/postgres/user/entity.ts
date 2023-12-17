@@ -3,7 +3,7 @@ import { Column, Entity, PrimaryColumn } from 'typeorm'
 
 @Entity()
 export class UserEntity implements IPrivateUser {
-  @PrimaryColumn('uuid')
+  @PrimaryColumn('uuid', { unique: true, nullable: false })
   id!: string
 
   @Column('varchar', { nullable: false, length: 50 })
@@ -15,7 +15,7 @@ export class UserEntity implements IPrivateUser {
   @Column('varchar', { nullable: false, length: 50 })
   username!: string
 
-  @Column('varchar', { nullable: false, length: 50 })
+  @Column('varchar', { unique: true, nullable: false, length: 50 })
   email!: string
 
   @Column('varchar', { nullable: false, length: 50 })
