@@ -1,4 +1,10 @@
-import { type IUserCreate, User, UserRepository } from '@/domain/user'
+import {
+  type IUserCreate,
+  User,
+  UserRepository,
+  UserNotFound,
+  UserAlreadyExist
+} from '@/domain/user'
 import { PostgresDataSource } from '..'
 import { UserEntity } from './entity'
 
@@ -11,21 +17,28 @@ export class PostgresUserRepository extends UserRepository {
 
   getById = async (id: string): Promise<User> => {
     const user = await this.userRepo.findOne({ where: { id } })
-    if (user == null) throw new Error(`User with id: ${id} not found`)
+    if (user == null) throw new UserNotFound(id)
     return new User(user)
   }
 
   getByEmail = async (email: string): Promise<User> => {
     const user = await this.userRepo.findOne({ where: { email } })
-    if (user == null) throw new Error(`User with email: ${email} not found`)
+    if (user == null) throw new UserNotFound(email, 'email')
     return new User(user)
   }
 
   findAndValidate = async (email: string, password: string): Promise<User> => {
-    const user = await this.userRepo.findOne({ where: { email } })
-    if (user == null) throw new Error(`User with email: ${email} not found`)
-    if (user.password !== password) throw new Error('Invalid password')
-    return new User(user)
+    try {
+      const user = await this.userRepo.findOne({
+        where: { email }
+      })
+      if (user == null) throw new UserNotFound(email, 'email')
+      if (user.password !== password) throw new UserNotFound(email, 'email')
+      return new User(user)
+    } catch (error) {
+      console.log('POSTGRES findAndValidate', error)
+      throw error
+    }
   }
 
   getAll = async (): Promise<User[]> => {
@@ -34,10 +47,19 @@ export class PostgresUserRepository extends UserRepository {
   }
 
   create = async ({ password, ...user }: IUserCreate): Promise<User> => {
-    const newUser = User.create({ password, ...user })
-    const userEntity = new UserEntity()
-    Object.assign(userEntity, { password, ...newUser })
-    await this.userRepo.save(userEntity)
-    return newUser
+    try {
+      const exist = await this.userRepo.findOne({
+        where: { email: user.email }
+      })
+      if (exist != null) throw new UserAlreadyExist(user.email)
+      const newUser = User.create({ password, ...user })
+      const userEntity = new UserEntity()
+      Object.assign(userEntity, { password, ...newUser })
+      await this.userRepo.save(userEntity)
+      return newUser
+    } catch (error) {
+      console.log('POSTGRES create', error)
+      throw error
+    }
   }
 }
