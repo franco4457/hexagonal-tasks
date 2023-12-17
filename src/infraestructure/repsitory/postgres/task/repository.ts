@@ -1,11 +1,12 @@
 import { Task, TaskRepository, TaskNotFound, type ITaskInput } from '@/domain/task'
 import { PostgresDataSource } from '..'
 import { TaskEntity } from './entity'
+import type { IUserRepository } from '@/domain/user'
 
 export class PostgresTaskRepository extends TaskRepository {
   private readonly taskRepo
-  constructor() {
-    super()
+  constructor({ aggregates = {} }: { aggregates?: { userRepo?: IUserRepository } } = {}) {
+    super({ aggregates })
     this.taskRepo = PostgresDataSource.getRepository(TaskEntity)
   }
 
@@ -68,11 +69,11 @@ export class PostgresTaskRepository extends TaskRepository {
 
   async setUser(id: string, userId: string): Promise<void> {
     try {
+      const user = await this.aggregates.userRepo?.getById(userId)
       const task = await this.taskRepo.findOne({ where: { id } })
-      if (task == null) {
-        throw new TaskNotFound(id)
-      }
-      task.userId = userId
+      if (task == null) throw new TaskNotFound(id)
+
+      task.userId = user?.id ?? null
       await this.taskRepo.save(task)
     } catch (error) {
       console.log('POSTGRES setUser', error)

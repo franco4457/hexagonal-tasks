@@ -14,8 +14,10 @@ export const createPostgresApi = async (): Promise<ApiExpress> => {
     if (NODE_ENV === 'test') await postgresTestSeeds()
     const apiBuilder = new ApiBuilderExpress()
     const userRepository = new PostgresUserRepository()
-    const tastRepository = new PostgresTaskRepository()
-    apiBuilder.setTaskRepository(tastRepository)
+    const taskRepository = new PostgresTaskRepository({
+      aggregates: { userRepo: userRepository }
+    })
+    apiBuilder.setTaskRepository(taskRepository)
     apiBuilder.setUserRepository(userRepository)
     return apiBuilder.build()
   } catch (error) {
