@@ -1,8 +1,9 @@
 import { type ITask } from '@/domain/task'
-import { Column, PrimaryColumn } from 'typeorm'
+import { BaseEntity, Column, Entity, PrimaryColumn } from 'typeorm'
 
-export class TaskEntity implements ITask {
-  @PrimaryColumn('uuid')
+@Entity()
+export class TaskEntity extends BaseEntity implements ITask {
+  @PrimaryColumn('uuid', { unique: true, nullable: false })
   id!: string
 
   @Column('varchar', { nullable: false, length: 50 })
