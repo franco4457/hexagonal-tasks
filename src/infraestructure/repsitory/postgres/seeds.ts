@@ -1,10 +1,13 @@
 import { PostgresDataSource } from './data-source'
+import { TaskEntity } from './task'
 import { UserEntity } from './user'
 
 export const postgresTestSeeds = async (): Promise<void> => {
   try {
     const userRepo = PostgresDataSource.getRepository(UserEntity)
+    const taskRepo = PostgresDataSource.getRepository(TaskEntity)
     await userRepo.clear()
+    await taskRepo.clear()
     const userEnt = new UserEntity()
     Object.assign(userEnt, {
       id: 'c2d7e0e0-4e0a-4b7a-8c7e-2a9a9b0a3b1a',
