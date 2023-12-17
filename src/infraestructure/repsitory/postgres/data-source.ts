@@ -7,6 +7,7 @@ import { DB_URL } from '@/config'
 export const PostgresDataSource = new DataSource({
   type: 'postgres',
   url: DB_URL,
+  synchronize: true,
   entities: [UserEntity, TaskEntity],
   logging: false
 })
