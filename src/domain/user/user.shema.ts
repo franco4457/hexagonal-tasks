@@ -1,5 +1,5 @@
 import z from 'zod'
-import { type IUserCreate } from './user.entity'
+import { type UserPropsCreate } from './user.entity'
 import { customErrorMap } from '../core'
 import { InvalidUser } from './user.exceptions'
 
@@ -39,7 +39,7 @@ export const UserSchema = z.object({
     .regex(/[0-9]/, { message: 'Password should have at least one number' })
 })
 
-export const validateUser = async (user: unknown): Promise<IUserCreate> => {
+export const validateUser = async (user: unknown): Promise<UserPropsCreate> => {
   try {
     const result = await UserSchema.omit({ id: true }).parseAsync(user, {
       errorMap: customErrorMap
