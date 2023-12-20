@@ -8,6 +8,11 @@ export interface UserProps {
   email: string
   password: string
 }
+export type UserModel = UserProps & {
+  id: string
+  createdAt: Date
+  updatedAt: Date
+}
 
 export type UserPropsLoginInput = Pick<UserProps, 'email' | 'username' | 'password'>
 
