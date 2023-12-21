@@ -2,6 +2,7 @@ import z from 'zod'
 import { type UserPropsCreate } from './user.entity'
 import { customErrorMap } from '../core'
 import { InvalidUser } from './user.exceptions'
+import { passSchema } from './value-objects'
 
 export const UserSchema = z.object({
   id: z.string().uuid({ message: 'Invalid id' }),
@@ -28,15 +29,7 @@ export const UserSchema = z.object({
       required_error: 'Email is required'
     })
     .email({ message: 'Email should be a string like name@mail.com' }),
-  password: z
-    .string({
-      required_error: 'Password is required'
-    })
-    .min(8, { message: 'Password should be at least 8 characters' })
-    .max(50, { message: 'Password should be less than 50 characters' })
-    .regex(/[a-z]/, { message: 'Password should have at least one lowercase letter' })
-    .regex(/[A-Z]/, { message: 'Password should have at least one uppercase letter' })
-    .regex(/[0-9]/, { message: 'Password should have at least one number' })
+  password: passSchema
 })
 
 export const validateUser = async (user: unknown): Promise<UserPropsCreate> => {

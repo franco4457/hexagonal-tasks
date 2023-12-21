@@ -1,12 +1,16 @@
 import { UserResponseDto } from './user.dto'
 import { type Mapper } from '../core/mapper'
 import { type UserModel, User } from './user.entity'
+import { Password } from './value-objects'
 
 export class UserMapper implements Mapper<User, UserModel, UserResponseDto> {
   toDomain(record: UserModel): User {
     const { id, createdAt, updatedAt, ...props } = record
     const user = new User({
-      props,
+      props: {
+        ...props,
+        password: new Password(props.password)
+      },
       id,
       createdAt: new Date(createdAt),
       updatedAt: new Date(updatedAt)
@@ -16,8 +20,10 @@ export class UserMapper implements Mapper<User, UserModel, UserResponseDto> {
 
   toPersistence(entity: User): UserModel {
     const { id, createdAt, updatedAt, ...props } = entity.getProps()
+    const { password } = props
     const record: UserModel = {
       ...props,
+      password: password.value,
       id: id.toString(),
       createdAt,
       updatedAt
