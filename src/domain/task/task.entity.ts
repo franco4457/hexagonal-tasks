@@ -1,34 +1,35 @@
 import { randomUUID } from 'node:crypto'
-import { type IUser } from '../user'
+import { type User } from '../user'
+import { type AggregateID, Entity } from '../core'
 
-export interface ITask {
-  id: string
+export interface TaskProps {
   title: string
   description: string
-  userId: IUser['id'] | null
+  isCompleted: boolean
+  userId: User['id']
 }
 
-export type ITaskInput = Omit<ITask, 'id' | 'userId'>
+export type TaskPropsCreate = Omit<TaskProps, 'id'>
 
-export class Task implements ITask {
-  readonly id: string
-  readonly title: string
-  readonly description: string
-  userId: string | null
-  constructor({ description, title, id, userId }: ITask) {
-    this.id = id
-    this.description = description
-    this.title = title
-    this.userId = userId
-  }
+export type TaskModel = Omit<TaskProps, 'isComplete'> & {
+  id: string
+  is_completed: boolean
+  createdAt: Date
+  updatedAt: Date
+}
 
-  static create = (task: ITaskInput): Task => {
+export class Task extends Entity<TaskProps> {
+  protected readonly _id!: AggregateID
+  static create = (task: TaskPropsCreate): Task => {
     const id = randomUUID()
-    return new Task({ ...task, id, userId: null })
+    return new Task({ id, props: { ...task } })
   }
 
-  setUser(userId: IUser['id']): IUser['id'] {
-    this.userId = userId
-    return userId
+  markComplete = (): void => {
+    this.props.isCompleted = true
+  }
+
+  markIncomplete = (): void => {
+    this.props.isCompleted = false
   }
 }
