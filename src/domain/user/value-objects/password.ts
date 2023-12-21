@@ -28,6 +28,6 @@ export class Password extends ValueObject<string> {
   }
 
   async compare(password: string): Promise<boolean> {
-    return await bcrypt.compare(password, this._value)
+    return await bcrypt.compare(password, this.value)
   }
 }

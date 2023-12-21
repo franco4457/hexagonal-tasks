@@ -6,7 +6,7 @@ export abstract class ValueObject<T> {
     this._value = value
   }
 
-  public unpack(): T {
+  public get value(): T {
     return this._value
   }
 
