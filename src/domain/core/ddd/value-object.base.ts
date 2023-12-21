@@ -10,7 +10,7 @@ export abstract class ValueObject<T> {
     return this._value
   }
 
-  protected abstract validate(value: T): boolean
+  protected abstract validate(value: T): void
 
   static isValueObject(value: unknown): value is ValueObject<unknown> {
     return value instanceof ValueObject
