@@ -27,7 +27,7 @@ export abstract class Entity<EntityProps> {
     this.props = props
   }
 
-  getID(): AggregateID {
+  get id(): AggregateID {
     return this._id
   }
 
