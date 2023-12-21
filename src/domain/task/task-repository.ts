@@ -1,12 +1,12 @@
-import type { IUser, IUserRepository } from '../user'
-import type { ITask, ITaskInput, Task } from './task.entity'
+import type { User, IUserRepository } from '../user'
+import type { Task, TaskPropsCreate } from './task.entity'
 
 export interface ITaskRepository {
-  getTasks: () => Promise<ITask[]>
-  getTasksByUserId: (userId: IUser['id']) => Promise<ITask[]>
+  getTasks: () => Promise<Task[]>
+  getTasksByUserId: (userId: User['id']) => Promise<Task[]>
   getTask: (id: Task['id']) => Promise<Task>
-  create: (newTask: ITaskInput) => Promise<Task>
-  setUser: (id: Task['id'], userId: IUser['id']) => Promise<void>
+  create: (newTask: TaskPropsCreate) => Promise<Task>
+  setUser: (id: Task['id'], userId: User['id']) => Promise<void>
 }
 export abstract class TaskRepository implements ITaskRepository {
   readonly repositoryName = 'TaskRepository'
@@ -15,8 +15,8 @@ export abstract class TaskRepository implements ITaskRepository {
     this.aggregates = aggregates
   }
   abstract getTasks(): Promise<Task[]>
-  abstract getTasksByUserId(userId: IUser['id']): Promise<Task[]>
+  abstract getTasksByUserId(userId: User['id']): Promise<Task[]>
   abstract getTask(id: Task['id']): Promise<Task>
-  abstract create(newTask: ITaskInput): Promise<Task>
-  abstract setUser(id: Task['id'], userId: IUser['id']): Promise<void>
+  abstract create(newTask: TaskPropsCreate): Promise<Task>
+  abstract setUser(id: Task['id'], userId: User['id']): Promise<void>
 }
