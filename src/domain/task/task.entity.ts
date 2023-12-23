@@ -11,7 +11,7 @@ export interface TaskProps {
 
 export type TaskPropsCreate = Omit<TaskProps, 'id'>
 
-export type TaskModel = Omit<TaskProps, 'isComplete'> & {
+export type TaskModel = Omit<TaskProps, 'isCompleted'> & {
   id: string
   is_completed: boolean
   createdAt: Date
