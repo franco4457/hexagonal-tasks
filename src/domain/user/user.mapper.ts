@@ -24,7 +24,7 @@ export class UserMapper implements Mapper<User, UserModel, UserResponseDto> {
     const record: UserModel = {
       ...props,
       password: password.value,
-      id: id.toString(),
+      id,
       createdAt,
       updatedAt
     }
