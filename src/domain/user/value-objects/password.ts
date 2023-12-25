@@ -12,8 +12,8 @@ export const passSchema = z
   .regex(/[A-Z]/, { message: 'Password should have at least one uppercase letter' })
   .regex(/[0-9]/, { message: 'Password should have at least one number' })
 
+const isValidPass = /^\$2[abxy]\$.{56}$/
 export class Password extends ValueObject<string> {
-  private readonly validPass = /^\$2[abxy]\$.{56}$/
   static async create(value: string): Promise<Password> {
     const data = await passSchema.parseAsync(value)
     const salt = await bcrypt.genSalt(10)
@@ -22,7 +22,7 @@ export class Password extends ValueObject<string> {
   }
 
   protected validate(value: string): void {
-    if (!this.validPass.test(value)) {
+    if (!isValidPass.test(value)) {
       throw new Error("Password isn't a valid hashed password")
     }
   }
