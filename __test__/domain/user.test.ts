@@ -28,7 +28,6 @@ describe('User', () => {
     expect(userProps.lastname).toEqual('tester')
     expect(userProps.username).toEqual('tested')
     expect(user.getCreatedAt()).toBeInstanceOf(Date)
-    console.log(user)
     expect(user.getUpdatedAt()).toBeInstanceOf(Date)
     expect(user.id).toBeTypeOf('string')
     expect(userProps.password).toBeInstanceOf(Password)
