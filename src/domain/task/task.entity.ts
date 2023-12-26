@@ -1,6 +1,6 @@
 import { randomUUID } from 'node:crypto'
 import { type User } from '../user'
-import { type AggregateID, Entity } from '../core'
+import { Entity } from '../core'
 
 export interface TaskProps {
   title: string
@@ -19,7 +19,6 @@ export type TaskModel = Omit<TaskProps, 'isCompleted'> & {
 }
 
 export class Task extends Entity<TaskProps> {
-  protected readonly _id!: AggregateID
   static create = (task: TaskPropsCreate): Task => {
     const id = randomUUID()
     return new Task({ id, props: { ...task } })
