@@ -9,7 +9,7 @@ export interface TaskProps {
   userId: User['id']
 }
 
-export type TaskPropsCreate = Omit<TaskProps, 'id'>
+export type TaskPropsCreate = Omit<TaskProps, 'id' | 'isCompleted'>
 
 export type TaskModel = Omit<TaskProps, 'isCompleted'> & {
   id: string
@@ -21,7 +21,7 @@ export type TaskModel = Omit<TaskProps, 'isCompleted'> & {
 export class Task extends Entity<TaskProps> {
   static create = (task: TaskPropsCreate): Task => {
     const id = randomUUID()
-    return new Task({ id, props: { ...task } })
+    return new Task({ id, props: { isCompleted: false, ...task } })
   }
 
   markComplete = (): void => {
