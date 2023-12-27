@@ -5,28 +5,32 @@ import { Password } from './value-objects'
 
 export class UserMapper implements Mapper<User, UserModel, UserResponseDto> {
   toDomain(record: UserModel): User {
-    const { id, createdAt, updatedAt, ...props } = record
     const user = new User({
+      id: record.id,
       props: {
-        ...props,
-        password: new Password(props.password)
+        name: record.name,
+        lastname: record.lastname,
+        username: record.username,
+        email: record.email,
+        password: new Password(record.password)
       },
-      id,
-      createdAt: new Date(createdAt),
-      updatedAt: new Date(updatedAt)
+      createdAt: new Date(record.createdAt),
+      updatedAt: new Date(record.updatedAt)
     })
     return user
   }
 
   toPersistence(entity: User): UserModel {
-    const { id, createdAt, updatedAt, ...props } = entity.getProps()
-    const { password } = props
+    const copy = entity.getProps()
     const record: UserModel = {
-      ...props,
-      password: password.value,
-      id,
-      createdAt,
-      updatedAt
+      id: entity.id,
+      email: copy.email,
+      name: copy.name,
+      lastname: copy.lastname,
+      username: copy.username,
+      password: copy.password.value,
+      createdAt: copy.createdAt,
+      updatedAt: copy.updatedAt
     }
     return record
   }
