@@ -1,5 +1,5 @@
 import { z } from 'zod'
-import type { ITaskInput } from './task.entity'
+import type { TaskPropsCreate } from './task.entity'
 import { ValidationError } from '../core'
 
 export const TaskSchema = z.object({
@@ -15,12 +15,16 @@ export const TaskSchema = z.object({
       required_error: 'Description is required'
     })
     .min(3, { message: 'Description should be at least 3 characters' })
-    .max(50, { message: 'Description should be less than 50 characters' })
+    .max(50, { message: 'Description should be less than 50 characters' }),
+  userId: z.string().uuid({ message: 'Invalid userId' }),
+  isCompleted: z.boolean()
 })
 
-export const validateTask = async (task: unknown): Promise<ITaskInput> => {
+export const validateTask = async (task: unknown): Promise<Omit<TaskPropsCreate, 'userId'>> => {
   try {
-    const result = await TaskSchema.omit({ id: true }).parseAsync(task)
+    const result = await TaskSchema.omit({ id: true, userId: true, isCompleted: true }).parseAsync(
+      task
+    )
     return result
   } catch (error) {
     if (error instanceof z.ZodError) {
