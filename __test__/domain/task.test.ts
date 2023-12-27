@@ -10,9 +10,11 @@ const testUUID = 'c2d7e0e0-4e0a-4b7a-8c7e-2a9a9b0a3b1a'
 const testUser = {
   email: 'new@mail.com',
   username: 'newUser',
-  password: 'Pass1234',
+  password: '$2b$10$LW29SqaXA.1e/ruyZjyjNumC7cItPePd2guY9Eq3udPl62iep9l6u',
   name: 'new-user',
-  lastname: 'user-new'
+  lastname: 'user-new',
+  createdAt: new Date(),
+  updatedAt: new Date()
 }
 const userRepo = new InMemoryUserRepository([
   {
@@ -39,10 +41,11 @@ describe('task', () => {
       userId: testUUID
     })
     expect(task).toBeInstanceOf(Task)
-    expect(task.title).toEqual('title')
-    expect(task.description).toEqual('description')
+    const taskProps = task.getProps()
+    expect(taskProps.title).toEqual('title')
+    expect(taskProps.description).toEqual('description')
     expect(task.id).toBeTypeOf('string')
-    expect(task.userId).toBe(testUUID)
+    expect(taskProps.userId).toBe(testUUID)
   })
   it.concurrent('List task', async () => {
     const taskRepository = new InMemoryTaskRepository({ aggregates: { userRepo: loadedRepo } })
@@ -62,10 +65,11 @@ describe('task', () => {
     expect(tasks).toHaveLength(10)
     tasks.forEach((task, i) => {
       expect(task).toBeInstanceOf(Task)
-      expect(task.title).toBe(`test-title-${i}`)
-      expect(task.description).toBe(`test-desc-${i}`)
+      const taskProps = task.getProps()
+      expect(taskProps.title).toBe(`test-title-${i}`)
+      expect(taskProps.description).toBe(`test-desc-${i}`)
+      expect(taskProps.userId).toBe(testUUID.slice(0, -1) + i)
       expect(task.id).toBeTypeOf('string')
-      expect(task.userId).toBe(testUUID.slice(0, -1) + i)
     })
   })
   it.concurrent('List task by user id', async () => {
@@ -89,16 +93,18 @@ describe('task', () => {
     expect(tasks).toBeInstanceOf(Array)
     expect(tasks).toHaveLength(2)
     const [task, task2] = tasks
+    const taskP = task.getProps()
+    const taskP2 = task2.getProps()
     expect(task).toBeInstanceOf(Task)
-    expect(task.title).toBe('test-title-0')
-    expect(task.description).toBe('test-desc-0')
+    expect(taskP.title).toBe('test-title-0')
+    expect(taskP.description).toBe('test-desc-0')
+    expect(taskP.userId).toBe(testUUID.slice(0, -1) + 0)
     expect(task.id).toBeTypeOf('string')
-    expect(task.userId).toBe(testUUID.slice(0, -1) + 0)
     expect(task2).toBeInstanceOf(Task)
-    expect(task2.title).toBe('test-title-10')
-    expect(task2.description).toBe('test-desc-10')
+    expect(taskP2.title).toBe('test-title-10')
+    expect(taskP2.description).toBe('test-desc-10')
+    expect(taskP2.userId).toBe(testUUID.slice(0, -1) + 0)
     expect(task2.id).toBeTypeOf('string')
-    expect(task2.userId).toBe(testUUID.slice(0, -1) + 0)
   })
   it.concurrent('should throw error when create task don`t send correct ', async () => {
     const taskRepository = new InMemoryTaskRepository()
