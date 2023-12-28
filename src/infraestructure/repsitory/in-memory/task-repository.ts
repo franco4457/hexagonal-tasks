@@ -31,11 +31,12 @@ export class InMemoryTaskRepository extends TaskRepository {
 
   async create(task: Task): Promise<Task> {
     this.tasks.push(this.mapper.toPersistence(task))
+    await this.setUser(task.id, task.getProps().userId, this.tasks.length - 1)
     return task
   }
 
-  async setUser(id: Task['id'], userId: User['id']): Promise<void> {
-    const indexTask = this.tasks.findIndex((task) => task.id === id)
+  async setUser(id: Task['id'], userId: User['id'], idxTask?: number): Promise<void> {
+    const indexTask = idxTask ?? this.tasks.findIndex((task) => task.id === id)
     if (indexTask === -1) {
       throw new TaskNotFound(id)
     }
