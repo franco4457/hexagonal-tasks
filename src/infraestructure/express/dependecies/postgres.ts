@@ -3,7 +3,7 @@ import {
   PostgresDataSource,
   PostgresTaskRepository,
   PostgresUserRepository
-} from '@/infraestructure/repsitory/postgres'
+} from '@/infraestructure/repository/postgres'
 import { type ApiExpress } from '../api'
 import { ApiBuilderExpress } from './api-builder'
 import { NODE_ENV } from '@/config'

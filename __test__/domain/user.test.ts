@@ -1,7 +1,7 @@
 import { UserLogin, UserRegister } from '@/application/user'
 import { ValidationError } from '@/domain/core'
 import { type UserPropsLoginInput, type UserPropsCreate, User, Password } from '@/domain/user'
-import { InMemoryUserRepository } from '@/infraestructure/repsitory/in-memory'
+import { InMemoryUserRepository } from '@/infraestructure/repository/in-memory'
 
 const newUser: UserPropsCreate = {
   email: 'new@mail.com',

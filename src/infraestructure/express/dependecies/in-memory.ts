@@ -1,7 +1,7 @@
 import {
   InMemoryTaskRepository,
   InMemoryUserRepository
-} from '@/infraestructure/repsitory/in-memory'
+} from '@/infraestructure/repository/in-memory'
 import { ApiBuilderExpress } from './api-builder'
 import type { ApiExpress } from '../api'
 

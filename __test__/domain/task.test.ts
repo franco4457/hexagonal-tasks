@@ -4,7 +4,7 @@ import { Task } from '@/domain/task'
 import {
   InMemoryTaskRepository,
   InMemoryUserRepository
-} from '@/infraestructure/repsitory/in-memory'
+} from '@/infraestructure/repository/in-memory'
 
 const testUUID = 'c2d7e0e0-4e0a-4b7a-8c7e-2a9a9b0a3b1a'
 const testUser = {

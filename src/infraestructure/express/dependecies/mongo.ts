@@ -4,7 +4,7 @@ import {
   MongoTaskRepository,
   MongoUserRepository,
   testMongoSeeds
-} from '@/infraestructure/repsitory/mongo'
+} from '@/infraestructure/repository/mongo'
 import { NODE_ENV } from '@/config'
 
 export const createMongoApi = async (): Promise<ApiExpress> => {
