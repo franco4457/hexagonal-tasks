@@ -66,9 +66,11 @@ describe('User', () => {
       .send({ password: 'Pass1234', ...testUser })
     expect(res.status).toBe(200)
     const {
-      user: { id, ...user }
+      user: { id, createdAt, updatedAt, ...user }
     } = res.body
     expect(id).toBeDefined()
+    expect(createdAt).toBeDefined()
+    expect(updatedAt).toBeDefined()
     expect(user).toEqual(testUser)
   })
   it.concurrent('POST /user/register - error missing fields', async () => {
@@ -186,15 +188,15 @@ describe('User', () => {
   it.concurrent('POST /user/register - error user already exist', async () => {
     await request(app)
       .post('/api/v1/user/register')
-      .send({ password: 'Pass1234', ...testUser })
+      .send({ password: 'Pass1234', ...testUser, email: 'test2@email.com' })
     const res = await request(app)
       .post('/api/v1/user/register')
-      .send({ password: 'Pass1234', ...testUser })
+      .send({ password: 'Pass1234', ...testUser, email: 'test2@email.com' })
     expect(res.status).toBe(409)
     expect(res.body).toEqual({
       error: true,
       name: 'Already exist',
-      message: 'User with email: test@email.com already exist'
+      message: 'User with email: test2@email.com already exist'
     })
   })
 })
