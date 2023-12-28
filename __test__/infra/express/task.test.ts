@@ -16,6 +16,7 @@ describe('Task', () => {
     const { task } = res.body
     expect(task).toHaveProperty('id')
     expect(task).toHaveProperty('title')
+    expect(task.isCompleted).toBe(false)
     expect(task).toHaveProperty('description')
     expect(task).toHaveProperty('userId')
   })
