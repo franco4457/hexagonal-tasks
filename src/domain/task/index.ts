@@ -1,4 +1,6 @@
 export * from './task-repository'
+export * from './task.dto'
 export * from './task.entity'
 export * from './task.exceptions'
+export * from './task.mapper'
 export * from './task.schema'
