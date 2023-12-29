@@ -1,6 +1,6 @@
 import { randomUUID } from 'crypto'
 
-type DomainEventMetadata = {
+interface DomainEventMetadata {
   readonly timestamp: number
   readonly correlationId: string
   readonly causationId?: string
