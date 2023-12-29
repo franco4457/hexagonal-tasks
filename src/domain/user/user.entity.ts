@@ -1,6 +1,6 @@
 import { Password } from './value-objects/password'
 import { randomUUID } from 'node:crypto'
-import { Entity } from '../core'
+import { AggregateRoot } from '../core'
 
 export interface UserProps {
   name: string
@@ -22,7 +22,7 @@ export type UserPropsLoginInput = Pick<UserProps, 'email' | 'username'> & {
 
 export type UserPropsCreate = Pick<UserProps, 'name' | 'lastname'> & UserPropsLoginInput
 
-export class User extends Entity<UserProps> {
+export class User extends AggregateRoot<UserProps> {
   static async create(props: UserPropsCreate): Promise<User> {
     const id = randomUUID()
     const password = await Password.create(props.password)
