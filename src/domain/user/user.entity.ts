@@ -1,6 +1,7 @@
 import { Password } from './value-objects/password'
 import { randomUUID } from 'node:crypto'
 import { AggregateRoot } from '../core'
+import { UserCreateEvent } from './events/user-create.event'
 
 export interface UserProps {
   name: string
@@ -33,6 +34,15 @@ export class User extends AggregateRoot<UserProps> {
       },
       id
     })
+
+    user.addEvent(
+      new UserCreateEvent({
+        aggregateId: user.id,
+        email: user.props.email,
+        username: user.props.username
+      })
+    )
+
     return user
   }
 }
