@@ -7,7 +7,8 @@ import type { ApiExpress } from '../api'
 
 export const createInMemoryApi = (): ApiExpress => {
   const apiBuilder = new ApiBuilderExpress()
-  const userRepository = new InMemoryUserRepository()
+  const config = apiBuilder.getRepoConfig()
+  const userRepository = new InMemoryUserRepository(config)
   const taskRepository = new InMemoryTaskRepository({ aggregates: { userRepo: userRepository } })
   apiBuilder.setTaskRepository(taskRepository)
   apiBuilder.setUserRepository(userRepository)

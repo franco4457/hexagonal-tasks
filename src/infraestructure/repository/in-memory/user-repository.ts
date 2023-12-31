@@ -1,5 +1,7 @@
 import { UserRepository, type User, type UserModel } from '@/domain/user'
 import { UserAlreadyExist, UserNotFound } from '@/domain/user/user.exceptions'
+import { Logger } from '@/infraestructure/logger'
+import type EventEmitter2 from 'eventemitter2'
 
 export class InMemoryUserRepository extends UserRepository {
   private readonly users: UserModel[] = [
@@ -15,9 +17,19 @@ export class InMemoryUserRepository extends UserRepository {
     }
   ]
 
-  constructor(users?: UserModel[]) {
-    super()
-    if (users != null) this.users = users
+  constructor({
+    users = [],
+    ...props
+  }: {
+    users?: UserModel[]
+    appContext?: string
+    eventEmitter: EventEmitter2
+  }) {
+    super({
+      ...props,
+      logger: new Logger({ context: InMemoryUserRepository.name, appContext: props.appContext })
+    })
+    this.users = users
   }
 
   async getByEmail(email: string): Promise<User> {

@@ -3,15 +3,24 @@ import type { TaskRepository } from '@/domain/task'
 import type { IUserRepository } from '@/domain/user'
 import { ApiExpress } from '../api'
 import { MainRouter } from '../routes'
-
+import EventEmitter2 from 'eventemitter2'
 export class ApiBuilderExpress implements IApiBuilder {
   private api: ApiExpress
   private taskRepository!: TaskRepository | null
   private userRepository!: IUserRepository | null
+  private readonly eventEmitter = new EventEmitter2()
+  private readonly appContext = 'EXPRESS'
   constructor() {
     this.taskRepository = null
     this.userRepository = null
     this.api = new ApiExpress()
+  }
+
+  getRepoConfig(): { eventEmitter: EventEmitter2; appContext?: string } {
+    return {
+      eventEmitter: this.eventEmitter,
+      appContext: this.appContext
+    }
   }
 
   reset(): IApiBuilder {
