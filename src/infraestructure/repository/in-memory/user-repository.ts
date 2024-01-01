@@ -18,7 +18,7 @@ export class InMemoryUserRepository extends UserRepository {
   ]
 
   constructor({
-    users = [],
+    users,
     ...props
   }: {
     users?: UserModel[]
@@ -29,7 +29,7 @@ export class InMemoryUserRepository extends UserRepository {
       ...props,
       logger: new Logger({ context: InMemoryUserRepository.name, appContext: props.appContext })
     })
-    this.users = users
+    if (users != null) this.users = users
   }
 
   async getByEmail(email: string): Promise<User> {
@@ -53,6 +53,7 @@ export class InMemoryUserRepository extends UserRepository {
   }
 
   async create(user: User): Promise<User> {
+    this.logger.debug('creating 1 entities to "user" table:', user.id)
     if (this.users.some((u) => u.email === user.getProps().email)) {
       throw new UserAlreadyExist(user.getProps().email, 'email')
     }
