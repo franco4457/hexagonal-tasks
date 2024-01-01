@@ -42,6 +42,7 @@ const OPTIONS_FORMAT: Intl.DateTimeFormatOptions = {
 
 const format = new Intl.DateTimeFormat('es-ES', OPTIONS_FORMAT)
 
+type Color = keyof typeof COOLORS
 export class Logger implements LoggerPort {
   private readonly appContext?: string
   private readonly context?: string
@@ -50,33 +51,55 @@ export class Logger implements LoggerPort {
     this.appContext = appContext
   }
 
-  private _log(color: keyof typeof COOLORS, ...message: string[]): void {
-    console.log(...this._prefix(color), ...message, COOLORS.reset)
+  private _log(color: Color, type: string, ...message: string[]): void {
+    console.log(
+      ...this._prefix(color),
+      ...this._type(color, type),
+      ...this._context(),
+      ...this._content(color, ...message)
+    )
+  }
+
+  private _content(color: Color, ...message: string[]): string[] {
+    return [COOLORS[color], ...message, COOLORS.reset]
   }
 
   private _timeStamp(): string {
-    return '- ' + format.format(new Date())
+    return format.format(new Date())
   }
 
-  private _prefix(color: keyof typeof COOLORS): string[] {
+  private _type(color: Color, type: string): string[] {
+    return [COOLORS[color], type.padStart(5).toUpperCase()]
+  }
+
+  private _context(): string[] {
+    return this.context != null ? [COOLORS.yellow, `[${this.context}]`] : ['']
+  }
+
+  private _prefix(color: Color): string[] {
     const appContext = this.appContext != null ? `[${this.appContext}]` : ''
-    const context = this.context != null ? `[${this.context}]` : ''
-    return [COOLORS[color], appContext, COOLORS.reset, this._timeStamp(), COOLORS[color], context]
+    return [COOLORS[color], appContext + ' -', COOLORS.reset, this._timeStamp(), COOLORS[color]]
   }
 
   log(message: string, ...meta: unknown[]): void {
-    this._log('blue', message, ...(meta as string[]))
+    this._log('blue', 'log', message, ...(meta as string[]))
   }
 
   error(message: string, trace?: unknown, ...meta: unknown[]): void {
-    this._log('red', message, ...(meta as string[]), trace != null ? ` \n ${String(trace)}` : '')
+    this._log(
+      'red',
+      'error',
+      message,
+      ...(meta as string[]),
+      trace != null ? ` \n ${String(trace)}` : ''
+    )
   }
 
   warn(message: string, ...meta: unknown[]): void {
-    this._log('yellow', message, ...(meta as string[]))
+    this._log('yellow', 'warn', message, ...(meta as string[]))
   }
 
   debug(message: string, ...meta: unknown[]): void {
-    this._log('magenta', message, ...(meta as string[]))
+    this._log('magenta', 'debug', message, ...(meta as string[]))
   }
 }
