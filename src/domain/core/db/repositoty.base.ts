@@ -10,7 +10,7 @@ export abstract class RepositoryBase<
 > implements RepositoryPort<Aggregate>
 {
   protected abstract readonly repositoryName: string
-  private readonly logger: LoggerPort
+  protected readonly logger: LoggerPort
   protected readonly mapper: Mapper<Aggregate, DbModel>
   private readonly eventEmitter: EventEmitter2
   constructor(props: {
