@@ -5,6 +5,7 @@ import {
   InMemoryTaskRepository,
   InMemoryUserRepository
 } from '@/infraestructure/repository/in-memory'
+import EventEmitter2 from 'eventemitter2'
 
 const testUUID = 'c2d7e0e0-4e0a-4b7a-8c7e-2a9a9b0a3b1a'
 const testUser = {
@@ -16,19 +17,25 @@ const testUser = {
   createdAt: new Date(),
   updatedAt: new Date()
 }
-const userRepo = new InMemoryUserRepository([
-  {
-    id: testUUID,
-    ...testUser
-  }
-])
+const userRepo = new InMemoryUserRepository({
+  eventEmitter: new EventEmitter2(),
+  users: [
+    {
+      id: testUUID,
+      ...testUser
+    }
+  ]
+})
 
-const loadedRepo = new InMemoryUserRepository([
-  ...Array.from({ length: 10 }, (_, i) => i).map((i) => ({
-    id: testUUID.slice(0, -1) + i,
-    ...testUser
-  }))
-])
+const loadedRepo = new InMemoryUserRepository({
+  eventEmitter: new EventEmitter2(),
+  users: [
+    ...Array.from({ length: 10 }, (_, i) => i).map((i) => ({
+      id: testUUID.slice(0, -1) + i,
+      ...testUser
+    }))
+  ]
+})
 
 describe('task', () => {
   it.concurrent('Create task', async () => {
