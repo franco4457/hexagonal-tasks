@@ -1,13 +1,26 @@
 import { type Task, TaskRepository, TaskNotFound, type TaskModel } from '@/domain/task'
 import { type IUserRepository, type User, UserNotFound } from '@/domain/user'
+import { Logger } from '@/infraestructure/logger'
+import type EventEmitter2 from 'eventemitter2'
 
 export class InMemoryTaskRepository extends TaskRepository {
   private readonly tasks: TaskModel[] = []
   constructor({
     tasks = [],
-    aggregates = {}
-  }: { tasks?: TaskModel[]; aggregates?: { userRepo?: IUserRepository } } = {}) {
-    super({ aggregates })
+    aggregates = {},
+    appContext,
+    eventEmitter
+  }: {
+    tasks?: TaskModel[]
+    aggregates?: { userRepo?: IUserRepository }
+    appContext?: string
+    eventEmitter: EventEmitter2
+  }) {
+    super({
+      aggregates,
+      logger: new Logger({ appContext, context: InMemoryTaskRepository.name }),
+      eventEmitter
+    })
     this.tasks = tasks
   }
 
@@ -29,7 +42,17 @@ export class InMemoryTaskRepository extends TaskRepository {
     return this.mapper.toDomain(task)
   }
 
-  async create(task: Task): Promise<Task> {
+  async create(task: Task): Promise<Task>
+  async create(task: Task[]): Promise<Task[]>
+  async create(task: Task | Task[]): Promise<Task | Task[]> {
+    const tasksIds = Array.isArray(task) ? task.map((t) => t.id) : [task.id]
+    this.logger.debug(
+      `creating ${tasksIds.length} entities to "task" table: ${tasksIds.join(', ')}`
+    )
+    if (Array.isArray(task)) {
+      this.tasks.push(...task.map((t) => this.mapper.toPersistence(t)))
+      return task
+    }
     this.tasks.push(this.mapper.toPersistence(task))
     await this.setUser(task.id, task.getProps().userId, this.tasks.length - 1)
     return task
