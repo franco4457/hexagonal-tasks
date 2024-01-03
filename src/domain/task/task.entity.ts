@@ -1,7 +1,7 @@
 import { randomUUID } from 'node:crypto'
 import { type User } from '../user'
 import { AggregateRoot } from '../core'
-import { TaskCreateEvent } from './events'
+import { TaskCreateEvent, TaskMarkCompleted, TaskMarkIncompleted } from './events'
 
 export interface TaskProps {
   title: string
@@ -29,11 +29,13 @@ export class Task extends AggregateRoot<TaskProps> {
     return newTask
   }
 
-  markComplete = (): void => {
+  markCompleted = (): void => {
+    this.addEvent(new TaskMarkCompleted({ aggregateId: this.id, userId: this.props.userId }))
     this.props.isCompleted = true
   }
 
-  markIncomplete = (): void => {
+  markIncompleted = (): void => {
+    this.addEvent(new TaskMarkIncompleted({ aggregateId: this.id, userId: this.props.userId }))
     this.props.isCompleted = false
   }
 }
