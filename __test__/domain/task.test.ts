@@ -37,9 +37,15 @@ const loadedRepo = new InMemoryUserRepository({
   ]
 })
 
+const taskConfig = {
+  eventEmitter: new EventEmitter2(),
+  appContext: 'TEST'
+}
+
 describe('task', () => {
   it.concurrent('Create task', async () => {
     const taskRepository = new InMemoryTaskRepository({
+      ...taskConfig,
       aggregates: { userRepo }
     })
     const createTask = new CreateTask(taskRepository)
@@ -55,16 +61,16 @@ describe('task', () => {
     expect(taskProps.userId).toBe(testUUID)
   })
   it.concurrent('List task', async () => {
-    const taskRepository = new InMemoryTaskRepository({ aggregates: { userRepo: loadedRepo } })
+    const taskRepository = new InMemoryTaskRepository({
+      ...taskConfig,
+      aggregates: { userRepo: loadedRepo }
+    })
     const createTask = new CreateTask(taskRepository)
-    await Promise.all(
-      Array.from({ length: 10 }, (_, i) => i).map(
-        async (i) =>
-          await createTask.create({
-            task: { title: `test-title-${i}`, description: `test-desc-${i}` },
-            userId: testUUID.slice(0, -1) + i
-          })
-      )
+    await createTask.create(
+      Array.from({ length: 10 }, (_, i) => i).map((i) => ({
+        task: { title: `test-title-${i}`, description: `test-desc-${i}` },
+        userId: testUUID.slice(0, -1) + i
+      }))
     )
     const listTasks = new ListTasks(taskRepository)
     const tasks = await listTasks.getAll()
@@ -80,15 +86,17 @@ describe('task', () => {
     })
   })
   it.concurrent('List task by user id', async () => {
-    const taskRepository = new InMemoryTaskRepository({ aggregates: { userRepo: loadedRepo } })
+    const taskRepository = new InMemoryTaskRepository({
+      ...taskConfig,
+      aggregates: { userRepo: loadedRepo }
+    })
     const createTask = new CreateTask(taskRepository)
     await Promise.all([
-      ...Array.from({ length: 10 }, (_, i) => i).map(
-        async (i) =>
-          await createTask.create({
-            task: { title: `test-title-${i}`, description: `test-desc-${i}` },
-            userId: testUUID.slice(0, -1) + i
-          })
+      await createTask.create(
+        Array.from({ length: 10 }, (_, i) => i).map((i) => ({
+          task: { title: `test-title-${i}`, description: `test-desc-${i}` },
+          userId: testUUID.slice(0, -1) + i
+        }))
       ),
       createTask.create({
         task: { title: 'test-title-10', description: 'test-desc-10' },
@@ -114,7 +122,7 @@ describe('task', () => {
     expect(task2.id).toBeTypeOf('string')
   })
   it.concurrent('should throw error when create task don`t send correct ', async () => {
-    const taskRepository = new InMemoryTaskRepository()
+    const taskRepository = new InMemoryTaskRepository(taskConfig)
     const createTask = new CreateTask(taskRepository)
     await expect(
       createTask.create({
@@ -125,14 +133,13 @@ describe('task', () => {
     ).rejects.toThrowError('["Title is required","Description is required"]')
   })
   it('should throw error when create task don`t send correct types ', async () => {
-    const taskRepository = new InMemoryTaskRepository()
+    const taskRepository = new InMemoryTaskRepository(taskConfig)
     const createTask = new CreateTask(taskRepository)
     await expect(
       createTask.create({
+        // @ts-expect-error test
         task: {
-          // @ts-expect-error test
           title: 0,
-          // @ts-expect-error test
           description: 0
         },
         userId: testUUID
@@ -142,7 +149,7 @@ describe('task', () => {
     )
   })
   it('should throw error when create task don`t send correct lengths', async () => {
-    const taskRepository = new InMemoryTaskRepository()
+    const taskRepository = new InMemoryTaskRepository(taskConfig)
     const createTask = new CreateTask(taskRepository)
     await expect(
       createTask.create({
@@ -157,7 +164,7 @@ describe('task', () => {
     )
   })
   it('should throw error when create task don`t incorrect userId', async () => {
-    const taskRepository = new InMemoryTaskRepository()
+    const taskRepository = new InMemoryTaskRepository(taskConfig)
     const createTask = new CreateTask(taskRepository)
     await expect(
       createTask.create({
