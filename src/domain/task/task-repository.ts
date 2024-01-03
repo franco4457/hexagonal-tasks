@@ -1,5 +1,7 @@
+import type EventEmitter2 from 'eventemitter2'
+import { type LoggerPort, RepositoryBase } from '../core'
 import type { User, IUserRepository } from '../user'
-import type { Task } from './task.entity'
+import type { Task, TaskModel } from './task.entity'
 import { TaskMapper } from './task.mapper'
 
 export interface ITaskRepository {
@@ -9,16 +11,29 @@ export interface ITaskRepository {
   create: (newTask: Task) => Promise<Task>
   setUser: (id: Task['id'], userId: User['id']) => Promise<void>
 }
-export abstract class TaskRepository implements ITaskRepository {
+export abstract class TaskRepository
+  extends RepositoryBase<Task, TaskModel>
+  implements ITaskRepository
+{
   readonly repositoryName = 'TaskRepository'
   protected readonly mapper = new TaskMapper()
   protected aggregates: { userRepo?: IUserRepository } = {}
-  constructor({ aggregates = {} }: { aggregates?: { userRepo?: IUserRepository } } = {}) {
+  constructor({
+    aggregates = {},
+    ...props
+  }: {
+    aggregates?: { userRepo?: IUserRepository }
+    logger: LoggerPort
+    eventEmitter: EventEmitter2
+  }) {
+    super({ ...props, mapper: new TaskMapper() })
     this.aggregates = aggregates
   }
   abstract getTasks(): Promise<Task[]>
   abstract getTasksByUserId(userId: User['id']): Promise<Task[]>
   abstract getTask(id: Task['id']): Promise<Task>
-  abstract create(newTask: Task): Promise<Task>
+  abstract create(task: Task): Promise<Task>
+  abstract create(task: Task[]): Promise<Task[]>
+  abstract create(task: Task | Task[]): Promise<Task | Task[]>
   abstract setUser(id: Task['id'], userId: User['id']): Promise<void>
 }
