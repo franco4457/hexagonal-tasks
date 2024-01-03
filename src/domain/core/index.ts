@@ -1,6 +1,6 @@
 export * from './api'
 export * from './custom-error'
-export * from './db/repositoty.base'
+export * from './db/repository.base'
 export * from './ddd'
 export * from './exeptions'
 export * from './id.schema'
