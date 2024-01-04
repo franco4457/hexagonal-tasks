@@ -50,11 +50,18 @@ export class InMemoryTaskRepository extends TaskRepository {
       `creating ${tasksIds.length} entities to "task" table: ${tasksIds.join(', ')}`
     )
     if (Array.isArray(task)) {
-      this.tasks.push(...task.map((t) => this.mapper.toPersistence(t)))
+      await Promise.all(
+        task.map(async (t) => {
+          await this.save(t, async () => {
+            this.tasks.push(this.mapper.toPersistence(t))
+          })
+        })
+      )
       return task
     }
-    this.tasks.push(this.mapper.toPersistence(task))
-    await this.setUser(task.id, task.getProps().userId, this.tasks.length - 1)
+    await this.save(task, async () => {
+      this.tasks.push(this.mapper.toPersistence(task))
+    })
     return task
   }
 

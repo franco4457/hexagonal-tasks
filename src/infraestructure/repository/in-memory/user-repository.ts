@@ -57,7 +57,11 @@ export class InMemoryUserRepository extends UserRepository {
     if (this.users.some((u) => u.email === user.getProps().email)) {
       throw new UserAlreadyExist(user.getProps().email, 'email')
     }
-    this.users.push(this.mapper.toPersistence(user))
+    await this.save(user, async () => {
+      this.users.push(this.mapper.toPersistence(user))
+    }).catch((err) => {
+      this.logger.error(err)
+    })
     return user
   }
 
