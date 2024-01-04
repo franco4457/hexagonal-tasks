@@ -1,5 +1,5 @@
 import { type TaskRepository } from '@/domain/task'
-import { type IUserRepository } from '@/domain/user'
+import { type UserRepository } from '@/domain/user'
 import type EventEmitter2 from 'eventemitter2'
 
 export interface IApiBuilder {
@@ -9,6 +9,6 @@ export interface IApiBuilder {
     appContext?: string
   }
   setTaskRepository: (taskRepository: TaskRepository) => IApiBuilder
-  setUserRepository: (userRepository: IUserRepository) => IApiBuilder
+  setUserRepository: (userRepository: UserRepository) => IApiBuilder
   build: () => any
 }
