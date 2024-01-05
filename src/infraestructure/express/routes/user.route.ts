@@ -1,10 +1,10 @@
 import e from 'express'
-import { type IUserRepository } from '@/domain/user'
+import { type UserRepository } from '@/domain/user'
 import { UserController } from '../controllers/user.controller'
 export class UserRouter {
   private readonly userRouter = e.Router()
   private readonly userController
-  constructor(private readonly userRepository: IUserRepository) {
+  constructor(private readonly userRepository: UserRepository) {
     this.userController = new UserController(this.userRepository)
   }
 
