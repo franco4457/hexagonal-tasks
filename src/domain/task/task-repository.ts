@@ -1,7 +1,7 @@
 import type EventEmitter2 from 'eventemitter2'
 import { type LoggerPort, RepositoryBase } from '../core'
 import type { User, IUserRepository } from '../user'
-import type { Task, TaskModel } from './task.entity'
+import { type Task, type TaskModel } from './task.entity'
 import { TaskMapper } from './task.mapper'
 
 export interface ITaskRepository {
@@ -18,16 +18,8 @@ export abstract class TaskRepository
   readonly repositoryName = 'TaskRepository'
   protected readonly mapper = new TaskMapper()
   protected aggregates: { userRepo?: IUserRepository } = {}
-  constructor({
-    aggregates = {},
-    ...props
-  }: {
-    aggregates?: { userRepo?: IUserRepository }
-    logger: LoggerPort
-    eventEmitter: EventEmitter2
-  }) {
+  constructor({ ...props }: { logger: LoggerPort; eventEmitter: EventEmitter2 }) {
     super({ ...props, mapper: new TaskMapper() })
-    this.aggregates = aggregates
   }
   abstract getTasks(): Promise<Task[]>
   abstract getTasksByUserId(userId: User['id']): Promise<Task[]>
