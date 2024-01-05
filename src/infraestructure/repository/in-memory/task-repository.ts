@@ -1,5 +1,5 @@
 import { type Task, TaskRepository, TaskNotFound, type TaskModel } from '@/domain/task'
-import { type IUserRepository, type User, UserNotFound } from '@/domain/user'
+import { type User, UserNotFound } from '@/domain/user'
 import { Logger } from '@/infraestructure/logger'
 import type EventEmitter2 from 'eventemitter2'
 
@@ -7,17 +7,14 @@ export class InMemoryTaskRepository extends TaskRepository {
   private readonly tasks: TaskModel[] = []
   constructor({
     tasks = [],
-    aggregates = {},
     appContext,
     eventEmitter
   }: {
     tasks?: TaskModel[]
-    aggregates?: { userRepo?: IUserRepository }
     appContext?: string
     eventEmitter: EventEmitter2
   }) {
     super({
-      aggregates,
       logger: new Logger({ appContext, context: InMemoryTaskRepository.name }),
       eventEmitter
     })

@@ -9,7 +9,7 @@ export const createInMemoryApi = (): ApiExpress => {
   const apiBuilder = new ApiBuilderExpress()
   const config = apiBuilder.getRepoConfig()
   const userRepository = new InMemoryUserRepository(config)
-  const taskRepository = new InMemoryTaskRepository({ aggregates: { userRepo: userRepository } })
+  const taskRepository = new InMemoryTaskRepository(config)
   apiBuilder.setTaskRepository(taskRepository)
   apiBuilder.setUserRepository(userRepository)
   return apiBuilder.build()
