@@ -1,4 +1,4 @@
-import type { IUserRepository } from '@/domain/user'
+import type { UserRepository } from '@/domain/user'
 import type { TaskRepository } from '@/domain/task'
 import e from 'express'
 import { UserRouter } from './user.route'
@@ -8,7 +8,7 @@ export class MainRouter {
   private readonly mainRouter = e.Router()
   private readonly userRouter: UserRouter
   private readonly taskRouter: TaskRouter
-  constructor(userRepository: IUserRepository, taskRepository: TaskRepository) {
+  constructor(userRepository: UserRepository, taskRepository: TaskRepository) {
     this.userRouter = new UserRouter(userRepository)
     this.taskRouter = new TaskRouter(taskRepository)
   }
