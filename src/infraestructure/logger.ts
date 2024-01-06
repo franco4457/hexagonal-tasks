@@ -18,12 +18,39 @@ const REQUEST_COLORS: Record<string, string> = {
   DELETE: COOLORS.red
 }
 
-export const loggerRequest = (method: string, path: string): void => {
+const colorDuration = (duration: number): string => {
+  if (duration < 100) return COOLORS.green
+  if (duration < 500) return COOLORS.yellow
+  return COOLORS.red
+}
+
+const colorStatus = (status: number): string => {
+  if (status < 300) return COOLORS.green
+  if (status < 400) return COOLORS.blue
+  if (status < 500) return COOLORS.yellow
+  return COOLORS.red
+}
+
+export const loggerRequest = ({
+  method,
+  path,
+  duration,
+  status
+}: {
+  method: string
+  path: string
+  duration: number
+  status?: number
+}): void => {
   const logger = new Logger({ appContext: 'EXPRESS', context: 'HttpRequest' })
+  const statusCode = status != null ? colorStatus(status) + status : ''
   logger.debug(
     'Request received: ',
     REQUEST_COLORS?.[method] ?? COOLORS.reset,
-    method.padEnd(8).toUpperCase(),
+    method.padEnd(6).toUpperCase(),
+    colorDuration(duration),
+    `${duration}ms`.padEnd(6),
+    statusCode,
     COOLORS.cyan,
     path
   )
