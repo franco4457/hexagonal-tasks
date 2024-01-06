@@ -1,52 +1,20 @@
 import { ListTasks } from './../../src/application/task/list-tasks'
 import { CreateTask } from '@/application/task/task-create'
 import { Task } from '@/domain/task'
-import {
-  InMemoryTaskRepository,
-  InMemoryUserRepository
-} from '@/infraestructure/repository/in-memory'
+import { InMemoryTaskRepository } from '@/infraestructure/repository/in-memory'
 import EventEmitter2 from 'eventemitter2'
 
 const testUUID = 'c2d7e0e0-4e0a-4b7a-8c7e-2a9a9b0a3b1a'
-const testUser = {
-  email: 'new@mail.com',
-  username: 'newUser',
-  password: '$2b$10$LW29SqaXA.1e/ruyZjyjNumC7cItPePd2guY9Eq3udPl62iep9l6u',
-  name: 'new-user',
-  lastname: 'user-new',
-  createdAt: new Date(),
-  updatedAt: new Date()
-}
-const userRepo = new InMemoryUserRepository({
-  eventEmitter: new EventEmitter2(),
-  users: [
-    {
-      id: testUUID,
-      ...testUser
-    }
-  ]
-})
-
-const loadedRepo = new InMemoryUserRepository({
-  eventEmitter: new EventEmitter2(),
-  users: [
-    ...Array.from({ length: 10 }, (_, i) => i).map((i) => ({
-      id: testUUID.slice(0, -1) + i,
-      ...testUser
-    }))
-  ]
-})
-
+const eventEmitter = new EventEmitter2()
 const taskConfig = {
-  eventEmitter: new EventEmitter2(),
+  eventEmitter,
   appContext: 'TEST'
 }
 
 describe('task', () => {
   it.concurrent('Create task', async () => {
     const taskRepository = new InMemoryTaskRepository({
-      ...taskConfig,
-      aggregates: { userRepo }
+      ...taskConfig
     })
     const createTask = new CreateTask(taskRepository)
     const task = await createTask.create({
@@ -60,10 +28,26 @@ describe('task', () => {
     expect(task.id).toBeTypeOf('string')
     expect(taskProps.userId).toBe(testUUID)
   })
+  it.concurrent('On create task should be publish event', async () => {
+    const taskRepository = new InMemoryTaskRepository(taskConfig)
+    const createTask = new CreateTask(taskRepository)
+    let exec = false
+    eventEmitter.on('TaskCreateEvent', (event) => {
+      exec = true
+      expect(event).toBeInstanceOf(Object)
+      expect(event).toHaveProperty('userId')
+    })
+    const task = await createTask.create({
+      task: { title: 'title', description: 'description' },
+      userId: testUUID
+    })
+    await task.publishEvents(eventEmitter, console)
+    expect(task).toBeInstanceOf(Task)
+    expect(exec).toBe(true)
+  })
   it.concurrent('List task', async () => {
     const taskRepository = new InMemoryTaskRepository({
-      ...taskConfig,
-      aggregates: { userRepo: loadedRepo }
+      ...taskConfig
     })
     const createTask = new CreateTask(taskRepository)
     await createTask.create(
@@ -87,8 +71,7 @@ describe('task', () => {
   })
   it.concurrent('List task by user id', async () => {
     const taskRepository = new InMemoryTaskRepository({
-      ...taskConfig,
-      aggregates: { userRepo: loadedRepo }
+      ...taskConfig
     })
     const createTask = new CreateTask(taskRepository)
     await Promise.all([
