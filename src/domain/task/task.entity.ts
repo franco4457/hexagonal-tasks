@@ -1,12 +1,15 @@
 import { randomUUID } from 'node:crypto'
-import { type User } from '../user'
+import type { User } from '../user'
 import { AggregateRoot } from '../core'
 import { TaskCreateEvent, TaskMarkCompleted, TaskMarkIncompleted } from './events'
+import type { Pomodoro } from './value-objects'
 
 export interface TaskProps {
   title: string
   description: string
   isCompleted: boolean
+  order: number
+  pomodoro: Pomodoro
   userId: User['id']
 }
 
@@ -19,6 +22,7 @@ export type TaskModel = Omit<TaskProps, 'isCompleted'> & {
   updatedAt: Date
 }
 
+// TODO: add guards
 export class Task extends AggregateRoot<TaskProps> {
   static create = (task: TaskPropsCreate): Task => {
     const id = randomUUID()
