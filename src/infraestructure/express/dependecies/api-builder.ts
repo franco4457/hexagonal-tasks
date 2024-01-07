@@ -1,13 +1,16 @@
 import type { IApiBuilder } from '@/application/api/builder'
 import type { TaskRepository } from '@/domain/task'
-import type { IUserRepository } from '@/domain/user'
+import { type UserRepository } from '@/domain/user'
 import { ApiExpress } from '../api'
 import { MainRouter } from '../routes'
 import EventEmitter2 from 'eventemitter2'
+import { AssignTaskWhenIsCreatedEventHandler } from '@/application/user'
+
+const eventhandlers = [AssignTaskWhenIsCreatedEventHandler]
 export class ApiBuilderExpress implements IApiBuilder {
   private api: ApiExpress
   private taskRepository!: TaskRepository | null
-  private userRepository!: IUserRepository | null
+  private userRepository!: UserRepository | null
   private readonly eventEmitter = new EventEmitter2()
   private readonly appContext = 'EXPRESS'
   constructor() {
@@ -35,7 +38,7 @@ export class ApiBuilderExpress implements IApiBuilder {
     return this
   }
 
-  setUserRepository(userRepository: IUserRepository): IApiBuilder {
+  setUserRepository(userRepository: UserRepository): IApiBuilder {
     this.userRepository = userRepository
     return this
   }
@@ -43,6 +46,13 @@ export class ApiBuilderExpress implements IApiBuilder {
   build(): ApiExpress {
     if (this.taskRepository == null) throw new Error('TaskRepository not set')
     if (this.userRepository == null) throw new Error('UserRepository not set')
+    eventhandlers.forEach((Handler) => {
+      const repositoriesToInject = Handler.repositoriesToInject.map((repo) => {
+        return this[repo]
+      })
+      const instance = new Handler(...(repositoriesToInject as [UserRepository])) // Convert repositoriesToInject to a tuple
+      this.eventEmitter.on(Handler.EVENT_NAME, instance.handle.bind(instance))
+    })
 
     this.api.build(new MainRouter(this.userRepository, this.taskRepository))
     return this.api
