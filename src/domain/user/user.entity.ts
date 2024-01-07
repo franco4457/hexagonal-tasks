@@ -23,6 +23,7 @@ export type UserPropsLoginInput = Pick<UserProps, 'email' | 'username'> & {
 
 export type UserPropsCreate = Pick<UserProps, 'name' | 'lastname'> & UserPropsLoginInput
 
+// TODO: add guards
 export class User extends AggregateRoot<UserProps> {
   static async create(props: UserPropsCreate): Promise<User> {
     const id = randomUUID()
