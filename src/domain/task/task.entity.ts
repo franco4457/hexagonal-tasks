@@ -2,7 +2,7 @@ import { randomUUID } from 'node:crypto'
 import type { User } from '../user'
 import { AggregateRoot } from '../core'
 import { TaskCreateEvent, TaskMarkCompleted, TaskMarkIncompleted } from './events'
-import type { Pomodoro } from './value-objects'
+import { type Pomodoro } from './value-objects'
 
 export interface TaskProps {
   title: string
@@ -15,9 +15,11 @@ export interface TaskProps {
 
 export type TaskPropsCreate = Omit<TaskProps, 'id' | 'isCompleted'>
 
-export type TaskModel = Omit<TaskProps, 'isCompleted'> & {
+export type TaskModel = Omit<TaskProps, 'isCompleted' | 'pomodoro'> & {
   id: string
   is_completed: boolean
+  podomoro_estimated: number
+  podomoro_actual: number
   createdAt: Date
   updatedAt: Date
 }
