@@ -9,7 +9,6 @@ export interface ITaskRepository {
   getTasksByUserId: (userId: User['id']) => Promise<Task[]>
   getTask: (id: Task['id']) => Promise<Task>
   create: (newTask: Task) => Promise<Task>
-  setUser: (id: Task['id'], userId: User['id']) => Promise<void>
 }
 export abstract class TaskRepository
   extends RepositoryBase<Task, TaskModel>
@@ -27,5 +26,4 @@ export abstract class TaskRepository
   abstract create(task: Task): Promise<Task>
   abstract create(task: Task[]): Promise<Task[]>
   abstract create(task: Task | Task[]): Promise<Task | Task[]>
-  abstract setUser(id: Task['id'], userId: User['id']): Promise<void>
 }
