@@ -17,10 +17,13 @@ export const TaskSchema = z.object({
     .min(3, { message: 'Description should be at least 3 characters' })
     .max(50, { message: 'Description should be less than 50 characters' }),
   userId: z.string().uuid({ message: 'Invalid userId' }),
+  order: z.number().int().positive({ message: 'Order should be greater than 0' }),
   isCompleted: z.boolean()
 })
 
-export const validateTask = async (task: unknown): Promise<Omit<TaskPropsCreate, 'userId'>> => {
+export const validateTask = async (
+  task: unknown
+): Promise<Omit<TaskPropsCreate, 'userId' | 'pomodoro'>> => {
   try {
     const result = await TaskSchema.omit({ id: true, userId: true, isCompleted: true }).parseAsync(
       task
