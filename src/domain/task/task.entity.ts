@@ -1,8 +1,14 @@
 import { randomUUID } from 'node:crypto'
 import type { User } from '../user'
 import { AggregateRoot } from '../core'
-import { TaskCreateEvent, TaskMarkCompleted, TaskMarkIncompleted } from './events'
-import { type Pomodoro } from './value-objects'
+import {
+  TaskCreateEvent,
+  TaskMarkCompleted,
+  TaskMarkIncompleted,
+  TaskUpdateActualPomodoroEvent,
+  TaskUpdateEstimatedPomodoroEvent
+} from './events'
+import { Pomodoro } from './value-objects'
 
 export interface TaskProps {
   title: string
@@ -43,5 +49,30 @@ export class Task extends AggregateRoot<TaskProps> {
   markIncompleted = (): void => {
     this.addEvent(new TaskMarkIncompleted({ aggregateId: this.id, userId: this.props.userId }))
     this.props.isCompleted = false
+  }
+
+  updateEstimatedPomodoro = (estimated: number): void => {
+    const newPomodoro = new Pomodoro({ estimated, actual: this.props.pomodoro.value.actual })
+    this.addEvent(
+      new TaskUpdateEstimatedPomodoroEvent({
+        aggregateId: this.id,
+        ...newPomodoro.value
+      })
+    )
+    this.props.pomodoro = newPomodoro
+  }
+
+  updateActualPomodoro = (): void => {
+    const newPomodoro = new Pomodoro({
+      estimated: this.props.pomodoro.value.estimated,
+      actual: this.props.pomodoro.value.actual + 1
+    })
+    this.addEvent(
+      new TaskUpdateActualPomodoroEvent({
+        aggregateId: this.id,
+        ...newPomodoro.value
+      })
+    )
+    this.props.pomodoro = newPomodoro
   }
 }
