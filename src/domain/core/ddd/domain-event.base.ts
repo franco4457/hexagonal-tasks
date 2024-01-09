@@ -1,4 +1,6 @@
 import { randomUUID } from 'crypto'
+import { isEmpty } from '../guard'
+import { ArgumentNotProvided } from '../exeptions'
 
 interface DomainEventMetadata {
   readonly timestamp: number
@@ -18,6 +20,9 @@ export abstract class DomainEvent {
   public readonly metadata: DomainEventMetadata
 
   protected constructor(props: DomainEventProps<unknown>) {
+    if (isEmpty(props)) {
+      throw new ArgumentNotProvided('DomainEvent props cannot be empty')
+    }
     this.id = randomUUID()
     this.aggregateId = props.aggregateId
     this.metadata = {

@@ -1,7 +1,11 @@
+import { ArgumentNotProvided } from '../exeptions'
+import { isEmpty } from '../guard'
+
 export abstract class ValueObject<T> {
   protected readonly _value: T
 
   constructor(value: T) {
+    this.checkIfEmpty(value)
     this.validate(value)
     this._value = value
   }
@@ -21,5 +25,11 @@ export abstract class ValueObject<T> {
       return false
     }
     return JSON.stringify(this) === JSON.stringify(valueObject)
+  }
+
+  private checkIfEmpty(value: T): void {
+    if (isEmpty(value)) {
+      throw new ArgumentNotProvided('ValueObject cannot be empty')
+    }
   }
 }
