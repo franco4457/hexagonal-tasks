@@ -1,7 +1,8 @@
 import { Password } from './value-objects/password'
 import { randomUUID } from 'node:crypto'
-import { AggregateRoot } from '../core'
+import { AggregateRoot, isEmpty } from '../core'
 import { UserCreateEvent } from './events/user-create.event'
+import { UserFieldIsRequired } from './user.exceptions'
 
 export interface UserProps {
   name: string
@@ -45,5 +46,13 @@ export class User extends AggregateRoot<UserProps> {
     )
 
     return user
+  }
+
+  public validate(): void {
+    const { name, lastname, username, email } = this.props
+    if (isEmpty(name)) throw new UserFieldIsRequired('name')
+    if (isEmpty(lastname)) throw new UserFieldIsRequired('lastname')
+    if (isEmpty(username)) throw new UserFieldIsRequired('username')
+    if (isEmpty(email)) throw new UserFieldIsRequired('email')
   }
 }

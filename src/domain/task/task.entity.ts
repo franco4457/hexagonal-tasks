@@ -1,6 +1,6 @@
 import { randomUUID } from 'node:crypto'
 import type { User } from '../user'
-import { AggregateRoot } from '../core'
+import { AggregateRoot, isEmpty } from '../core'
 import {
   TaskCreateEvent,
   TaskMarkCompleted,
@@ -9,6 +9,7 @@ import {
   TaskUpdateEstimatedPomodoroEvent
 } from './events'
 import { Pomodoro } from './value-objects'
+import { TaskFieldIsRequired } from './task.exceptions'
 
 export interface TaskProps {
   title: string
@@ -74,5 +75,12 @@ export class Task extends AggregateRoot<TaskProps> {
       })
     )
     this.props.pomodoro = newPomodoro
+  }
+
+  public validate(): void {
+    const { title, description, order } = this.props
+    if (isEmpty(title)) throw new TaskFieldIsRequired('title')
+    if (isEmpty(description)) throw new TaskFieldIsRequired('description')
+    if (isEmpty(order)) throw new TaskFieldIsRequired('order')
   }
 }

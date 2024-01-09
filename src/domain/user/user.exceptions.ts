@@ -1,4 +1,4 @@
-import { AlreadyExist, NotFound, ValidationError } from '@/domain/core'
+import { AlreadyExist, IsRequired, NotFound, ValidationError } from '@/domain/core'
 import type { User } from './user.entity'
 import { type ZodIssue } from 'zod'
 export class UserNotFound extends NotFound {
@@ -18,3 +18,5 @@ export class InvalidUser extends ValidationError {
     super('Invalid user', issues)
   }
 }
+
+export class UserFieldIsRequired extends IsRequired<keyof User | keyof User['props']> {}
