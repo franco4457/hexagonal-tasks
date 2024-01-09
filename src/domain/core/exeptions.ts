@@ -37,3 +37,14 @@ export class AlreadyExist extends DomainError {
     super(message, { name: 'Already exist', statusCode: 409 })
   }
 }
+
+export class ArgumentNotProvided extends DomainError {
+  constructor(message: string) {
+    super(message, { name: 'Argument not provided', statusCode: 501 })
+  }
+}
+export class IsRequired<T extends string> extends ValidationError {
+  constructor(field: T) {
+    super(`${field} is required`)
+  }
+}
