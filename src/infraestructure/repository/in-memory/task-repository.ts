@@ -1,5 +1,5 @@
 import { type Task, TaskRepository, TaskNotFound, type TaskModel } from '@/domain/task'
-import { type User, UserNotFound } from '@/domain/user'
+import { type User } from '@/domain/user'
 import { Logger } from '@/infraestructure/logger'
 import type EventEmitter2 from 'eventemitter2'
 
@@ -60,22 +60,5 @@ export class InMemoryTaskRepository extends TaskRepository {
       this.tasks.push(this.mapper.toPersistence(task))
     })
     return task
-  }
-
-  async setUser(id: Task['id'], userId: User['id'], idxTask?: number): Promise<void> {
-    const indexTask = idxTask ?? this.tasks.findIndex((task) => task.id === id)
-    if (indexTask === -1) {
-      throw new TaskNotFound(id)
-    }
-    try {
-      const user = await this.aggregates.userRepo?.getById(userId)
-      if (user == null) {
-        throw new UserNotFound(userId)
-      }
-      this.tasks[indexTask].userId = userId
-    } catch (error) {
-      this.tasks.splice(indexTask, 1)
-      throw error
-    }
   }
 }

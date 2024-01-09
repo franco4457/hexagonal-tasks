@@ -39,15 +39,6 @@ export class InMemoryUserRepository extends UserRepository {
     return this.mapper.toDomain(user)
   }
 
-  async findAndValidate(email: string, password: string): Promise<User> {
-    const record = this.users.find((user) => user.email === email)
-    if (record == null) throw new UserNotFound(email, 'email')
-    const user = this.mapper.toDomain(record)
-    const isValidPass = await user.getProps().password.compare(password)
-    if (!isValidPass) throw new UserNotFound(email, 'email')
-    return user
-  }
-
   async getAll(): Promise<User[]> {
     return this.users.map((user) => this.mapper.toDomain(user))
   }
