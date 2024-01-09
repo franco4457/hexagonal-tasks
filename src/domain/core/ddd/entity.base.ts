@@ -1,3 +1,5 @@
+import { ArgumentNotProvided } from '../exeptions'
+import { isEmpty } from '../guard'
 import { type AggregateID } from '../id.schema'
 
 export interface BaseEntityProps {
@@ -21,10 +23,12 @@ export abstract class Entity<EntityProps> {
 
   constructor({ id, createdAt, updatedAt, props }: CreateEntityProps<EntityProps>) {
     this.setID(id)
+    this.validateProps(props)
     const now = new Date()
     this._createdAt = createdAt ?? now
     this._updatedAt = updatedAt ?? now
     this.props = props
+    this.validate()
   }
 
   get id(): AggregateID {
@@ -51,5 +55,13 @@ export abstract class Entity<EntityProps> {
       ...this.props
     }
     return Object.freeze(propsCopy)
+  }
+
+  public abstract validate(): void
+
+  private validateProps(props: EntityProps): void {
+    if (isEmpty(props)) {
+      throw new ArgumentNotProvided('Entity props cannot be empty')
+    }
   }
 }
