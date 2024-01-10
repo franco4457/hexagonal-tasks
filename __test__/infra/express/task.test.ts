@@ -1,11 +1,14 @@
 import request from 'supertest'
-
 import api from '@/infraestructure/express/app'
 const app = (await api).getInstance()
 
 const testTask = {
   title: 'title',
   description: 'description',
+  order: 1,
+  pomodoro: {
+    estimated: 1
+  },
   userId: 'c2d7e0e0-4e0a-4b7a-8c7e-2a9a9b0a3b1a'
 }
 
@@ -40,9 +43,16 @@ describe('Task', () => {
           received: 'undefined',
           path: ['description'],
           message: 'Description is required'
+        },
+        {
+          code: 'invalid_type',
+          expected: 'number',
+          received: 'undefined',
+          path: ['order'],
+          message: 'Order is required'
         }
       ],
-      errors: ['Title is required', 'Description is required'],
+      errors: ['Title is required', 'Description is required', 'Order is required'],
       message: 'Invalida Task'
     })
   })
@@ -52,6 +62,7 @@ describe('Task', () => {
       .send({
         title: { title: 'title' },
         description: 20,
+        order: 'one',
         userId: testTask.userId
       })
     expect(res.status).toBe(422)
@@ -72,9 +83,20 @@ describe('Task', () => {
           received: 'number',
           path: ['description'],
           message: 'Expected string, received number'
+        },
+        {
+          code: 'invalid_type',
+          expected: 'number',
+          received: 'string',
+          path: ['order'],
+          message: 'Expected number, received string'
         }
       ],
-      errors: ['Expected string, received object', 'Expected string, received number'],
+      errors: [
+        'Expected string, received object',
+        'Expected string, received number',
+        'Expected number, received string'
+      ],
       message: 'Invalida Task'
     })
   })
@@ -82,6 +104,7 @@ describe('Task', () => {
     const res = await request(app).post('/api/v1/task').send({
       title: 'title',
       description: 'description',
+      order: 1,
       userId: '123'
     })
     expect(res.status).toBe(422)
@@ -104,11 +127,12 @@ describe('Task', () => {
     })
   })
   it.concurrent('POST /task - error user not found', async () => {
-    const res = await request(app).post('/api/v1/task').send({
-      title: 'title',
-      description: 'description',
-      userId: 'c2d7e0e0-4e0a-4b7a-8c7e-2a9a9b0a3b1b'
-    })
+    const res = await request(app)
+      .post('/api/v1/task')
+      .send({
+        ...testTask,
+        userId: 'c2d7e0e0-4e0a-4b7a-8c7e-2a9a9b0a3b1b'
+      })
     expect(res.status).toBe(404)
     expect(res.body).toEqual({
       error: true,
