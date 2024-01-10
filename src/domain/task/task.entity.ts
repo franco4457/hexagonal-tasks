@@ -1,6 +1,6 @@
 import { randomUUID } from 'node:crypto'
 import type { User } from '../user'
-import { AggregateRoot, isEmpty } from '../core'
+import { AggregateRoot, ValidationError, isEmpty } from '../core'
 import {
   TaskCreateEvent,
   TaskMarkCompleted,
@@ -78,9 +78,14 @@ export class Task extends AggregateRoot<TaskProps> {
   }
 
   public validate(): void {
-    const { title, description, order } = this.props
+    const { title, description, order, pomodoro, userId, isCompleted } = this.props
     if (isEmpty(title)) throw new TaskFieldIsRequired('title')
     if (isEmpty(description)) throw new TaskFieldIsRequired('description')
     if (isEmpty(order)) throw new TaskFieldIsRequired('order')
+    if (isEmpty(userId)) throw new TaskFieldIsRequired('userId')
+    if (isEmpty(isCompleted)) throw new TaskFieldIsRequired('isCompleted')
+    if (!Pomodoro.isValueObject(pomodoro)) {
+      throw new ValidationError('pomodoro should be a Pomodoro instance')
+    }
   }
 }
