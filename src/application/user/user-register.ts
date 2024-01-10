@@ -1,4 +1,4 @@
-import { User, validateUser } from '@/domain/user'
+import { Password, User, validateUser } from '@/domain/user'
 import type { UserRepository } from '@/domain/user'
 
 export class UserRegister {
@@ -6,7 +6,8 @@ export class UserRegister {
 
   async register(props: unknown): Promise<User> {
     const userInput = await validateUser(props)
-    const user = await User.create(userInput)
+    const password = await Password.create(userInput.password)
+    const user = User.create({ ...userInput, password })
     await this.userRepository.transaction(async () => await this.userRepository.create(user))
     return user
   }
