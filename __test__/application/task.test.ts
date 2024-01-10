@@ -1,5 +1,4 @@
-import { ListTasks } from './../../src/application/task/list-tasks'
-import { CreateTask } from '@/application/task/task-create'
+import { ListTasks, CreateTask } from '@/application/task'
 import { Task } from '@/domain/task'
 import { InMemoryTaskRepository } from '@/infraestructure/repository/in-memory'
 import EventEmitter2 from 'eventemitter2'
@@ -11,6 +10,15 @@ const taskConfig = {
   appContext: 'TEST'
 }
 
+const baseTask = {
+  title: 'title',
+  description: 'description',
+  order: 1,
+  pomodoro: {
+    estimated: 1
+  }
+}
+
 describe('task', () => {
   it.concurrent('Create task', async () => {
     const taskRepository = new InMemoryTaskRepository({
@@ -18,7 +26,7 @@ describe('task', () => {
     })
     const createTask = new CreateTask(taskRepository)
     const task = await createTask.create({
-      task: { title: 'title', description: 'description' },
+      task: baseTask,
       userId: testUUID
     })
     expect(task).toBeInstanceOf(Task)
@@ -38,7 +46,7 @@ describe('task', () => {
       expect(event).toHaveProperty('userId')
     })
     const task = await createTask.create({
-      task: { title: 'title', description: 'description' },
+      task: baseTask,
       userId: testUUID
     })
     await task.publishEvents(eventEmitter, console)
@@ -52,7 +60,7 @@ describe('task', () => {
     const createTask = new CreateTask(taskRepository)
     await createTask.create(
       Array.from({ length: 10 }, (_, i) => i).map((i) => ({
-        task: { title: `test-title-${i}`, description: `test-desc-${i}` },
+        task: { ...baseTask, title: `test-title-${i}`, description: `test-desc-${i}` },
         userId: testUUID.slice(0, -1) + i
       }))
     )
@@ -77,12 +85,12 @@ describe('task', () => {
     await Promise.all([
       await createTask.create(
         Array.from({ length: 10 }, (_, i) => i).map((i) => ({
-          task: { title: `test-title-${i}`, description: `test-desc-${i}` },
+          task: { ...baseTask, title: `test-title-${i}`, description: `test-desc-${i}` },
           userId: testUUID.slice(0, -1) + i
         }))
       ),
       createTask.create({
-        task: { title: 'test-title-10', description: 'test-desc-10' },
+        task: { ...baseTask, title: 'test-title-10', description: 'test-desc-10' },
         userId: testUUID.slice(0, -1) + 0
       })
     ])
@@ -113,7 +121,7 @@ describe('task', () => {
         task: {},
         userId: testUUID
       })
-    ).rejects.toThrowError('["Title is required","Description is required"]')
+    ).rejects.toThrowError('["Title is required","Description is required","Order is required"]')
   })
   it('should throw error when create task don`t send correct types ', async () => {
     const taskRepository = new InMemoryTaskRepository(taskConfig)
@@ -128,7 +136,7 @@ describe('task', () => {
         userId: testUUID
       })
     ).rejects.toThrowError(
-      '["Expected string, received number","Expected string, received number"]'
+      '["Expected string, received number","Expected string, received number","Order is required"]'
     )
   })
   it('should throw error when create task don`t send correct lengths', async () => {
@@ -137,13 +145,15 @@ describe('task', () => {
     await expect(
       createTask.create({
         task: {
+          ...baseTask,
+          order: -1,
           title: 't',
           description: 'd'
         },
         userId: testUUID
       })
     ).rejects.toThrowError(
-      '["Title should be at least 3 characters","Description should be at least 3 characters"]'
+      '["Title should be at least 3 characters","Description should be at least 3 characters","Order should be equals or greater than 0"]'
     )
   })
   it('should throw error when create task don`t incorrect userId', async () => {
@@ -152,6 +162,7 @@ describe('task', () => {
     await expect(
       createTask.create({
         task: {
+          ...baseTask,
           title: 'title',
           description: 'description'
         },
