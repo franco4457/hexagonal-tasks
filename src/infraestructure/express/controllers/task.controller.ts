@@ -13,8 +13,11 @@ export class TaskController {
 
   async create(req: Request, res: Response, next: NextFunction): Promise<void> {
     try {
-      const { userId, title, description } = req.body
-      const task = await this.createTask.create({ task: { title, description }, userId })
+      const { userId, title, description, order, pomodoro } = req.body
+      const task = await this.createTask.create({
+        task: { title, description, order, pomodoro },
+        userId
+      })
       res.status(201).json({ task: this.mapper.toResponse(task) })
     } catch (error) {
       next(error)
