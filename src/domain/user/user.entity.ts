@@ -1,6 +1,6 @@
-import { Password } from './value-objects/password'
+import { Password } from './value-objects'
 import { randomUUID } from 'node:crypto'
-import { AggregateRoot, isEmpty } from '../core'
+import { AggregateRoot, ValidationError, isEmpty } from '../core'
 import { UserCreateEvent } from './events/user-create.event'
 import { UserFieldIsRequired } from './user.exceptions'
 
@@ -24,16 +24,11 @@ export type UserPropsLoginInput = Pick<UserProps, 'email' | 'username'> & {
 
 export type UserPropsCreate = Pick<UserProps, 'name' | 'lastname'> & UserPropsLoginInput
 
-// TODO: add guards
 export class User extends AggregateRoot<UserProps> {
-  static async create(props: UserPropsCreate): Promise<User> {
+  static create(props: UserProps): User {
     const id = randomUUID()
-    const password = await Password.create(props.password)
     const user = new User({
-      props: {
-        ...props,
-        password
-      },
+      props,
       id
     })
 
@@ -49,10 +44,13 @@ export class User extends AggregateRoot<UserProps> {
   }
 
   public validate(): void {
-    const { name, lastname, username, email } = this.props
+    const { name, lastname, username, email, password } = this.props
     if (isEmpty(name)) throw new UserFieldIsRequired('name')
     if (isEmpty(lastname)) throw new UserFieldIsRequired('lastname')
     if (isEmpty(username)) throw new UserFieldIsRequired('username')
     if (isEmpty(email)) throw new UserFieldIsRequired('email')
+    if (!Password.isValueObject(password)) {
+      throw new ValidationError('user.password should be a Password instance')
+    }
   }
 }
