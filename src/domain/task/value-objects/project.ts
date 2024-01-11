@@ -14,14 +14,14 @@ export class Project extends ValueObject<ProjectProps> {
     return new Project({ id, name })
   }
 
-  public validate(): void {
-    if (isEmpty(this.value.id)) {
+  public validate(value: ProjectProps): void {
+    if (isEmpty(value.id)) {
       throw new ArgumentNotProvided('Project id cannot be empty')
     }
-    if (isEmpty(this.value.name)) {
+    if (isEmpty(value.name)) {
       throw new ArgumentNotProvided('Project name cannot be empty')
     }
-    if (isEmpty(this.value)) {
+    if (isEmpty(value)) {
       throw new ArgumentNotProvided('Project cannot be empty')
     }
   }

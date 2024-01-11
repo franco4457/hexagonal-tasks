@@ -14,14 +14,14 @@ export class Label extends ValueObject<LabelProps> {
     return new Label({ id, name })
   }
 
-  public validate(): void {
-    if (isEmpty(this.value.id)) {
+  public validate(value: LabelProps): void {
+    if (isEmpty(value.id)) {
       throw new ArgumentNotProvided('Label id cannot be empty')
     }
-    if (isEmpty(this.value.name)) {
+    if (isEmpty(value.name)) {
       throw new ArgumentNotProvided('Label name cannot be empty')
     }
-    if (isEmpty(this.value)) {
+    if (isEmpty(value)) {
       throw new ArgumentNotProvided('Label cannot be empty')
     }
   }
