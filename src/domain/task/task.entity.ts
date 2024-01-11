@@ -9,7 +9,7 @@ import {
   TaskRemoveLabelEvent,
   TaskUpdateActualPomodoroEvent,
   TaskUpdateEstimatedPomodoroEvent,
-  TaskUpdateProyectEvent
+  TaskUpdateProjectEvent
 } from './events'
 import { Label, Pomodoro, Project } from './value-objects'
 import { TaskFieldIsRequired } from './task.exceptions'
@@ -22,10 +22,10 @@ export interface TaskProps {
   pomodoro: Pomodoro
   labels: Label[]
   userId: User['id']
-  proyect: Project | null
+  project: Project | null
 }
 
-export type TaskPropsCreate = Omit<TaskProps, 'isCompleted' | 'labels' | 'proyect'>
+export type TaskPropsCreate = Omit<TaskProps, 'isCompleted' | 'labels' | 'project'>
 
 export type TaskModel = Omit<TaskProps, 'isCompleted' | 'pomodoro'> & {
   id: string
@@ -41,7 +41,7 @@ export class Task extends AggregateRoot<TaskProps> {
     const id = randomUUID()
     const newTask = new Task({
       id,
-      props: { ...task, isCompleted: false, labels: [], proyect: null }
+      props: { ...task, isCompleted: false, labels: [], project: null }
     })
     newTask.addEvent(
       new TaskCreateEvent({ aggregateId: newTask.id, title: task.title, userId: task.userId })
@@ -108,21 +108,21 @@ export class Task extends AggregateRoot<TaskProps> {
     )
   }
 
-  updateProyect(proyect: { name: string }): void {
-    const newProyect = Project.create(proyect)
-    this.props.proyect = newProyect
+  updateProject(project: { name: string }): void {
+    const newproject = Project.create(project)
+    this.props.project = newproject
     this.addEvent(
-      new TaskUpdateProyectEvent({
+      new TaskUpdateProjectEvent({
         aggregateId: this.id,
-        proyectId: newProyect.value.id,
-        proyectName: newProyect.value.name,
+        projectId: newproject.value.id,
+        projectName: newproject.value.name,
         userId: this.props.userId
       })
     )
   }
 
   public validate(): void {
-    const { title, description, order, pomodoro, userId, isCompleted, labels, proyect } = this.props
+    const { title, description, order, pomodoro, userId, isCompleted, labels, project } = this.props
     if (isEmpty(title)) throw new TaskFieldIsRequired('title')
     if (isEmpty(description)) throw new TaskFieldIsRequired('description')
     if (isEmpty(order)) throw new TaskFieldIsRequired('order')
@@ -134,8 +134,8 @@ export class Task extends AggregateRoot<TaskProps> {
     if (!labels.every((label) => Label.isValueObject(label))) {
       throw new ValidationError('labels should be a Label instance')
     }
-    if (proyect !== null && !Project.isValueObject(proyect)) {
-      throw new ValidationError('proyect should be a Project instance')
+    if (project !== null && !Project.isValueObject(project)) {
+      throw new ValidationError('project should be a Project instance')
     }
   }
 }
