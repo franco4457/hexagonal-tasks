@@ -8,9 +8,10 @@ import {
   TaskMarkIncompleted,
   TaskRemoveLabelEvent,
   TaskUpdateActualPomodoroEvent,
-  TaskUpdateEstimatedPomodoroEvent
+  TaskUpdateEstimatedPomodoroEvent,
+  TaskUpdateProyectEvent
 } from './events'
-import { Label, Pomodoro } from './value-objects'
+import { Label, Pomodoro, Project } from './value-objects'
 import { TaskFieldIsRequired } from './task.exceptions'
 
 export interface TaskProps {
@@ -21,9 +22,10 @@ export interface TaskProps {
   pomodoro: Pomodoro
   labels: Label[]
   userId: User['id']
+  proyect: Project | null
 }
 
-export type TaskPropsCreate = Omit<TaskProps, 'id' | 'isCompleted' | 'labels'>
+export type TaskPropsCreate = Omit<TaskProps, 'isCompleted' | 'labels' | 'proyect'>
 
 export type TaskModel = Omit<TaskProps, 'isCompleted' | 'pomodoro'> & {
   id: string
@@ -37,7 +39,10 @@ export type TaskModel = Omit<TaskProps, 'isCompleted' | 'pomodoro'> & {
 export class Task extends AggregateRoot<TaskProps> {
   static create(task: TaskPropsCreate): Task {
     const id = randomUUID()
-    const newTask = new Task({ id, props: { isCompleted: false, labels: [], ...task } })
+    const newTask = new Task({
+      id,
+      props: { ...task, isCompleted: false, labels: [], proyect: null }
+    })
     newTask.addEvent(
       new TaskCreateEvent({ aggregateId: newTask.id, title: task.title, userId: task.userId })
     )
@@ -103,8 +108,21 @@ export class Task extends AggregateRoot<TaskProps> {
     )
   }
 
+  updateProyect(proyect: { name: string }): void {
+    const newProyect = Project.create(proyect)
+    this.props.proyect = newProyect
+    this.addEvent(
+      new TaskUpdateProyectEvent({
+        aggregateId: this.id,
+        proyectId: newProyect.value.id,
+        proyectName: newProyect.value.name,
+        userId: this.props.userId
+      })
+    )
+  }
+
   public validate(): void {
-    const { title, description, order, pomodoro, userId, isCompleted, labels } = this.props
+    const { title, description, order, pomodoro, userId, isCompleted, labels, proyect } = this.props
     if (isEmpty(title)) throw new TaskFieldIsRequired('title')
     if (isEmpty(description)) throw new TaskFieldIsRequired('description')
     if (isEmpty(order)) throw new TaskFieldIsRequired('order')
@@ -115,6 +133,9 @@ export class Task extends AggregateRoot<TaskProps> {
     }
     if (!labels.every((label) => Label.isValueObject(label))) {
       throw new ValidationError('labels should be a Label instance')
+    }
+    if (proyect !== null && !Project.isValueObject(proyect)) {
+      throw new ValidationError('proyect should be a Project instance')
     }
   }
 }
