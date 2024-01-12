@@ -28,11 +28,13 @@ export interface TaskProps {
 
 export type TaskPropsCreate = Omit<TaskProps, 'isCompleted' | 'labels' | 'project'>
 
-export type TaskModel = Omit<TaskProps, 'isCompleted' | 'pomodoro'> & {
+export type TaskModel = Omit<TaskProps, 'isCompleted' | 'pomodoro' | 'labels' | 'project'> & {
   id: string
   is_completed: boolean
   podomoro_estimated: number
   podomoro_actual: number
+  labels: Array<{ id: string; name: string }>
+  project: { id: string; name: string } | null
   createdAt: Date
   updatedAt: Date
 }
