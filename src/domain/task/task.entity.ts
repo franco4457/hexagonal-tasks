@@ -7,6 +7,7 @@ import {
   TaskMarkCompleted,
   TaskMarkIncompleted,
   TaskRemoveLabelEvent,
+  TaskRemoveProjectEvent,
   TaskUpdateActualPomodoroEvent,
   TaskUpdateEstimatedPomodoroEvent,
   TaskUpdateProjectEvent
@@ -108,14 +109,25 @@ export class Task extends AggregateRoot<TaskProps> {
     )
   }
 
-  updateProject(project: { name: string }): void {
-    const newproject = Project.create(project)
-    this.props.project = newproject
+  updateProject({ id, name }: { id?: string; name: string }): void {
+    const newProject = id != null ? new Project({ id, name }) : Project.create({ name })
+    this.props.project = newProject
     this.addEvent(
       new TaskUpdateProjectEvent({
         aggregateId: this.id,
-        projectId: newproject.value.id,
-        projectName: newproject.value.name,
+        projectId: newProject.value.id,
+        projectName: newProject.value.name,
+        userId: this.props.userId
+      })
+    )
+  }
+
+  removeProject(): void {
+    if (this.props.project === null) return
+    this.props.project = null
+    this.addEvent(
+      new TaskRemoveProjectEvent({
+        aggregateId: this.id,
         userId: this.props.userId
       })
     )
