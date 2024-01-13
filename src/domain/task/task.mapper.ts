@@ -68,6 +68,8 @@ export class TaskMapper implements Mapper<Task, TaskModel, TaskResponseDto> {
     response.description = props.description
     response.isCompleted = props.isCompleted
     response.userId = props.userId
+    response.labels = props.labels.map((label) => ({ id: label.value.id, name: label.value.name }))
+    response.project = props.project?.value ?? null
     return response
   }
 }
