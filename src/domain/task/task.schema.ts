@@ -1,6 +1,6 @@
 import { z } from 'zod'
 import type { TaskPropsCreate } from './task.entity'
-import { ValidationError } from '../core'
+import { ValidationError, customErrorMap } from '../core'
 
 export const TaskSchema = z.object({
   id: z.string().uuid({ message: 'Invalid id' }),
@@ -23,15 +23,34 @@ export const TaskSchema = z.object({
     })
     .int()
     .nonnegative({ message: 'Order should be equals or greater than 0' }),
+  project: z
+    .object({
+      id: z.string().uuid({ message: 'Invalid project id' }).optional(),
+      name: z.string()
+    })
+    .optional(),
+  labels: z
+    .object(
+      {
+        id: z.string().uuid({ message: 'Invalid label id' }).optional(),
+        name: z.string()
+      },
+      { required_error: 'Labels is required' }
+    )
+    .array(),
   isCompleted: z.boolean()
 })
 
-export const validateTask = async (
-  task: unknown
-): Promise<Omit<TaskPropsCreate, 'userId' | 'pomodoro'>> => {
+type ValidatedProps = Omit<TaskPropsCreate, 'userId' | 'pomodoro'> & {
+  project?: { name: string; id?: string } | null
+  labels: Array<{ name: string; id?: string }>
+}
+
+export const validateTask = async (task: unknown): Promise<ValidatedProps> => {
   try {
     const result = await TaskSchema.omit({ id: true, userId: true, isCompleted: true }).parseAsync(
-      task
+      task,
+      { errorMap: customErrorMap }
     )
     return result
   } catch (error) {
