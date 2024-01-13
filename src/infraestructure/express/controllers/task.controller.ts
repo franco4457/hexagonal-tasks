@@ -13,9 +13,9 @@ export class TaskController {
 
   async create(req: Request, res: Response, next: NextFunction): Promise<void> {
     try {
-      const { userId, title, description, order, pomodoro } = req.body
+      const { userId, title, description, order, pomodoro, labels, project } = req.body
       const task = await this.createTask.create({
-        task: { title, description, order, pomodoro },
+        task: { title, description, order, pomodoro, labels, project },
         userId
       })
       res.status(201).json({ task: this.mapper.toResponse(task) })
