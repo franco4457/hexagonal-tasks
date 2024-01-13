@@ -4,10 +4,12 @@ import { Pomodoro } from '@/domain/task/value-objects'
 import { type User } from '@/domain/user'
 
 interface CreateTaskProps {
-  task: Omit<TaskPropsCreate, 'userId' | 'pomodoro'> & {
+  task: Omit<TaskPropsCreate, 'userId' | 'pomodoro' | 'project' | 'labels'> & {
     pomodoro: {
       estimated: number
     }
+    labels: Array<{ name: string; id?: string }>
+    project?: { name: string; id?: string } | null
   }
   userId: User['id']
 }
@@ -22,7 +24,7 @@ export class CreateTask {
         props.map(async ({ task: { pomodoro, ...task }, ...p }) => {
           const taskInp = await validateTask(task)
           const userId = await valdiateID(p.userId, 'User ID')
-          return Task.create({
+          const newTask = Task.create({
             ...taskInp,
             userId,
             pomodoro: new Pomodoro({
@@ -30,6 +32,13 @@ export class CreateTask {
               actual: 0
             })
           })
+          if (taskInp.project != null) {
+            newTask.updateProject(taskInp.project)
+          }
+          taskInp.labels.forEach((label) => {
+            newTask.addLabel(label)
+          })
+          return newTask
         })
       )
       await this.taskRepository.transaction(async () => await this.taskRepository.create(tasks))
@@ -45,6 +54,12 @@ export class CreateTask {
         ...taskInp,
         userId,
         pomodoro: new Pomodoro({ estimated: props.task.pomodoro.estimated, actual: 0 })
+      })
+      if (taskInp.project != null) {
+        newTask.updateProject(taskInp.project)
+      }
+      taskInp.labels.forEach((label) => {
+        newTask.addLabel(label)
       })
       await this.taskRepository.transaction(async () => await this.taskRepository.create(newTask))
       return newTask
