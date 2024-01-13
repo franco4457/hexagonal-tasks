@@ -5,7 +5,7 @@ export class Applicaction {
   private api!: ApiExpress
   async bootstrap(): Promise<ApiExpress> {
     if (DIALECT === 'MONGODB') this.api = await createMongoApi()
-    if (DIALECT === 'POSTGRES') this.api = await createPostgresApi()
+    else if (DIALECT === 'POSTGRES') this.api = await createPostgresApi()
     else this.api = createInMemoryApi()
     return this.api
   }
