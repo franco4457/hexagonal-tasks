@@ -87,7 +87,9 @@ export class Task extends AggregateRoot<TaskProps> {
     this.props.pomodoro = newPomodoro
   }
 
-  addLabel(label: Label): void {
+  addLabel(props: { id?: string; name: string }): void {
+    const label =
+      props.id != null ? new Label({ id: props.id, name: props.name }) : Label.create(props)
     this.props.labels.push(label)
     this.addEvent(
       new TaskAddLabelEvent({
