@@ -1,3 +1,4 @@
+import { TEST_ID } from './../utils/constants'
 import { ValidationError } from '@/domain/core'
 import {
   Label,
@@ -23,18 +24,18 @@ const baseTask = {
   labels: [],
   project: null,
   pomodoro: new Pomodoro({ estimated: 1, actual: 0 }),
-  userId: 'c2d7e0e0-4e0a-4b7a-8c7e-2a9a9b0a3b1a',
+  userId: TEST_ID,
   isCompleted: false
 }
 describe.concurrent('Task Domain', () => {
   it.concurrent('Should create a task instance', async () => {
     const props = baseTask
     const task = new Task({
-      id: 'c2d7e0e0-4e0a-4b7a-8c7e-2a9a9b0a3b1a',
+      id: TEST_ID,
       props
     })
     expect(task).toBeInstanceOf(Task)
-    expect(task.id).toBe('c2d7e0e0-4e0a-4b7a-8c7e-2a9a9b0a3b1a')
+    expect(task.id).toBe(TEST_ID)
     expect(task.getCreatedAt()).toBeInstanceOf(Date)
     expect(task.getUpdatedAt()).toBeInstanceOf(Date)
   })
@@ -77,7 +78,7 @@ describe.concurrent('Task Domain', () => {
         isCompleted: true
       }
       const task = new Task({
-        id: 'c2d7e0e0-4e0a-4b7a-8c7e-2a9a9b0a3b1a',
+        id: TEST_ID,
         props
       })
       task.markIncompleted()
@@ -118,21 +119,30 @@ describe.concurrent('Task Domain', () => {
     })
     it.concurrent('Add label', async () => {
       const task = new Task({
-        id: 'c2d7e0e0-4e0a-4b7a-8c7e-2a9a9b0a3b1a',
+        id: TEST_ID,
         props: baseTask
       })
-      const label = Label.create({ name: 'test' })
-      task.addLabel(label)
+
+      task.addLabel({ name: 'test' })
+      task.addLabel({ id: TEST_ID, name: 'test2' })
       const labels = task.getProps().labels
-      expect(labels).toHaveLength(1)
-      expect(labels[0]).toBe(label)
+      expect(labels).toHaveLength(2)
+      expect(labels[0]).toBeInstanceOf(Label)
+      expect(labels[0].value.name).toBe('test')
+      expect(labels[1]).toBeInstanceOf(Label)
+      expect(labels[1].value.name).toBe('test2')
+      expect(labels[1].value.id).toBe(TEST_ID)
       const events = task.domainEvents
-      expect(events).toHaveLength(1)
-      const e = events[0] as TaskAddLabelEvent
+      expect(events).toHaveLength(2)
+      const [e, e2] = events as TaskAddLabelEvent[]
       expect(e).toBeInstanceOf(TaskAddLabelEvent)
       expect(e.aggregateId).toBe(task.id)
-      expect(e.labelId).toBe(label.value.id)
+      expect(e.labelId).toBeTypeOf('string')
       expect(e.userId).toBe(task.getProps().userId)
+      expect(e2).toBeInstanceOf(TaskAddLabelEvent)
+      expect(e2.aggregateId).toBe(task.id)
+      expect(e2.labelId).toBe(TEST_ID)
+      expect(e2.userId).toBe(task.getProps().userId)
     })
     it.concurrent('Remove label', async () => {
       const label = Label.create({ name: 'test' })
@@ -141,7 +151,7 @@ describe.concurrent('Task Domain', () => {
         labels: [label]
       }
       const task = new Task({
-        id: 'c2d7e0e0-4e0a-4b7a-8c7e-2a9a9b0a3b1a',
+        id: TEST_ID,
         props
       })
       task.removeLabel(label.value.id)
@@ -157,7 +167,7 @@ describe.concurrent('Task Domain', () => {
     })
     it.concurrent('Update project adding', async () => {
       const task = new Task({
-        id: 'c2d7e0e0-4e0a-4b7a-8c7e-2a9a9b0a3b1a',
+        id: TEST_ID,
         props: baseTask
       })
       expect(task.getProps().project).toBe(null)
@@ -181,7 +191,7 @@ describe.concurrent('Task Domain', () => {
         project
       }
       const task = new Task({
-        id: 'c2d7e0e0-4e0a-4b7a-8c7e-2a9a9b0a3b1a',
+        id: TEST_ID,
         props
       })
       expect(task.getProps().project).toBe(project)
@@ -203,7 +213,7 @@ describe.concurrent('Task Domain', () => {
         project
       }
       const task = new Task({
-        id: 'c2d7e0e0-4e0a-4b7a-8c7e-2a9a9b0a3b1a',
+        id: TEST_ID,
         props
       })
       expect(task.getProps().project).toBe(project)
@@ -277,7 +287,7 @@ describe.concurrent('Task Domain', () => {
       try {
         // eslint-disable-next-line no-new
         new Task({
-          id: 'c2d7e0e0-4e0a-4b7a-8c7e-2a9a9b0a3b1a',
+          id: TEST_ID,
           // @ts-expect-error Testing purposes
           props
         })
@@ -309,7 +319,7 @@ describe.concurrent('Task Domain', () => {
       try {
         // eslint-disable-next-line no-new
         new Task({
-          id: 'c2d7e0e0-4e0a-4b7a-8c7e-2a9a9b0a3b1a',
+          id: TEST_ID,
           // @ts-expect-error Testing purposes
           props
         })
@@ -327,7 +337,7 @@ describe.concurrent('Task Domain', () => {
       try {
         // eslint-disable-next-line no-new
         new Task({
-          id: 'c2d7e0e0-4e0a-4b7a-8c7e-2a9a9b0a3b1a',
+          id: TEST_ID,
           // @ts-expect-error Testing purposes
           props
         })
