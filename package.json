@@ -40,6 +40,7 @@
     "vitest": "^0.34.3"
   },
   "dependencies": {
+    "awilix": "^10.0.1",
     "bcrypt": "^5.1.1",
     "dotenv": "^16.3.1",
     "eventemitter2": "^6.4.9",
