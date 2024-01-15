@@ -13,6 +13,8 @@ export class TaskRouter {
     this.taskRouter.get('/', this.taskController.getAll.bind(this.taskController))
     this.taskRouter.get('/:userId', this.taskController.getByUserId.bind(this.taskController))
     this.taskRouter.post('/', this.taskController.create.bind(this.taskController))
+    this.taskRouter.post('/bulk', this.taskController.bulkCreate.bind(this.taskController))
+
     return this.taskRouter
   }
 }

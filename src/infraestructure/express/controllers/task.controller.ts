@@ -24,6 +24,16 @@ export class TaskController {
     }
   }
 
+  async bulkCreate(req: Request, res: Response, next: NextFunction): Promise<void> {
+    try {
+      const { data } = req.body as { data: [] }
+      const tasksCreated = await this.createTask.create(data)
+      res.status(201).json({ tasks: tasksCreated.map((task) => this.mapper.toResponse(task)) })
+    } catch (error) {
+      next(error)
+    }
+  }
+
   async getAll(_req: Request, res: Response, next: NextFunction): Promise<void> {
     try {
       const tasks = await this.listTasks.getAll()
