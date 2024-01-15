@@ -21,14 +21,14 @@ export class CreateTask {
   async create(props: CreateTaskProps | CreateTaskProps[]): Promise<Task | Task[]> {
     if (Array.isArray(props)) {
       const tasks = await Promise.all(
-        props.map(async ({ task: { pomodoro, ...task }, ...p }) => {
+        props.map(async ({ task, ...p }) => {
           const taskInp = await validateTask(task)
           const userId = await valdiateID(p.userId, 'User ID')
           const newTask = Task.create({
             ...taskInp,
             userId,
-            pomodoro: new Pomodoro({
-              estimated: pomodoro.estimated,
+            pomodoro: Pomodoro.create({
+              estimated: task.pomodoro.estimated,
               actual: 0
             })
           })
@@ -44,16 +44,13 @@ export class CreateTask {
       await this.taskRepository.transaction(async () => await this.taskRepository.create(tasks))
       return tasks
     } else {
-      const {
-        task: { pomodoro, ...task },
-        ...p
-      } = props
+      const { task, ...p } = props
       const taskInp = await validateTask(task)
       const userId = await valdiateID(p.userId, 'User ID')
       const newTask = Task.create({
         ...taskInp,
         userId,
-        pomodoro: new Pomodoro({ estimated: props.task.pomodoro.estimated, actual: 0 })
+        pomodoro: new Pomodoro({ estimated: task.pomodoro.estimated, actual: 0 })
       })
       if (taskInp.project != null) {
         newTask.updateProject(taskInp.project)
