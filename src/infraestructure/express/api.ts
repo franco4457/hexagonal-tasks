@@ -14,6 +14,7 @@ export class ApiExpress {
   }
 
   build(mainRouter: MainRouter): any {
+    this.app.disable('x-powered-by')
     this.app.use((req, res, next) => {
       const start = Date.now()
       res.on('finish', () => {
