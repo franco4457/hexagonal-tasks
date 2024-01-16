@@ -51,12 +51,42 @@ describe('Task', () => {
       name: 'project'
     })
   })
+  it.concurrent('GET /task', async () => {
+    const res = await request(app).get('/api/v1/task')
+    expect(res.status).toBe(200)
+    const { tasks } = res.body
+    expect(tasks).toHaveLength(2)
+    const [task, task2] = tasks
+    expect(task).toHaveProperty('id')
+    expect(task.title).toBe(testTask.title)
+    expect(task.isCompleted).toBe(false)
+    expect(task.description).toBe('description')
+    expect(task.userId).toBe(TEST_ID)
+    expect(task.labels).toEqual([])
+    expect(task.project).toBe(null)
+
+    // second task
+    expect(task2).toHaveProperty('id')
+    expect(task2.title).toBe(testTask.title)
+    expect(task2.isCompleted).toBe(false)
+    expect(task2.description).toBe('description')
+    expect(task2.userId).toBe(TEST_ID)
+    expect(task2.labels).toEqual([
+      { id: expect.any(String), name: 'label' },
+      { id: TEST_ID, name: 'label2' }
+    ])
+    expect(task2.project).toEqual({
+      id: expect.any(String),
+      name: 'project'
+    })
+  })
+
   it.concurrent('POST /task - error missig fields', async () => {
     const res = await request(app).post('/api/v1/task').send({})
     expect(res.status).toBe(422)
     expect(res.body).toEqual({
       error: true,
-      name: 'Invalida Task',
+      name: 'Invalid Task',
       issues: [
         {
           code: 'invalid_type',
@@ -81,6 +111,13 @@ describe('Task', () => {
         },
         {
           code: 'invalid_type',
+          expected: 'object',
+          received: 'undefined',
+          path: ['pomodoro'],
+          message: 'Pomodoro is required'
+        },
+        {
+          code: 'invalid_type',
           expected: 'array',
           received: 'undefined',
           path: ['labels'],
@@ -91,9 +128,10 @@ describe('Task', () => {
         'Title is required',
         'Description is required',
         'Order is required',
+        'Pomodoro is required',
         'Labels is required'
       ],
-      message: 'Invalida Task'
+      message: 'Invalid Task'
     })
   })
   it.concurrent('POST /task - error invalid types', async () => {
@@ -111,7 +149,7 @@ describe('Task', () => {
     expect(res.status).toBe(422)
     expect(res.body).toEqual({
       error: true,
-      name: 'Invalida Task',
+      name: 'Invalid Task',
       issues: [
         {
           code: 'invalid_type',
@@ -143,6 +181,14 @@ describe('Task', () => {
         },
         {
           code: 'invalid_type',
+          expected: 'object',
+          message: "Invalid type on On 'pomodoro'. expected object, received array",
+          path: ['pomodoro'],
+          received: 'array'
+        },
+
+        {
+          code: 'invalid_type',
           expected: 'array',
           received: 'object',
           path: ['labels'],
@@ -154,9 +200,10 @@ describe('Task', () => {
         "Invalid type on On 'description'. expected string, received number",
         "Invalid type on On 'order'. expected number, received string",
         "Invalid type on On 'project.name'. expected string, received object",
+        "Invalid type on On 'pomodoro'. expected object, received array",
         "Invalid type on On 'labels'. expected array, received object"
       ],
-      message: 'Invalida Task'
+      message: 'Invalid Task'
     })
   })
   it.concurrent('POST /task - error invalid uuid', async () => {
@@ -199,14 +246,37 @@ describe('Task', () => {
       message: 'User with id: c2d7e0e0-4e0a-4b7a-8c7e-2a9a9b0a3b1b not found'
     })
   })
-  it.concurrent('GET /task', async () => {
-    const res = await request(app).get('/api/v1/task')
-    expect(res.status).toBe(200)
+
+  it.concurrent('POST /task/bulk', async () => {
+    const res = await request(app)
+      .post('/api/v1/task/bulk')
+      .send({
+        data: [
+          {
+            task: {
+              ...testTask,
+              title: 'title1'
+            },
+            userId: TEST_ID
+          },
+          {
+            task: {
+              ...testTask,
+              title: 'title2',
+              project: { name: 'project' },
+              labels: [{ name: 'label' }, { id: TEST_ID, name: 'label2' }]
+            },
+            userId: TEST_ID
+          }
+        ]
+      })
+    // console.log(res.body)
+    expect(res.status).toBe(201)
     const { tasks } = res.body
     expect(tasks).toHaveLength(2)
     const [task, task2] = tasks
     expect(task).toHaveProperty('id')
-    expect(task.title).toBe(testTask.title)
+    expect(task.title).toBe('title1')
     expect(task.isCompleted).toBe(false)
     expect(task.description).toBe('description')
     expect(task.userId).toBe(TEST_ID)
@@ -215,7 +285,7 @@ describe('Task', () => {
 
     // second task
     expect(task2).toHaveProperty('id')
-    expect(task2.title).toBe(testTask.title)
+    expect(task2.title).toBe('title2')
     expect(task2.isCompleted).toBe(false)
     expect(task2.description).toBe('description')
     expect(task2.userId).toBe(TEST_ID)
