@@ -248,7 +248,7 @@ describe('task', () => {
           userId: TEST_ID
         })
       ).rejects.toThrowError(
-        '["Title is required","Description is required","Order is required","Labels is required"]'
+        '["Title is required","Description is required","Order is required","Pomodoro is required","Labels is required"]'
       )
     })
     it.concurrent('Don`t send correct types ', async () => {
@@ -275,7 +275,7 @@ describe('task', () => {
         expect(error).toBeInstanceOf(ValidationError)
         const e = error as ValidationError
         expect(e.message).toBe(
-          '["Invalid type on On \'title\'. expected string, received number","Invalid type on On \'description\'. expected string, received number","Invalid type on On \'order\'. expected number, received string","Invalid project id","Invalid type on On \'project.name\'. expected string, received object","Invalid type on On \'labels\'. expected array, received string"]'
+          '["Invalid type on On \'title\'. expected string, received number","Invalid type on On \'description\'. expected string, received number","Invalid type on On \'order\'. expected number, received string","Invalid project id","Invalid type on On \'project.name\'. expected string, received object","Invalid type on On \'pomodoro\'. expected object, received string","Invalid type on On \'labels\'. expected array, received string"]'
         )
       }
     })
