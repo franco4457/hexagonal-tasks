@@ -1,4 +1,11 @@
-import { type Task, TaskRepository, TaskNotFound, type TaskModel } from '@/domain/task'
+import {
+  type Task,
+  TaskRepository,
+  TaskNotFound,
+  type TaskModel,
+  type Label,
+  type Project
+} from '@/domain/task'
 import { type User } from '@/domain/user'
 import { Logger } from '@/infraestructure/logger'
 import type EventEmitter2 from 'eventemitter2'
@@ -60,5 +67,46 @@ export class InMemoryTaskRepository extends TaskRepository {
       this.tasks.push(this.mapper.toPersistence(task))
     })
     return task
+  }
+
+  async addLabel(props: { taskId: string; label: Label }): Promise<void> {
+    const taskIdx = this.tasks.findIndex((task) => task.id === props.taskId)
+    if (taskIdx === -1) {
+      throw new TaskNotFound(props.taskId)
+    }
+    this.tasks[taskIdx].labels.push({
+      id: props.label.value.id,
+      name: props.label.value.name
+    })
+  }
+
+  async removeLabel(props: { taskId: string; label: Label }): Promise<void> {
+    const taskIdx = this.tasks.findIndex((task) => task.id === props.taskId)
+    if (taskIdx === -1) {
+      throw new TaskNotFound(props.taskId)
+    }
+    this.tasks[taskIdx].labels = this.tasks[taskIdx].labels.filter(
+      (label) => label.id !== props.label.value.id
+    )
+  }
+
+  async addProject(props: { taskId: string; project: Project }): Promise<void> {
+    const taskIdx = this.tasks.findIndex((task) => task.id === props.taskId)
+    if (taskIdx === -1) {
+      throw new TaskNotFound(props.taskId)
+    }
+    const pValue = props.project.value
+    this.tasks[taskIdx].project = {
+      id: pValue.id,
+      name: pValue.name
+    }
+  }
+
+  async removeProject(props: { taskId: string; project: Project }): Promise<void> {
+    const taskIdx = this.tasks.findIndex((task) => task.id === props.taskId)
+    if (taskIdx === -1) {
+      throw new TaskNotFound(props.taskId)
+    }
+    this.tasks[taskIdx].project = null
   }
 }
