@@ -3,12 +3,15 @@ import { randomUUID } from 'node:crypto'
 import { AggregateRoot, ValidationError, isEmpty } from '../core'
 import { UserCreateEvent } from './events/user-create.event'
 import { UserFieldIsRequired } from './user.exceptions'
+import { Template, type TemplateProps } from './entities'
+import { UserAddTemplateEvent } from './events'
 
 export interface UserProps {
   name: string
   lastname: string
   username: string
   email: string
+  templates: Template[]
   password: Password
 }
 export type UserModel = Omit<UserProps, 'password'> & {
@@ -43,6 +46,18 @@ export class User extends AggregateRoot<UserProps> {
     return user
   }
 
+  addTemplate(props: TemplateProps): void {
+    const template = Template.create(props)
+    this.addEvent(
+      new UserAddTemplateEvent({
+        aggregateId: this.id,
+        name: this.props.name,
+        templateId: template.id
+      })
+    )
+    this.props.templates.push(template)
+  }
+
   public validate(): void {
     const { name, lastname, username, email, password } = this.props
     if (isEmpty(name)) throw new UserFieldIsRequired('name')
@@ -51,6 +66,9 @@ export class User extends AggregateRoot<UserProps> {
     if (isEmpty(email)) throw new UserFieldIsRequired('email')
     if (!Password.isValueObject(password)) {
       throw new ValidationError('user.password should be a Password instance')
+    }
+    if (!Array.isArray(this.props.templates)) {
+      throw new ValidationError('user.templates should be an array')
     }
   }
 }
