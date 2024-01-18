@@ -2,6 +2,7 @@ import type EventEmitter2 from 'eventemitter2'
 import { type LoggerPort, RepositoryBase } from '../core'
 import type { User, UserModel } from './user.entity'
 import { UserMapper } from './user.mapper'
+import { type Template } from './entities'
 
 export interface IUserRepository {
   getById: (id: string) => Promise<User>
@@ -24,4 +25,5 @@ export abstract class UserRepository
   abstract getByEmail(email: string): Promise<User>
   abstract getAll(): Promise<User[]>
   abstract create(user: User): Promise<User>
+  abstract getTemplatesByUserId(userId: string): Promise<Template[]>
 }
