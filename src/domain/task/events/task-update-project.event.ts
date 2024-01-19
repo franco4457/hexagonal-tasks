@@ -1,13 +1,11 @@
 import { DomainEvent, type DomainEventProps } from '@/domain/core'
 
-export class TaskUpdateProjectEvent extends DomainEvent {
+export class TaskSetProjectEvent extends DomainEvent {
   userId: string
   projectName: string
-  projectId: string
-  constructor(props: DomainEventProps<TaskUpdateProjectEvent>) {
+  constructor(props: DomainEventProps<TaskSetProjectEvent>) {
     super(props)
     this.userId = props.userId
     this.projectName = props.projectName
-    this.projectId = props.projectId
   }
 }
