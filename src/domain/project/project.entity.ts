@@ -2,9 +2,18 @@ import { randomUUID } from 'crypto'
 import { AggregateRoot, isEmpty } from '../core'
 import { ProjectCreateEvent } from './event'
 
-interface ProjectProps {
+export interface ProjectProps {
   name: string
   userId: string
+}
+
+// TODO: Fix extends Record<string, unknown> throw type error on ProjectRepository
+export interface ProjectModel extends ProjectProps, Record<string, unknown> {
+  id: string
+  name: string
+  userId: string
+  createdAt: Date
+  updatedAt: Date
 }
 
 export class Project extends AggregateRoot<ProjectProps> {
