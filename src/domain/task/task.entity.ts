@@ -34,7 +34,7 @@ export type TaskModel = Omit<TaskProps, 'isCompleted' | 'pomodoro' | 'labels' | 
   podomoro_estimated: number
   podomoro_actual: number
   labels: Array<{ id: string; name: string }>
-  project: { id: string; name: string } | null
+  project_name: string | null
   createdAt: Date
   updatedAt: Date
 }
