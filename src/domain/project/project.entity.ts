@@ -1,6 +1,6 @@
 import { randomUUID } from 'crypto'
 import { AggregateRoot, isEmpty } from '../core'
-import { ProjectCreateEvent } from './event'
+import { ProjectCreateEvent, TaskSumPomodoroCountEvent } from './event'
 
 export interface ProjectProps {
   name: string
@@ -27,6 +27,13 @@ export class Project extends AggregateRoot<ProjectProps> {
       new ProjectCreateEvent({ aggregateId: id, name: props.name, userId: props.userId })
     )
     return project
+  }
+
+  sumPomodoroCount(): void {
+    this.props.pomodoroCount += 1
+    this.addEvent(
+      new TaskSumPomodoroCountEvent({ aggregateId: this.id, actCounter: this.props.pomodoroCount })
+    )
   }
 
   public validate(): void {
