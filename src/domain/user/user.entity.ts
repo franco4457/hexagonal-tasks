@@ -47,7 +47,7 @@ export class User extends AggregateRoot<UserProps> {
     return user
   }
 
-  addTemplate(props: TemplateProps): void {
+  addTemplate(props: TemplateProps): Template {
     const template = Template.create(props)
     this.addEvent(
       new UserAddTemplateEvent({
@@ -57,6 +57,7 @@ export class User extends AggregateRoot<UserProps> {
       })
     )
     this.props.templates.push(template)
+    return template
   }
 
   removeTemplate(templateId: string): void {
