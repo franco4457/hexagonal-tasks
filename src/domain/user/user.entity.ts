@@ -4,7 +4,7 @@ import { AggregateRoot, ValidationError, isEmpty } from '../core'
 import { UserCreateEvent } from './events/user-create.event'
 import { UserFieldIsRequired } from './user.exceptions'
 import { Template, type TemplateProps } from './entities'
-import { UserAddTemplateEvent } from './events'
+import { UserAddTemplateEvent, UserRemoveTemplateEvent } from './events'
 
 export interface UserProps {
   name: string
@@ -56,6 +56,20 @@ export class User extends AggregateRoot<UserProps> {
       })
     )
     this.props.templates.push(template)
+  }
+
+  removeTemplate(templateId: string): void {
+    const idx = this.props.templates.findIndex((template) => template.id === templateId)
+    if (idx === -1) return
+    const template = this.props.templates[idx]
+    this.props.templates.splice(idx, 1)
+    this.addEvent(
+      new UserRemoveTemplateEvent({
+        aggregateId: this.id,
+        templateName: template.getProps().name,
+        templateId: template.id
+      })
+    )
   }
 
   public validate(): void {

@@ -1,3 +1,10 @@
 {
-  "conventionalCommits.scopes": ["domain", "application", "infra", "domain/project", "domain/task"]
+  "conventionalCommits.scopes": [
+    "domain",
+    "application",
+    "infra",
+    "domain/project",
+    "domain/task",
+    "domain/user"
+  ]
 }
