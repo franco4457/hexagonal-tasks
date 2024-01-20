@@ -3,14 +3,15 @@ import { randomUUID } from 'node:crypto'
 import { AggregateRoot, ValidationError, isEmpty } from '../core'
 import { UserCreateEvent } from './events/user-create.event'
 import { UserFieldIsRequired } from './user.exceptions'
-import { Template, type TemplateProps } from './entities'
-import { UserAddTemplateEvent, UserRemoveTemplateEvent } from './events'
+import { type LabelProps, Template, type TemplateProps, Label } from './entities'
+import { UserAddLabelEvent, UserAddTemplateEvent, UserRemoveTemplateEvent } from './events'
 
 export interface UserProps {
   name: string
   lastname: string
   username: string
   email: string
+  labels: Label[]
   templates: Template[]
   password: Password
 }
@@ -70,6 +71,19 @@ export class User extends AggregateRoot<UserProps> {
         templateId: template.id
       })
     )
+  }
+
+  addLabel(props: LabelProps): Label {
+    const label = Label.create(props)
+    this.props.labels.push(label)
+    this.addEvent(
+      new UserAddLabelEvent({
+        aggregateId: this.id,
+        labelId: label.id,
+        labelName: label.getProps().name
+      })
+    )
+    return label
   }
 
   public validate(): void {
