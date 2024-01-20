@@ -87,27 +87,26 @@ export class Task extends AggregateRoot<TaskProps> {
     this.props.pomodoro = newPomodoro
   }
 
-  addLabel(props: { id?: string; name: string }): void {
-    const label =
-      props.id != null ? new Label({ id: props.id, name: props.name }) : Label.create(props)
+  addLabel(props: { name: string }): void {
+    const label = new Label(props)
     this.props.labels.push(label)
     this.addEvent(
       new TaskAddLabelEvent({
         aggregateId: this.id,
-        labelId: label.value.id,
+        labelName: label.value.name,
         userId: this.props.userId
       })
     )
   }
 
-  removeLabel(labelId: string): void {
-    const labelIdx = this.props.labels.findIndex((label) => label.value.id === labelId)
+  removeLabel(labelName: string): void {
+    const labelIdx = this.props.labels.findIndex((label) => label.value.name === labelName)
     if (labelIdx === -1) return
     this.props.labels = this.props.labels.filter((_, i) => i !== labelIdx)
     this.addEvent(
       new TaskRemoveLabelEvent({
         aggregateId: this.id,
-        labelId,
+        labelName,
         userId: this.props.userId
       })
     )

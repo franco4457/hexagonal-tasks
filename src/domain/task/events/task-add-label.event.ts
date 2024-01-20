@@ -1,11 +1,11 @@
 import { DomainEvent, type DomainEventProps } from '@/domain/core'
 
 export class TaskAddLabelEvent extends DomainEvent {
-  labelId: string
+  labelName: string
   userId: string
   constructor(props: DomainEventProps<TaskAddLabelEvent>) {
     super(props)
-    this.labelId = props.labelId
+    this.labelName = props.labelName
     this.userId = props.userId
   }
 }
