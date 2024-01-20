@@ -14,7 +14,7 @@ export class TaskMapper implements Mapper<Task, TaskModel, TaskResponseDto> {
       podomoro_actual: actual,
       podomoro_estimated: estimated,
       labels,
-      project,
+      project_name: projectName,
       ...props
     } = raw
     const task = new Task({
@@ -24,8 +24,8 @@ export class TaskMapper implements Mapper<Task, TaskModel, TaskResponseDto> {
           actual,
           estimated
         }),
-        labels: labels.map((label) => new Label({ id: label.id, name: label.name })),
-        project: project != null ? new Project({ id: project.id, name: project.name }) : null,
+        labels: labels.map((label) => new Label({ name: label.name })),
+        project: projectName != null ? new Project({ name: projectName }) : null,
         isCompleted
       },
       id,
@@ -53,8 +53,8 @@ export class TaskMapper implements Mapper<Task, TaskModel, TaskResponseDto> {
       podomoro_actual: pomo.actual,
       podomoro_estimated: pomo.estimated,
       id,
-      labels: labels.map((label) => ({ id: label.value.id, name: label.value.name })),
-      project: project != null ? { id: project.value.id, name: project.value.name } : null,
+      labels: labels.map((label) => ({ name: label.value.name })),
+      project_name: project?.value.name ?? null,
       createdAt,
       updatedAt
     }
@@ -68,7 +68,7 @@ export class TaskMapper implements Mapper<Task, TaskModel, TaskResponseDto> {
     response.description = props.description
     response.isCompleted = props.isCompleted
     response.userId = props.userId
-    response.labels = props.labels.map((label) => ({ id: label.value.id, name: label.value.name }))
+    response.labels = props.labels.map((label) => ({ name: label.value.name }))
     response.project = props.project?.value ?? null
     return response
   }

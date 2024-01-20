@@ -25,7 +25,6 @@ export const TaskSchema = z.object({
     .nonnegative({ message: 'Order should be equals or greater than 0' }),
   project: z
     .object({
-      id: z.string().uuid({ message: 'Invalid project id' }).optional(),
       name: z.string()
     })
     .optional(),
@@ -43,7 +42,6 @@ export const TaskSchema = z.object({
   labels: z
     .object(
       {
-        id: z.string().uuid({ message: 'Invalid label id' }).optional(),
         name: z.string()
       },
       { required_error: 'Labels is required' }
@@ -53,8 +51,8 @@ export const TaskSchema = z.object({
 })
 
 type ValidatedProps = Omit<TaskPropsCreate, 'userId' | 'pomodoro'> & {
-  project?: { name: string; id?: string } | null
-  labels: Array<{ name: string; id?: string }>
+  project?: { name: string } | null
+  labels: Array<{ name: string }>
   pomodoro: { estimated: number }
 }
 

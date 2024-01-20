@@ -5,6 +5,6 @@ export class TaskResponseDto extends ResponseBase {
   description!: string
   isCompleted!: boolean
   userId!: string
-  labels!: Array<{ id: string; name: string }>
-  project!: { id: string; name: string } | null
+  labels!: Array<{ name: string }>
+  project!: { name: string } | null
 }
