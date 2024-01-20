@@ -4,7 +4,12 @@ import { AggregateRoot, ValidationError, isEmpty } from '../core'
 import { UserCreateEvent } from './events/user-create.event'
 import { UserFieldIsRequired } from './user.exceptions'
 import { type LabelProps, Template, type TemplateProps, Label } from './entities'
-import { UserAddLabelEvent, UserAddTemplateEvent, UserRemoveTemplateEvent } from './events'
+import {
+  UserAddLabelEvent,
+  UserAddTemplateEvent,
+  UserRemoveLabelEvent,
+  UserRemoveTemplateEvent
+} from './events'
 
 export interface UserProps {
   name: string
@@ -85,6 +90,20 @@ export class User extends AggregateRoot<UserProps> {
       })
     )
     return label
+  }
+
+  removeLabel(labelId: string): void {
+    const idx = this.props.labels.findIndex((label) => label.id === labelId)
+    if (idx === -1) return
+    const label = this.props.labels[idx]
+    this.props.labels.splice(idx, 1)
+    this.addEvent(
+      new UserRemoveLabelEvent({
+        aggregateId: this.id,
+        labelName: label.getProps().name,
+        labelId: label.id
+      })
+    )
   }
 
   public validate(): void {
