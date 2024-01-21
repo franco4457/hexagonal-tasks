@@ -3,7 +3,15 @@ import { randomUUID } from 'node:crypto'
 import { AggregateRoot, ValidationError, isEmpty } from '../core'
 import { UserCreateEvent } from './events/user-create.event'
 import { UserFieldIsRequired } from './user.exceptions'
-import { type LabelProps, Template, type TemplateProps, Label } from './entities'
+import {
+  type LabelProps,
+  Template,
+  type TemplateProps,
+  Label,
+  type LabelModel,
+  type TemplateModel
+} from './entities'
+
 import {
   UserAddLabelEvent,
   UserAddTemplateEvent,
@@ -20,9 +28,11 @@ export interface UserProps {
   templates: Template[]
   password: Password
 }
-export type UserModel = Omit<UserProps, 'password'> & {
+export type UserModel = Omit<UserProps, 'password' | 'labels' | 'templates'> & {
   id: string
   password: string
+  labels: LabelModel[]
+  templates: TemplateModel[]
   createdAt: Date
   updatedAt: Date
 }

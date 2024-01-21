@@ -5,6 +5,12 @@ export interface LabelProps {
   name: string
 }
 
+export interface LabelModel extends LabelProps {
+  id: string
+  createdAt: Date
+  updatedAt: Date
+}
+
 export class Label extends Entity<LabelProps> {
   public static create(props: LabelProps): Label {
     const id = randomUUID()
