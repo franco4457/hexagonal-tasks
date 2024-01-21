@@ -5,6 +5,7 @@
     "infra",
     "domain/project",
     "domain/task",
-    "domain/user"
+    "domain/user",
+    "domain/timer"
   ]
 }
