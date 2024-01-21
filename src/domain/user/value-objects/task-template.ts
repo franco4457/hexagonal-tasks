@@ -1,6 +1,6 @@
 import { ValidationError, ValueObject } from '@/domain/core'
 
-interface TaskTemplateProps {
+export interface TaskTemplateProps {
   name: string
   description: string
   order: number
