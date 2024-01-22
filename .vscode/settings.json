@@ -6,6 +6,7 @@
     "domain/project",
     "domain/task",
     "domain/user",
-    "domain/timer"
+    "domain/timer",
+    "domain/core"
   ]
 }
