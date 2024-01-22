@@ -35,8 +35,7 @@ export class Timer extends AggregateRoot<TimerProps> {
     timer.addEvent(
       new TimerCreateEvent({
         aggregateId: id,
-        userId: timer.props.userId,
-        fullDuration: timer.props.fullDuration
+        userId: timer.props.userId
       })
     )
     return timer
