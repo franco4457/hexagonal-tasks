@@ -6,7 +6,8 @@ import {
   Duration,
   type DurationProps,
   Stage,
-  type StageProps
+  type StageProps,
+  StageEnum
 } from './value-objects'
 import { TimerCreateEvent } from './events/timer-create.event'
 
@@ -17,7 +18,6 @@ export interface TimerProps {
   duration: Duration
   stage: Stage
   startedAt: number
-  currentDuration: number
 }
 
 export interface TimerCreateProps {
@@ -37,8 +37,7 @@ export class Timer extends AggregateRoot<TimerProps> {
         status: new Status(StatusEnum.READY),
         duration: Duration.create(props.duration ?? {}),
         stage: Stage.create(props.stage ?? {}),
-        startedAt: 0,
-        currentDuration: 0
+        startedAt: 0
       },
       id
     })
@@ -51,8 +50,18 @@ export class Timer extends AggregateRoot<TimerProps> {
     return timer
   }
 
+  get currentDuration(): number {
+    const stage = this.props.stage.currentStage
+    if (stage === StageEnum.SHORT_BREAK) {
+      return this.props.duration.shortBreak
+    } else if (stage === StageEnum.LONG_BREAK) {
+      return this.props.duration.longBreak
+    }
+    return this.props.duration.pomodoro
+  }
+
   validate(): void {
-    const { userId, status, currentDuration, startedAt, duration } = this.props
+    const { userId, status, startedAt, duration } = this.props
     if (isEmpty(userId)) {
       throw new ValidationError('Timer must have a userId.')
     }
@@ -61,9 +70,6 @@ export class Timer extends AggregateRoot<TimerProps> {
     }
     if (isEmpty(startedAt)) {
       throw new ValidationError('Timer must have a startedAt.')
-    }
-    if (isEmpty(currentDuration)) {
-      throw new ValidationError('Timer must have a currentDuration.')
     }
     if (!(duration instanceof Duration)) {
       throw new ValidationError('Timer must have a duration.')
