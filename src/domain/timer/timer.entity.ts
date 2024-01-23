@@ -9,7 +9,7 @@ import {
   type StageProps,
   StageEnum
 } from './value-objects'
-import { TimerCreateEvent } from './events/timer-create.event'
+import { TimerCreateEvent, TimerStartEvent } from './events'
 
 export interface TimerProps {
   userId: AggregateID
@@ -60,6 +60,23 @@ export class Timer extends AggregateRoot<TimerProps> {
       return this.props.duration.longBreak
     }
     return this.props.duration.pomodoro
+  }
+
+  start(): void {
+    if (this.props.status.isReady()) {
+      throw new Error('Timer is not ready to start.')
+    }
+    const now = Date.now()
+    this.props.status = new Status(StatusEnum.RUNNING)
+    this.props.startedAt = now
+    this.addEvent(
+      new TimerStartEvent({
+        aggregateId: this.id,
+        userId: this.props.userId,
+        duration: this.currentDuration,
+        staredAt: now
+      })
+    )
   }
 
   validate(): void {
