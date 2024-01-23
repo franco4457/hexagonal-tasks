@@ -18,6 +18,7 @@ export interface TimerProps {
   duration: Duration
   stage: Stage
   startedAt: number
+  pomodoroCounter: number
 }
 
 export interface TimerCreateProps {
@@ -37,7 +38,8 @@ export class Timer extends AggregateRoot<TimerProps> {
         status: new Status(StatusEnum.READY),
         duration: Duration.create(props.duration ?? {}),
         stage: Stage.create(props.stage ?? {}),
-        startedAt: 0
+        startedAt: 0,
+        pomodoroCounter: 0
       },
       id
     })
