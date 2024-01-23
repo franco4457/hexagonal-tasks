@@ -1,6 +1,13 @@
 import { randomUUID } from 'crypto'
 import { type AggregateID, AggregateRoot, isEmpty, ValidationError } from '@/domain/core'
-import { StatusEnum, Status, Duration, type DurationProps } from './value-objects'
+import {
+  StatusEnum,
+  Status,
+  Duration,
+  type DurationProps,
+  Stage,
+  type StageProps
+} from './value-objects'
 import { TimerCreateEvent } from './events/timer-create.event'
 
 export interface TimerProps {
@@ -8,6 +15,7 @@ export interface TimerProps {
   currentTaskId: AggregateID | null
   status: Status
   duration: Duration
+  stage: Stage
   startedAt: number
   currentDuration: number
 }
@@ -16,6 +24,7 @@ export interface TimerCreateProps {
   userId: AggregateID
   fullDuration?: number
   duration?: Partial<DurationProps>
+  stage?: Partial<StageProps>
 }
 
 export class Timer extends AggregateRoot<TimerProps> {
@@ -27,6 +36,7 @@ export class Timer extends AggregateRoot<TimerProps> {
         currentTaskId: null,
         status: new Status(StatusEnum.READY),
         duration: Duration.create(props.duration ?? {}),
+        stage: Stage.create(props.stage ?? {}),
         startedAt: 0,
         currentDuration: 0
       },
