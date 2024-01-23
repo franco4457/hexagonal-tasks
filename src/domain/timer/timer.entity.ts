@@ -9,7 +9,7 @@ import {
   type StageProps,
   StageEnum
 } from './value-objects'
-import { TimerCreateEvent, TimerStartEvent } from './events'
+import { TimerCreateEvent, TimerStartEvent, TimerFinishEvent } from './events'
 
 export interface TimerProps {
   userId: AggregateID
@@ -77,6 +77,52 @@ export class Timer extends AggregateRoot<TimerProps> {
         staredAt: now
       })
     )
+  }
+
+  finish(): void {
+    if (!this.props.status.isRunning()) {
+      throw new Error('Timer is not running.')
+    }
+    this.props.status = new Status(StatusEnum.READY)
+    const prev = this.props.stage.currentStage
+    this.props.startedAt = 0
+    this.updateCounter()
+    this.updateStage()
+    this.addEvent(
+      new TimerFinishEvent({
+        aggregateId: this.id,
+        userId: this.props.userId,
+        currentTaskId: this.props.currentTaskId,
+        pomodoroCounter: this.props.pomodoroCounter,
+        prevStage: prev,
+        nextStage: this.props.stage.currentStage
+      })
+    )
+  }
+
+  private updateCounter(): void {
+    if (this.props.stage.currentStage === StageEnum.POMODORO) {
+      this.props.pomodoroCounter++
+    }
+  }
+
+  private updateStage(): void {
+    const {
+      stage: { currentStage, stageInterval }
+    } = this.props
+    if (currentStage !== StageEnum.POMODORO) {
+      this.props.stage = new Stage({
+        stageInterval,
+        currentStage: StageEnum.POMODORO
+      })
+    } else {
+      const { pomodoroCounter } = this.props
+      const isLongBreak = pomodoroCounter % stageInterval === 0
+      this.props.stage = new Stage({
+        stageInterval,
+        currentStage: isLongBreak ? StageEnum.LONG_BREAK : StageEnum.SHORT_BREAK
+      })
+    }
   }
 
   validate(): void {
