@@ -9,7 +9,13 @@ import {
   type StageProps,
   StageEnum
 } from './value-objects'
-import { TimerCreateEvent, TimerStartEvent, TimerFinishEvent, TimerStopEvent } from './events'
+import {
+  TimerCreateEvent,
+  TimerStartEvent,
+  TimerFinishEvent,
+  TimerStopEvent,
+  TimerResumeEvent
+} from './events'
 
 export interface TimerProps {
   userId: AggregateID
@@ -95,6 +101,24 @@ export class Timer extends AggregateRoot<TimerProps> {
         userId: this.props.userId,
         stage: this.props.stage.currentStage,
         stoppedAt: now
+      })
+    )
+  }
+
+  resume(): void {
+    if (!this.props.status.isPaused()) {
+      throw new Error('Timer is not paused.')
+    }
+    const now = Date.now()
+    this.props.status = new Status(StatusEnum.RUNNING)
+    this.props.startedAt = now
+    this.addEvent(
+      new TimerResumeEvent({
+        aggregateId: this.id,
+        userId: this.props.userId,
+        duration: this.currentDuration - (this.props.stoppedAt - this.props.startedAt),
+        staredAt: now,
+        stoppedAt: this.props.stoppedAt
       })
     )
   }
