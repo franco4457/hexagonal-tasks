@@ -1,5 +1,5 @@
 import { randomUUID } from 'crypto'
-import { AggregateRoot, isEmpty } from '../core'
+import { AggregateRoot, ValidationError, isEmpty } from '../core'
 import { ProjectCreateEvent, TaskSumPomodoroCountEvent } from './event'
 
 export interface ProjectProps {
@@ -39,13 +39,13 @@ export class Project extends AggregateRoot<ProjectProps> {
   public validate(): void {
     const { name, userId, pomodoroCount } = this.props
     if (isEmpty(name)) {
-      throw new Error('Project name must be at least 3 characters long')
+      throw new ValidationError('Project name must be at least 3 characters long')
     }
     if (isEmpty(userId)) {
-      throw new Error('Project userId must be at least 3 characters long')
+      throw new ValidationError('Project userId must be at least 3 characters long')
     }
     if (pomodoroCount < 0) {
-      throw new Error('Project pomodoroCount must be greater than 0')
+      throw new ValidationError('Project pomodoroCount must be greater than 0')
     }
   }
 }
