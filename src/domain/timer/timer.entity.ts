@@ -9,7 +9,7 @@ import {
   type StageProps,
   StageEnum
 } from './value-objects'
-import { TimerCreateEvent, TimerStartEvent, TimerFinishEvent } from './events'
+import { TimerCreateEvent, TimerStartEvent, TimerFinishEvent, TimerStopEvent } from './events'
 
 export interface TimerProps {
   userId: AggregateID
@@ -18,6 +18,7 @@ export interface TimerProps {
   duration: Duration
   stage: Stage
   startedAt: number
+  stoppedAt: number
   pomodoroCounter: number
 }
 
@@ -39,6 +40,7 @@ export class Timer extends AggregateRoot<TimerProps> {
         duration: Duration.create(props.duration ?? {}),
         stage: Stage.create(props.stage ?? {}),
         startedAt: 0,
+        stoppedAt: 0,
         pomodoroCounter: 0
       },
       id
@@ -69,12 +71,30 @@ export class Timer extends AggregateRoot<TimerProps> {
     const now = Date.now()
     this.props.status = new Status(StatusEnum.RUNNING)
     this.props.startedAt = now
+    this.props.stoppedAt = 0
     this.addEvent(
       new TimerStartEvent({
         aggregateId: this.id,
         userId: this.props.userId,
         duration: this.currentDuration,
         staredAt: now
+      })
+    )
+  }
+
+  stop(): void {
+    if (!this.props.status.isRunning()) {
+      throw new Error('Timer is not running.')
+    }
+    const now = Date.now()
+    this.props.status = new Status(StatusEnum.PAUSED)
+    this.props.stoppedAt = now
+    this.addEvent(
+      new TimerStopEvent({
+        aggregateId: this.id,
+        userId: this.props.userId,
+        stage: this.props.stage.currentStage,
+        stoppedAt: now
       })
     )
   }
