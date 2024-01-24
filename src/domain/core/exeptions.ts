@@ -48,3 +48,9 @@ export class IsRequired<T extends string> extends ValidationError {
     super(`${field} is required`)
   }
 }
+
+export class Unauthorized extends DomainError {
+  constructor(message: string) {
+    super(message, { name: 'Unauthorized', statusCode: 401 })
+  }
+}
