@@ -8,7 +8,6 @@ export interface ProjectProps {
   pomodoroCount: number
 }
 
-// TODO: Fix extends Record<string, unknown> throw type error on ProjectRepository
 export interface ProjectModel extends ProjectProps, Record<string, unknown> {
   id: string
   pomodoroCount: number
@@ -18,7 +17,7 @@ export interface ProjectModel extends ProjectProps, Record<string, unknown> {
   updatedAt: Date
 }
 
-type CreateProjectProps = Omit<ProjectProps, 'pomodoroCount'>
+export type CreateProjectProps = Omit<ProjectProps, 'pomodoroCount'>
 export class Project extends AggregateRoot<ProjectProps> {
   public static create(props: CreateProjectProps): Project {
     const id = randomUUID()

@@ -1,5 +1,5 @@
 import { z } from 'zod'
-import { type ProjectProps } from './project.entity'
+import { type CreateProjectProps, type ProjectProps } from './project.entity'
 import { customErrorMap } from '../core'
 import { InvalidProject } from './project.exceptions'
 
@@ -15,9 +15,25 @@ export const projectSchema = z.object({
   pomodoroCount: z.number().nonnegative()
 })
 
-export const validateProject = (project: unknown): ProjectProps => {
+export const validateProject = async (project: unknown): Promise<ProjectProps> => {
   try {
-    const result = projectSchema.parse(project, { errorMap: customErrorMap })
+    const result = await projectSchema
+      .omit({ id: true })
+      .parseAsync(project, { errorMap: customErrorMap })
+    return result
+  } catch (error) {
+    if (error instanceof z.ZodError) {
+      throw new InvalidProject(error.issues)
+    }
+    throw new InvalidProject()
+  }
+}
+
+export const validateCreateProject = async (project: unknown): Promise<CreateProjectProps> => {
+  try {
+    const result = await projectSchema
+      .omit({ id: true, pomodoroCount: true })
+      .parseAsync(project, { errorMap: customErrorMap })
     return result
   } catch (error) {
     if (error instanceof z.ZodError) {
