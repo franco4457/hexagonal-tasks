@@ -5,7 +5,11 @@ export enum StatusEnum {
   RUNNING = 'running',
   READY = 'ready'
 }
-
+const statusValues: Record<StatusEnum, keyof typeof StatusEnum> = {
+  [StatusEnum.PAUSED]: 'PAUSED',
+  [StatusEnum.RUNNING]: 'RUNNING',
+  [StatusEnum.READY]: 'READY'
+}
 export class Status extends ValueObject<StatusEnum> {
   public static create(): Status {
     const status = new Status(StatusEnum.READY)
@@ -22,6 +26,10 @@ export class Status extends ValueObject<StatusEnum> {
 
   isReady(): boolean {
     return this.value === StatusEnum.READY
+  }
+
+  getStatusKey(): keyof typeof StatusEnum {
+    return statusValues[this.value]
   }
 
   protected validate(value: any): void {

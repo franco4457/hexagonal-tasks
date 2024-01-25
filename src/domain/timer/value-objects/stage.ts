@@ -5,6 +5,11 @@ export enum StageEnum {
   LONG_BREAK = 'long_break',
   POMODORO = 'pomodoro'
 }
+const stageEnumKeys: Record<StageEnum, keyof typeof StageEnum> = {
+  [StageEnum.SHORT_BREAK]: 'SHORT_BREAK',
+  [StageEnum.LONG_BREAK]: 'LONG_BREAK',
+  [StageEnum.POMODORO]: 'POMODORO'
+}
 
 export interface StageProps {
   stageInterval: number
@@ -25,6 +30,10 @@ export class Stage extends ValueObject<StageProps> {
 
   get currentStage(): StageEnum {
     return this.value.currentStage
+  }
+
+  getCurrentStageKey(): keyof typeof StageEnum {
+    return stageEnumKeys[this.currentStage]
   }
 
   protected validate(value: StageProps): void {
