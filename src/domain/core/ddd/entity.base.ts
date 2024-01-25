@@ -39,19 +39,19 @@ export abstract class Entity<EntityProps> {
     this._id = id
   }
 
-  getCreatedAt(): Date {
+  get createdAt(): Date {
     return this._createdAt
   }
 
-  getUpdatedAt(): Date {
+  get updatedAt(): Date {
     return this._updatedAt
   }
 
   getProps(): EntityProps & BaseEntityProps {
     const propsCopy = {
       id: this._id,
-      createdAt: this.getCreatedAt(),
-      updatedAt: this.getUpdatedAt(),
+      createdAt: this.createdAt,
+      updatedAt: this.updatedAt,
       ...this.props
     }
     return Object.freeze(propsCopy)
