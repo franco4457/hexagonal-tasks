@@ -1,5 +1,7 @@
-import { RepositoryBase } from '../core'
+import type EventEmitter2 from 'eventemitter2'
+import { type LoggerPort, RepositoryBase } from '@/domain/core'
 import { type ProjectModel, type Project } from './project.entity'
+import { ProjectMapper } from './project.mapper'
 
 export interface IProjectRepository {
   create: (project: Project) => Promise<void>
@@ -12,6 +14,10 @@ export abstract class ProjectRepository
   extends RepositoryBase<Project, ProjectModel>
   implements IProjectRepository
 {
+  readonly repositoryName = 'ProjectRepository'
+  constructor(props: { logger: LoggerPort; eventEmitter: EventEmitter2 }) {
+    super({ ...props, mapper: new ProjectMapper() })
+  }
   abstract create(project: Project): Promise<void>
   abstract delete(id: Project['id']): Promise<void>
   abstract getById(id: Project['id']): Promise<Project>
