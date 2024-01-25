@@ -35,6 +35,18 @@ export interface TimerCreateProps {
   stage?: Partial<StageProps>
 }
 
+export type TimerModel = Omit<TimerProps, 'status' | 'duration' | 'stage'> & {
+  id: string
+  status: keyof typeof StatusEnum
+  duration: DurationProps
+  stage: {
+    stageInterval: number
+    currentStage: keyof typeof StageEnum
+  }
+  createdAt: Date
+  updatedAt: Date
+}
+
 export class Timer extends AggregateRoot<TimerProps> {
   public static create(props: TimerCreateProps): Timer {
     const id = randomUUID()
