@@ -1,5 +1,5 @@
 import z from 'zod'
-import { type UserPropsCreate } from './user.entity'
+import type { UserPropsCreate } from './user.entity'
 import { customErrorMap } from '../core'
 import { InvalidUser } from './user.exceptions'
 import { passSchema } from './value-objects'
@@ -32,7 +32,9 @@ export const UserSchema = z.object({
   password: passSchema
 })
 
-export const validateUser = async (user: unknown): Promise<UserPropsCreate> => {
+type ValidatedUser = Omit<UserPropsCreate, 'password'> & { password: string }
+
+export const validateUser = async (user: unknown): Promise<ValidatedUser> => {
   try {
     const result = await UserSchema.omit({ id: true }).parseAsync(user, {
       errorMap: customErrorMap

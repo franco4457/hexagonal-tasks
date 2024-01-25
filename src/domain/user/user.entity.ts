@@ -41,13 +41,13 @@ export type UserPropsLoginInput = Pick<UserProps, 'email' | 'username'> & {
   password: string
 }
 
-export type UserPropsCreate = Pick<UserProps, 'name' | 'lastname'> & UserPropsLoginInput
+export type UserPropsCreate = Omit<UserProps, 'labels' | 'templates'>
 
 export class User extends AggregateRoot<UserProps> {
-  static create(props: UserProps): User {
+  static create(props: UserPropsCreate): User {
     const id = randomUUID()
     const user = new User({
-      props,
+      props: { ...props, labels: [], templates: [] },
       id
     })
 
