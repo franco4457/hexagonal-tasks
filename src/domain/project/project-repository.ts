@@ -8,6 +8,7 @@ export interface IProjectRepository {
   delete: (id: Project['id']) => Promise<void>
   getById: (id: Project['id']) => Promise<Project>
   getByUserId: (userId: string) => Promise<Project[]>
+  getByNameAndUserId: (query: { name: string; userId: string }) => Promise<Project>
   sumPomodoroCount: (id: Project['id']) => Promise<void>
 }
 
@@ -23,6 +24,7 @@ export abstract class ProjectRepository
   abstract delete(id: Project['id']): Promise<void>
   abstract getById(id: Project['id']): Promise<Project>
   abstract getByUserId(userId: string): Promise<Project[]>
+  abstract getByNameAndUserId(query: { name: string; userId: string }): Promise<Project>
 
   abstract sumPomodoroCount(id: Project['id']): Promise<void>
 }
