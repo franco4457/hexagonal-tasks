@@ -5,6 +5,8 @@ const baseProps = {
   name: 'test',
   lastname: 'test',
   username: 'test',
+  templates: [],
+  labels: [],
   email: 'test@email.com'
 }
 
@@ -21,8 +23,8 @@ describe.concurrent('User Domain', () => {
     })
     expect(user).toBeInstanceOf(User)
     expect(user.id).toBe('c2d7e0e0-4e0a-4b7a-8c7e-2a9a9b0a3b1a')
-    expect(user.getCreatedAt()).toBeInstanceOf(Date)
-    expect(user.getUpdatedAt()).toBeInstanceOf(Date)
+    expect(user.createdAt).toBeInstanceOf(Date)
+    expect(user.updatedAt).toBeInstanceOf(Date)
   })
   it.concurrent('should create a user intance with create method', async () => {
     const pass = await Password.create('Test1234')
@@ -33,9 +35,9 @@ describe.concurrent('User Domain', () => {
     const user = User.create(props)
     expect(user).toBeInstanceOf(User)
     expect(user.id).toBeTypeOf('string')
-    expect(user.getCreatedAt()).toBeInstanceOf(Date)
-    expect(user.getUpdatedAt()).toBeInstanceOf(Date)
-    const now = user.getCreatedAt()
+    expect(user.createdAt).toBeInstanceOf(Date)
+    expect(user.updatedAt).toBeInstanceOf(Date)
+    const now = user.createdAt
     expect(user.getProps()).toStrictEqual({ ...props, createdAt: now, updatedAt: now, id: user.id })
   })
   it.concurrent('should be add event on create', async () => {
