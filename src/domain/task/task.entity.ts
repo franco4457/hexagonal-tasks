@@ -81,6 +81,8 @@ export class Task extends AggregateRoot<TaskProps> {
     this.addEvent(
       new TaskUpdateActualPomodoroEvent({
         aggregateId: this.id,
+        projectName: this.props.project?.value.name ?? null,
+        userId: this.props.userId,
         ...newPomodoro.value
       })
     )
