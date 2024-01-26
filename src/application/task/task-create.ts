@@ -33,7 +33,7 @@ export class CreateTask {
             })
           })
           if (taskInp.project != null) {
-            newTask.updateProject(taskInp.project)
+            newTask.setProject(taskInp.project)
           }
           taskInp.labels.forEach((label) => {
             newTask.addLabel(label)
@@ -53,7 +53,7 @@ export class CreateTask {
         pomodoro: new Pomodoro({ estimated: task.pomodoro.estimated, actual: 0 })
       })
       if (taskInp.project != null) {
-        newTask.updateProject(taskInp.project)
+        newTask.setProject(taskInp.project)
       }
       taskInp.labels.forEach((label) => {
         newTask.addLabel(label)

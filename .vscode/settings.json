@@ -9,6 +9,7 @@
     "domain/timer",
     "domain/core",
     "infra/express",
-    "application/project"
+    "application/project",
+    "application/task"
   ]
 }
