@@ -1,3 +1,4 @@
+export * from './entities'
 export * from './events'
 export * from './user-repository'
 export * from './user.dto'
