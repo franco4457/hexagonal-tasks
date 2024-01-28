@@ -13,11 +13,11 @@ export interface IUserRepository {
   addTemplate: (props: { userId: string; template: Template }) => Promise<Template>
   getTemplatesByUserId: (userId: string) => Promise<Template[]>
   updateTemplate: (props: { template: Template }) => Promise<Template>
-  removeTemplate: (props: { templateId: Template['id'] }) => Promise<void>
+  removeTemplate: (props: { userId: User['id']; templateId: Template['id'] }) => Promise<void>
 
   addLabelToUser: (props: { userId: string; label: Label }) => Promise<Label>
   getLabelsByUserId: (userId: string) => Promise<Label[]>
-  removeLabel: (props: { labelId: Label['id'] }) => Promise<void>
+  removeLabel: (props: { userId: User['id']; labelId: Label['id'] }) => Promise<void>
 }
 
 export abstract class UserRepository
@@ -39,10 +39,10 @@ export abstract class UserRepository
   abstract addTemplate(props: { userId: string; template: Template }): Promise<Template>
   abstract getTemplatesByUserId(userId: string): Promise<Template[]>
   abstract updateTemplate(props: { template: Template }): Promise<Template>
-  abstract removeTemplate(props: { templateId: Template['id'] }): Promise<void>
+  abstract removeTemplate(props: { userId: User['id']; templateId: Template['id'] }): Promise<void>
 
   // Labels
   abstract addLabelToUser(props: { userId: string; label: Label }): Promise<Label>
   abstract getLabelsByUserId(userId: string): Promise<Label[]>
-  abstract removeLabel(props: { labelId: Label['id'] }): Promise<void>
+  abstract removeLabel(props: { userId: User['id']; labelId: Label['id'] }): Promise<void>
 }
