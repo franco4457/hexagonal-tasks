@@ -1,4 +1,4 @@
-export * from './assign-task-when-is.created.event-handler'
+export * from './handlers'
 export * from './user-add-label'
 export * from './user-add-template'
 export * from './user-login'
