@@ -1,4 +1,6 @@
 export * from './list-tasks'
 export * from './task-add-label'
+export * from './task-add-project'
 export * from './task-create'
 export * from './task-remove-label'
+export * from './task-remove-project'
