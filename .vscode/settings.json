@@ -10,6 +10,7 @@
     "domain/core",
     "infra/express",
     "application/project",
-    "application/task"
+    "application/task",
+    "application/user"
   ]
 }
