@@ -1,3 +1,5 @@
 export * from './assign-task-when-is.created.event-handler'
+export * from './user-add-label'
 export * from './user-login'
 export * from './user-register'
+export * from './user-remove-label'
