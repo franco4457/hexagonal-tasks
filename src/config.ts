@@ -8,3 +8,5 @@ export const {
   DIALECT = 'memory',
   DB_URL = ''
 } = process.env
+
+export const JWT_SECRET = NODE_ENV === 'test' ? 'test' : (process.env.JWT_SECRET as string)
