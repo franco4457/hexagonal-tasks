@@ -1,8 +1,8 @@
-import { Password } from './value-objects'
+import { Password, type TaskTemplate } from './value-objects'
 import { randomUUID } from 'node:crypto'
 import { AggregateRoot, ValidationError, isEmpty } from '../core'
 import { UserCreateEvent } from './events/user-create.event'
-import { UserFieldIsRequired } from './user.exceptions'
+import { UserFieldIsRequired, UserPropNotFound } from './user.exceptions'
 import {
   type LabelProps,
   Template,
@@ -16,7 +16,8 @@ import {
   UserAddLabelEvent,
   UserAddTemplateEvent,
   UserRemoveLabelEvent,
-  UserRemoveTemplateEvent
+  UserRemoveTemplateEvent,
+  UserUpdateTemplateEvent
 } from './events'
 
 export interface UserProps {
@@ -60,6 +61,33 @@ export class User extends AggregateRoot<UserProps> {
     )
 
     return user
+  }
+
+  updateTemplate(props: {
+    templateId: string
+    newProps: {
+      name: string
+      tasks: TaskTemplate[]
+    }
+  }): Template {
+    const tempIdx = this.props.templates.findIndex((template) => template.id === props.templateId)
+    if (tempIdx === -1) {
+      throw new UserPropNotFound<'templates'>(props.templateId, 'templates[number].id')
+    }
+    const oldTemp = this.props.templates[tempIdx]
+    const newTemplate = new Template({
+      ...oldTemp.getProps(),
+      props: props.newProps
+    })
+    this.props.templates[tempIdx] = newTemplate
+    this.addEvent(
+      new UserUpdateTemplateEvent({
+        aggregateId: this.id,
+        templateId: newTemplate.id,
+        name: newTemplate.getProps().name
+      })
+    )
+    return newTemplate
   }
 
   addTemplate(props: TemplateProps): Template {
