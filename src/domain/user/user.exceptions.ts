@@ -7,6 +7,17 @@ export class UserNotFound extends NotFound {
   }
 }
 
+type PropField<T extends keyof User['props']> = User['props'][T] extends Array<infer U>
+  ? // TODO: add support for Enitities and VO props
+    `${T}[number].${Extract<keyof U, string>}`
+  : `${T}`
+
+export class UserPropNotFound<T extends keyof User['props']> extends NotFound {
+  constructor(value: string, field: PropField<T>) {
+    super(`User with ${field}: ${value} not found`)
+  }
+}
+
 export class UserAlreadyExist extends AlreadyExist {
   constructor(value: string, field: keyof User | keyof User['props'] = 'email') {
     super(`User with ${field}: ${value} already exist`)
