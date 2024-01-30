@@ -11,6 +11,7 @@
     "infra/express",
     "application/project",
     "application/task",
-    "application/user"
+    "application/user",
+    "application/timer"
   ]
 }
