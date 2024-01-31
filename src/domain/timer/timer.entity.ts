@@ -83,7 +83,8 @@ export class Timer extends AggregateRoot<TimerProps> {
   }
 
   start(): void {
-    if (this.props.status.isReady()) {
+    if (!this.props.status.isReady()) {
+      // TODO: add a custom error
       throw new Error('Timer is not ready to start.')
     }
     const now = Date.now()
@@ -102,6 +103,7 @@ export class Timer extends AggregateRoot<TimerProps> {
 
   stop(): void {
     if (!this.props.status.isRunning()) {
+      // TODO: add a custom error
       throw new Error('Timer is not running.')
     }
     const now = Date.now()
@@ -119,6 +121,7 @@ export class Timer extends AggregateRoot<TimerProps> {
 
   resume(): void {
     if (!this.props.status.isPaused()) {
+      // TODO: add a custom error
       throw new Error('Timer is not paused.')
     }
     const now = Date.now()
@@ -136,6 +139,7 @@ export class Timer extends AggregateRoot<TimerProps> {
   }
 
   finish(): void {
+    // TODO: add a custom error
     if (!this.props.status.isRunning()) {
       throw new Error('Timer is not running.')
     }
