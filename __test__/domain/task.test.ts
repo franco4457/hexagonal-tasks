@@ -14,7 +14,7 @@ import {
   TaskRemoveProjectEvent,
   TaskUpdateActualPomodoroEvent,
   TaskUpdateEstimatedPomodoroEvent,
-  TaskUpdateProjectEvent
+  TaskSetProjectEvent
 } from '@/domain/task'
 
 const baseTask = {
@@ -36,17 +36,17 @@ describe.concurrent('Task Domain', () => {
     })
     expect(task).toBeInstanceOf(Task)
     expect(task.id).toBe(TEST_ID)
-    expect(task.getCreatedAt()).toBeInstanceOf(Date)
-    expect(task.getUpdatedAt()).toBeInstanceOf(Date)
+    expect(task.createdAt).toBeInstanceOf(Date)
+    expect(task.updatedAt).toBeInstanceOf(Date)
   })
   it.concurrent('Should create a task intance with create method', async () => {
     const props = baseTask
     const task = Task.create(props)
     expect(task).toBeInstanceOf(Task)
     expect(task.id).toBeTypeOf('string')
-    expect(task.getCreatedAt()).toBeInstanceOf(Date)
-    expect(task.getUpdatedAt()).toBeInstanceOf(Date)
-    const now = task.getCreatedAt()
+    expect(task.createdAt).toBeInstanceOf(Date)
+    expect(task.updatedAt).toBeInstanceOf(Date)
+    const now = task.createdAt
     expect(task.getProps()).toStrictEqual({ ...props, createdAt: now, updatedAt: now, id: task.id })
   })
 
@@ -124,28 +124,25 @@ describe.concurrent('Task Domain', () => {
       })
 
       task.addLabel({ name: 'test' })
-      task.addLabel({ id: TEST_ID, name: 'test2' })
+      task.addLabel({ name: 'test2' })
       const labels = task.getProps().labels
       expect(labels).toHaveLength(2)
       expect(labels[0]).toBeInstanceOf(Label)
       expect(labels[0].value.name).toBe('test')
       expect(labels[1]).toBeInstanceOf(Label)
       expect(labels[1].value.name).toBe('test2')
-      expect(labels[1].value.id).toBe(TEST_ID)
       const events = task.domainEvents
       expect(events).toHaveLength(2)
       const [e, e2] = events as TaskAddLabelEvent[]
       expect(e).toBeInstanceOf(TaskAddLabelEvent)
       expect(e.aggregateId).toBe(task.id)
-      expect(e.labelId).toBeTypeOf('string')
       expect(e.userId).toBe(task.getProps().userId)
       expect(e2).toBeInstanceOf(TaskAddLabelEvent)
       expect(e2.aggregateId).toBe(task.id)
-      expect(e2.labelId).toBe(TEST_ID)
       expect(e2.userId).toBe(task.getProps().userId)
     })
     it.concurrent('Remove label', async () => {
-      const label = Label.create({ name: 'test' })
+      const label = new Label({ name: 'test' })
       const props = {
         ...baseTask,
         labels: [label]
@@ -154,7 +151,7 @@ describe.concurrent('Task Domain', () => {
         id: TEST_ID,
         props
       })
-      task.removeLabel(label.value.id)
+      task.removeLabel(label.value.name)
       const labels = task.getProps().labels
       expect(labels).toHaveLength(0)
       const events = task.domainEvents
@@ -162,30 +159,28 @@ describe.concurrent('Task Domain', () => {
       const e = events[0] as TaskRemoveLabelEvent
       expect(e).toBeInstanceOf(TaskRemoveLabelEvent)
       expect(e.aggregateId).toBe(task.id)
-      expect(e.labelId).toBe(label.value.id)
       expect(e.userId).toBe(task.getProps().userId)
     })
-    it.concurrent('Update project adding', async () => {
+    it.concurrent('Set project adding', async () => {
       const task = new Task({
         id: TEST_ID,
         props: baseTask
       })
       expect(task.getProps().project).toBe(null)
-      task.updateProject({ name: 'test' })
+      task.setProject({ name: 'test' })
       const project = task.getProps().project
       expect(project).toBeInstanceOf(Project)
       expect(project?.value.name).toBe('test')
       const events = task.domainEvents
       expect(events).toHaveLength(1)
-      const e = events[0] as TaskUpdateProjectEvent
-      expect(e).toBeInstanceOf(TaskUpdateProjectEvent)
+      const e = events[0] as TaskSetProjectEvent
+      expect(e).toBeInstanceOf(TaskSetProjectEvent)
       expect(e.aggregateId).toBe(task.id)
-      expect(e.projectId).toBe(project?.value.id)
       expect(e.projectName).toBe(project?.value.name)
       expect(e.userId).toBe(task.getProps().userId)
     })
-    it.concurrent('Update project change', async () => {
-      const project = Project.create({ name: 'test' })
+    it.concurrent('Set project change', async () => {
+      const project = new Project({ name: 'test' })
       const props = {
         ...baseTask,
         project
@@ -196,13 +191,12 @@ describe.concurrent('Task Domain', () => {
       })
       expect(task.getProps().project).toBe(project)
       const project2 = Project.create({ name: 'test2' })
-      task.updateProject(project2.value)
+      task.setProject(project2.value)
       expect(project2).toBeInstanceOf(Project)
       expect(project2?.value.name).toBe('test2')
       expect(task.domainEvents).toHaveLength(1)
-      const e = task.domainEvents[0] as TaskUpdateProjectEvent
-      expect(e).toBeInstanceOf(TaskUpdateProjectEvent)
-      expect(e.projectId).toBe(project2.value.id)
+      const e = task.domainEvents[0] as TaskSetProjectEvent
+      expect(e).toBeInstanceOf(TaskSetProjectEvent)
       expect(e.projectName).toBe(project2.value.name)
       expect(e.userId).toBe(task.getProps().userId)
     })
