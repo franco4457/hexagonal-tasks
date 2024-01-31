@@ -146,6 +146,7 @@ export class Timer extends AggregateRoot<TimerProps> {
     this.props.status = new Status(StatusEnum.READY)
     const prev = this.props.stage.currentStage
     this.props.startedAt = 0
+    this.props.stoppedAt = 0
     this.updateCounter()
     this.updateStage()
     this.addEvent(
