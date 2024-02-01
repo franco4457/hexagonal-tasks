@@ -14,7 +14,8 @@ import {
   TimerStartEvent,
   TimerFinishEvent,
   TimerStopEvent,
-  TimerResumeEvent
+  TimerResumeEvent,
+  TimerChangeStageEvent
 } from './events'
 import { InvalidCurrentStage, TimerFieldRequired } from './timer.exceptions'
 
@@ -47,8 +48,6 @@ export type TimerModel = Omit<TimerProps, 'status' | 'duration' | 'stage'> & {
   createdAt: Date
   updatedAt: Date
 }
-
-// TODO: add change stage method
 export class Timer extends AggregateRoot<TimerProps> {
   public static create(props: TimerCreateProps): Timer {
     const id = randomUUID()
@@ -138,7 +137,6 @@ export class Timer extends AggregateRoot<TimerProps> {
   }
 
   finish(): void {
-    console.log(this.props.status)
     if (!this.props.status.isRunning()) {
       throw new InvalidCurrentStage('Timer is not running.')
     }
@@ -183,6 +181,45 @@ export class Timer extends AggregateRoot<TimerProps> {
         currentStage: isLongBreak ? StageEnum.LONG_BREAK : StageEnum.SHORT_BREAK
       })
     }
+  }
+
+  changeToPomodoroStage(): void {
+    if (this.props.stage.currentStage === StageEnum.POMODORO) {
+      throw new InvalidCurrentStage('Timer is already in Pomodoro stage')
+    }
+    this.changeStage(StageEnum.POMODORO)
+  }
+
+  changeToShortBreakStage(): void {
+    if (this.props.stage.currentStage === StageEnum.SHORT_BREAK) {
+      throw new InvalidCurrentStage('Timer is already in Short Break stage')
+    }
+    this.changeStage(StageEnum.SHORT_BREAK)
+  }
+
+  changeToLongBreakStage(): void {
+    if (this.props.stage.currentStage === StageEnum.LONG_BREAK) {
+      throw new InvalidCurrentStage('Timer is already in Long Break stage')
+    }
+    this.changeStage(StageEnum.LONG_BREAK)
+  }
+
+  private changeStage(stage: StageEnum): void {
+    this.addEvent(
+      new TimerChangeStageEvent({
+        aggregateId: this.id,
+        userId: this.props.userId,
+        oldStage: this.props.stage.currentStage,
+        newStage: stage.toString()
+      })
+    )
+    this.props.startedAt = 0
+    this.props.stoppedAt = 0
+    this.props.status = new Status(StatusEnum.READY)
+    this.props.stage = new Stage({
+      ...this.props.stage.value,
+      currentStage: stage
+    })
   }
 
   validate(): void {
