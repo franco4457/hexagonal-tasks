@@ -16,6 +16,7 @@ import {
   TimerStopEvent,
   TimerResumeEvent
 } from './events'
+import { InvalidCurrentStage, TimerFieldRequired } from './timer.exceptions'
 
 export interface TimerProps {
   userId: AggregateID
@@ -47,6 +48,7 @@ export type TimerModel = Omit<TimerProps, 'status' | 'duration' | 'stage'> & {
   updatedAt: Date
 }
 
+// TODO: add change stage method
 export class Timer extends AggregateRoot<TimerProps> {
   public static create(props: TimerCreateProps): Timer {
     const id = randomUUID()
@@ -84,8 +86,7 @@ export class Timer extends AggregateRoot<TimerProps> {
 
   start(): void {
     if (!this.props.status.isReady()) {
-      // TODO: add a custom error
-      throw new Error('Timer is not ready to start.')
+      throw new InvalidCurrentStage('Timer is not ready to start.')
     }
     const now = Date.now()
     this.props.status = new Status(StatusEnum.RUNNING)
@@ -103,8 +104,7 @@ export class Timer extends AggregateRoot<TimerProps> {
 
   stop(): void {
     if (!this.props.status.isRunning()) {
-      // TODO: add a custom error
-      throw new Error('Timer is not running.')
+      throw new InvalidCurrentStage('Timer is not running.')
     }
     const now = Date.now()
     this.props.status = new Status(StatusEnum.PAUSED)
@@ -121,8 +121,7 @@ export class Timer extends AggregateRoot<TimerProps> {
 
   resume(): void {
     if (!this.props.status.isPaused()) {
-      // TODO: add a custom error
-      throw new Error('Timer is not paused.')
+      throw new InvalidCurrentStage('Timer is not paused.')
     }
     const now = Date.now()
     this.props.status = new Status(StatusEnum.RUNNING)
@@ -139,9 +138,9 @@ export class Timer extends AggregateRoot<TimerProps> {
   }
 
   finish(): void {
-    // TODO: add a custom error
+    console.log(this.props.status)
     if (!this.props.status.isRunning()) {
-      throw new Error('Timer is not running.')
+      throw new InvalidCurrentStage('Timer is not running.')
     }
     this.props.status = new Status(StatusEnum.READY)
     const prev = this.props.stage.currentStage
@@ -187,18 +186,15 @@ export class Timer extends AggregateRoot<TimerProps> {
   }
 
   validate(): void {
-    const { userId, status, startedAt, duration } = this.props
-    if (isEmpty(userId)) {
-      throw new ValidationError('Timer must have a userId.')
-    }
-    if (!(status instanceof Status)) {
-      throw new ValidationError('Timer must have a status.')
-    }
-    if (isEmpty(startedAt)) {
-      throw new ValidationError('Timer must have a startedAt.')
-    }
+    const { userId, status, startedAt, duration, pomodoroCounter, stage, stoppedAt } = this.props
+    if (isEmpty(userId)) throw new TimerFieldRequired('userId')
+    if (isEmpty(startedAt)) throw new TimerFieldRequired('startedAt')
+    if (isEmpty(stoppedAt)) throw new TimerFieldRequired('stoppedAt')
+    if (isEmpty(pomodoroCounter)) throw new TimerFieldRequired('pomodoroCounter')
+    if (!(status instanceof Status)) throw new ValidationError('status must be a Status instance')
+    if (!(stage instanceof Stage)) throw new ValidationError('stage must be a Stage instance')
     if (!(duration instanceof Duration)) {
-      throw new ValidationError('Timer must have a duration.')
+      throw new ValidationError('duration must be a Duration instance')
     }
   }
 }
