@@ -6,10 +6,9 @@ export class UserNotFound extends NotFound {
     super(`User with ${field}: ${value} not found`)
   }
 }
-
+// TODO: add support for Enitities and VO props
 type PropField<T extends keyof User['props']> = User['props'][T] extends Array<infer U>
-  ? // TODO: add support for Enitities and VO props
-    `${T}[number].${Extract<keyof U, string>}`
+  ? `${T}[number].${Extract<keyof U, string>}`
   : `${T}`
 
 export class UserPropNotFound<T extends keyof User['props']> extends NotFound {
