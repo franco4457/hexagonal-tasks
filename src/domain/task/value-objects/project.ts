@@ -11,6 +11,10 @@ export class Project extends ValueObject<ProjectProps> {
     return new Project({ name })
   }
 
+  get name(): string {
+    return this.value.name
+  }
+
   public validate(value: ProjectProps): void {
     if (isEmpty(value.name)) {
       throw new ArgumentNotProvided('Project name cannot be empty')

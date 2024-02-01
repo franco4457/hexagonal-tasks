@@ -5,6 +5,10 @@ interface LabelProps {
 }
 
 export class Label extends ValueObject<LabelProps> {
+  get name(): string {
+    return this.value.name
+  }
+
   public validate(value: LabelProps): void {
     if (isEmpty(value.name)) {
       throw new ArgumentNotProvided('Label name cannot be empty')

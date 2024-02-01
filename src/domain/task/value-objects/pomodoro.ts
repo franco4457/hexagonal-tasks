@@ -9,6 +9,14 @@ export class Pomodoro extends ValueObject<PomodoroProps> {
     return new Pomodoro(props)
   }
 
+  get estimated(): number {
+    return this.value.estimated
+  }
+
+  get actual(): number {
+    return this.value.actual
+  }
+
   protected validate(props: PomodoroProps): void {
     if (props.estimated < 0) {
       throw new ValidationError('Estimated should be greater than 0')
