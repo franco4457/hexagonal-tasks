@@ -13,7 +13,7 @@ export class UserAddLabel {
     if (props.userId == null) throw new UserNotFound(props.userId)
     const label = user.addLabel(props.label)
     await this.userRepository.transaction(async () => {
-      await this.userRepository.addLabelToUser({ userId: props.userId, label })
+      await this.userRepository.addLabelToUser({ user, label })
     })
     return label
   }

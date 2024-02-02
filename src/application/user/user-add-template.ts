@@ -13,7 +13,7 @@ export class UserAddTemplateTemplate {
     const tasks = props.template.tasks.map((task) => new TaskTemplate(task))
     const template = user.addTemplate({ name: props.template.name, tasks })
     await this.userRepository.transaction(async () => {
-      await this.userRepository.addTemplate({ userId: user.id, template })
+      await this.userRepository.addTemplate({ user, template })
     })
   }
 }

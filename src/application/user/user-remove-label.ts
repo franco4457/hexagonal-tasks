@@ -13,7 +13,7 @@ export class UserRemoveLabel {
     user.removeLabel(props.labelId)
     await this.userRepository.transaction(async () => {
       await this.userRepository.removeLabel({
-        userId: props.userId,
+        user,
         labelId: props.labelId
       })
     })

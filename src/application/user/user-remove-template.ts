@@ -12,7 +12,7 @@ export class UserRemoveTemplate {
     user.removeTemplate(props.templateId)
     await this.userRepository.transaction(async () => {
       await this.userRepository.removeTemplate({
-        userId: props.userId,
+        user,
         templateId: props.templateId
       })
     })

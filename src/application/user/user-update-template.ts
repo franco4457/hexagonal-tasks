@@ -25,6 +25,7 @@ export class UserUpdateTemplate {
     })
     await this.userRepository.transaction(async () => {
       await this.userRepository.updateTemplate({
+        user,
         template: newTemplate
       })
     })
