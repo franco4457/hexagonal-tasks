@@ -13,6 +13,7 @@
     "application/task",
     "application/user",
     "application/timer",
-    "infra/user"
+    "infra/user",
+    "infra/task"
   ]
 }
