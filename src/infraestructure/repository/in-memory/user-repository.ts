@@ -12,6 +12,8 @@ export class InMemoryUserRepository extends UserRepository {
       name: 'test',
       password: '$2b$10$LW29SqaXA.1e/ruyZjyjNumC7cItPePd2guY9Eq3udPl62iep9l6u',
       username: 'tested',
+      labels: [],
+      templates: [],
       createdAt: new Date(),
       updatedAt: new Date()
     }
@@ -32,10 +34,20 @@ export class InMemoryUserRepository extends UserRepository {
     if (users != null) this.users = users
   }
 
-  async getByEmail(email: string): Promise<User> {
-    const user = this.users.find((user) => user.email === email)
-    if (user == null) throw new UserNotFound(email, 'email')
+  private userFinder({ value, key = 'id' }: { value: string; key?: keyof UserModel }): {
+    user: UserModel
+    userIndex: number
+  } {
+    const idx = this.users.findIndex((user) => user[key] === value)
+    if (idx === -1) throw new UserNotFound(value, key)
+    return {
+      user: this.users[idx],
+      userIndex: idx
+    }
+  }
 
+  async getByEmail(email: string): Promise<User> {
+    const { user } = this.userFinder({ value: email, key: 'email' })
     return this.mapper.toDomain(user)
   }
 
@@ -57,8 +69,9 @@ export class InMemoryUserRepository extends UserRepository {
   }
 
   async getById(id: string): Promise<User> {
-    const user = this.users.find((user) => user.id === id)
-    if (user == null) throw new UserNotFound(id)
+    const { user } = this.userFinder({ value: id })
     return this.mapper.toDomain(user)
   }
+
+  // FIXME: implement the rest of the methods
 }

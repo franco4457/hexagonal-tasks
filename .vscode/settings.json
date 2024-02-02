@@ -12,6 +12,7 @@
     "application/project",
     "application/task",
     "application/user",
-    "application/timer"
+    "application/timer",
+    "infra/user"
   ]
 }
