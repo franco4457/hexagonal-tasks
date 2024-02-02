@@ -5,8 +5,8 @@ import { Password } from './value-objects'
 import { LabelMapper, TemplateMapper } from './entities'
 
 export class UserMapper implements Mapper<User, UserModel, UserResponseDto> {
-  private readonly templateMapper = new TemplateMapper()
-  private readonly labelMapper = new LabelMapper()
+  readonly templateMapper = new TemplateMapper()
+  readonly labelMapper = new LabelMapper()
   toDomain(record: UserModel): User {
     const labels = record.labels.map(this.labelMapper.toDomain)
     const templates = record.templates.map(this.templateMapper.toDomain)
