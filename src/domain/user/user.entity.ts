@@ -63,6 +63,14 @@ export class User extends AggregateRoot<UserProps> {
     return user
   }
 
+  get templates(): Template[] {
+    return this.props.templates
+  }
+
+  get labels(): Label[] {
+    return this.props.labels
+  }
+
   updateTemplate(props: {
     templateId: string
     newProps: {
