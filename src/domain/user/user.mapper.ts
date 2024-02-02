@@ -1,21 +1,15 @@
 import { UserResponseDto } from './user.dto'
 import { type Mapper } from '../core/mapper'
 import { type UserModel, User } from './user.entity'
-import { Password, TaskTemplate } from './value-objects'
-import { Label, Template } from './entities'
+import { Password } from './value-objects'
+import { LabelMapper, TemplateMapper } from './entities'
 
-// TODO: subEntities Mapper
 export class UserMapper implements Mapper<User, UserModel, UserResponseDto> {
+  private readonly templateMapper = new TemplateMapper()
+  private readonly labelMapper = new LabelMapper()
   toDomain(record: UserModel): User {
-    const labels = record.labels.map(({ id, createdAt, updatedAt, ...props }) => {
-      return new Label({ id, createdAt, updatedAt, props })
-    })
-    const templates = record.templates.map(({ id, createdAt, updatedAt, ...props }) => {
-      const tasks = props.tasks.map((task) => {
-        return new TaskTemplate(task)
-      })
-      return new Template({ id, createdAt, updatedAt, props: { name: props.name, tasks } })
-    })
+    const labels = record.labels.map(this.labelMapper.toDomain)
+    const templates = record.templates.map(this.templateMapper.toDomain)
     const user = new User({
       id: record.id,
       props: {
@@ -41,22 +35,8 @@ export class UserMapper implements Mapper<User, UserModel, UserResponseDto> {
       name: copy.name,
       lastname: copy.lastname,
       username: copy.username,
-      labels: copy.labels.map((label) => {
-        const { id, createdAt, updatedAt, ...props } = label.getProps()
-        return { id, createdAt, updatedAt, ...props }
-      }),
-      templates: copy.templates.map((template) => {
-        const { id, createdAt, updatedAt, ...props } = template.getProps()
-        return {
-          id,
-          createdAt,
-          updatedAt,
-          name: props.name,
-          tasks: props.tasks.map((task) => {
-            return task.value
-          })
-        }
-      }),
+      labels: copy.labels.map(this.labelMapper.toPersistence),
+      templates: copy.templates.map(this.templateMapper.toPersistence),
       password: copy.password.value,
       createdAt: copy.createdAt,
       updatedAt: copy.updatedAt
