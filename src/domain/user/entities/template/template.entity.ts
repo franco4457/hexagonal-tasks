@@ -1,6 +1,6 @@
 import { Entity, ValidationError } from '@/domain/core'
 import { randomUUID } from 'crypto'
-import { type TaskTemplateProps, type TaskTemplate } from '../value-objects'
+import { type TaskTemplateProps, type TaskTemplate } from '../../value-objects'
 
 export interface TemplateProps {
   name: string
