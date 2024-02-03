@@ -1,5 +1,5 @@
-import { UserRepository, type User, type UserModel } from '@/domain/user'
-import { UserAlreadyExist, UserNotFound } from '@/domain/user/user.exceptions'
+import { UserRepository, type User, type UserModel, type Label, type Template } from '@/domain/user'
+import { UserAlreadyExist, UserNotFound, UserPropNotFound } from '@/domain/user/user.exceptions'
 import { Logger } from '@/infraestructure/logger'
 import type EventEmitter2 from 'eventemitter2'
 
@@ -46,6 +46,12 @@ export class InMemoryUserRepository extends UserRepository {
     }
   }
 
+  /* ------ QUERY METHODS ------ */
+  async getById(id: string): Promise<User> {
+    const { user } = this.userFinder({ value: id })
+    return this.mapper.toDomain(user)
+  }
+
   async getByEmail(email: string): Promise<User> {
     const { user } = this.userFinder({ value: email, key: 'email' })
     return this.mapper.toDomain(user)
@@ -55,6 +61,17 @@ export class InMemoryUserRepository extends UserRepository {
     return this.users.map((user) => this.mapper.toDomain(user))
   }
 
+  async getTemplatesByUserId(userId: string): Promise<Template[]> {
+    const { user } = this.userFinder({ value: userId })
+    return user.templates.map(this.mapper.templateMapper.toDomain)
+  }
+
+  async getLabelsByUserId(userId: string): Promise<Label[]> {
+    const { user } = this.userFinder({ value: userId })
+    return user.labels.map(this.mapper.labelMapper.toDomain)
+  }
+
+  /* ------ COMMANDS METHODS ------ */
   async create(user: User): Promise<User> {
     this.logger.debug('creating 1 entities to "user" table:', user.id)
     if (this.users.some((u) => u.email === user.getProps().email)) {
@@ -68,10 +85,67 @@ export class InMemoryUserRepository extends UserRepository {
     return user
   }
 
-  async getById(id: string): Promise<User> {
-    const { user } = this.userFinder({ value: id })
-    return this.mapper.toDomain(user)
+  async addTemplate(props: { user: User; template: Template }): Promise<Template> {
+    this.logger.debug('adding 1 template to user:', props.user.id)
+    const { userIndex: idx } = this.userFinder({ value: props.user.id })
+
+    await this.save(props.user, async () => {
+      this.users[idx].templates.push(this.mapper.templateMapper.toPersistence(props.template))
+    })
+    return props.template
   }
 
-  // FIXME: implement the rest of the methods
+  async updateTemplate(props: { user: User; template: Template }): Promise<Template> {
+    this.logger.debug('updating 1 template to user:', props.user.id)
+    const { userIndex: idx } = this.userFinder({ value: props.user.id })
+
+    const templateIdx = this.users[idx].templates.findIndex((temp) => temp.id === props.template.id)
+    if (templateIdx === -1) {
+      throw new UserPropNotFound<'templates'>(props.template.id, 'templates[number].id')
+    }
+    await this.save(props.user, async () => {
+      this.users[idx].templates[templateIdx] = this.mapper.templateMapper.toPersistence(
+        props.template
+      )
+    })
+    return props.template
+  }
+
+  async removeTemplate(props: { user: User; templateId: string }): Promise<void> {
+    this.logger.debug('removing 1 template to user:', props.user.id)
+    const { userIndex: idx } = this.userFinder({ value: props.user.id })
+
+    const templateIdx = this.users[idx].templates.findIndex((temp) => temp.id === props.templateId)
+    if (templateIdx === -1) {
+      throw new UserPropNotFound<'templates'>(props.templateId, 'templates[number].id')
+    }
+
+    await this.save(props.user, async () => {
+      this.users[idx].templates.splice(templateIdx, 1)
+    })
+  }
+
+  async addLabelToUser(props: { user: User; label: Label }): Promise<Label> {
+    this.logger.debug('adding 1 label to user:', props.user.id)
+    const { userIndex: idx } = this.userFinder({ value: props.user.id })
+
+    await this.save(props.user, async () => {
+      this.users[idx].labels.push(this.mapper.labelMapper.toPersistence(props.label))
+    })
+
+    return props.label
+  }
+
+  async removeLabel(props: { user: User; labelId: string }): Promise<void> {
+    this.logger.debug('removing 1 label to user:', props.user.id)
+    const { userIndex: idx } = this.userFinder({ value: props.user.id })
+
+    const labelIdx = this.users[idx].labels.findIndex((label) => label.id === props.labelId)
+    if (labelIdx === -1) {
+      throw new UserPropNotFound<'labels'>(props.labelId, 'labels[number].id')
+    }
+    await this.save(props.user, async () => {
+      this.users[idx].labels.splice(labelIdx, 1)
+    })
+  }
 }
