@@ -21,5 +21,7 @@ export abstract class TimerRepository
   abstract create(props: Timer): Promise<Timer>
   abstract getTimer(id: Timer['id']): Promise<Timer>
   abstract getTimerByUserId(userId: AggregateID): Promise<Timer>
+
+  // FIXME: update only the fields that are changed
   abstract update(props: Timer): Promise<Timer>
 }
