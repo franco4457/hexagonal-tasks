@@ -14,8 +14,6 @@ export class UserUpdateTemplate {
   async updateTemplate(props: UserUpdateTemplateProps): Promise<void> {
     const user = await this.userRepository.getById(props.userId)
     const newTasks = props.newProps.tasks.map((task) => new TaskTemplate(task))
-    // TODO: add custom exception
-    if (newTasks.length === 0) throw new Error('Template must have at least one task')
     const newTemplate = user.updateTemplate({
       templateId: props.templateId,
       newProps: {
