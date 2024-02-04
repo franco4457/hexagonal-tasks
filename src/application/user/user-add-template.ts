@@ -6,7 +6,7 @@ export interface UserAddTemplateProps {
     tasks: TaskTemplateProps[]
   }
 }
-export class UserAddTemplateTemplate {
+export class UserAddTemplate {
   constructor(private readonly userRepository: UserRepository) {}
   async addTemplate(props: UserAddTemplateProps): Promise<void> {
     const user = await this.userRepository.getById(props.userId)
