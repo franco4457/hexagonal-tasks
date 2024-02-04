@@ -91,6 +91,7 @@ export class InMemoryUserRepository extends UserRepository {
 
     await this.save(props.user, async () => {
       this.users[idx].templates.push(this.mapper.templateMapper.toPersistence(props.template))
+      this.users[idx].updatedAt = new Date()
     })
     return props.template
   }
@@ -107,6 +108,8 @@ export class InMemoryUserRepository extends UserRepository {
       this.users[idx].templates[templateIdx] = this.mapper.templateMapper.toPersistence(
         props.template
       )
+      this.users[idx].templates[templateIdx].updatedAt = new Date()
+      this.users[idx].updatedAt = new Date()
     })
     return props.template
   }
@@ -122,6 +125,7 @@ export class InMemoryUserRepository extends UserRepository {
 
     await this.save(props.user, async () => {
       this.users[idx].templates.splice(templateIdx, 1)
+      this.users[idx].updatedAt = new Date()
     })
   }
 
@@ -131,6 +135,7 @@ export class InMemoryUserRepository extends UserRepository {
 
     await this.save(props.user, async () => {
       this.users[idx].labels.push(this.mapper.labelMapper.toPersistence(props.label))
+      this.users[idx].updatedAt = new Date()
     })
 
     return props.label
@@ -146,6 +151,7 @@ export class InMemoryUserRepository extends UserRepository {
     }
     await this.save(props.user, async () => {
       this.users[idx].labels.splice(labelIdx, 1)
+      this.users[idx].updatedAt = new Date()
     })
   }
 }
