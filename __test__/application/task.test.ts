@@ -74,9 +74,7 @@ describe('task', () => {
     expect(taskProps.labels).toHaveLength(2)
     expect(taskProps.labels[0].value.name).toBe('label')
     expect(taskProps.labels[0]).toBeInstanceOf(Label)
-    expect(taskProps.labels[0].value.id).toBeTypeOf('string')
     expect(taskProps.labels[1].value.name).toBe('label2')
-    expect(taskProps.labels[1].value.id).toBe(TEST_ID)
     expect(taskProps.labels[1]).toBeInstanceOf(Label)
   })
   it.concurrent('Create task with labels and project', async () => {
@@ -152,9 +150,7 @@ describe('task', () => {
       expect(task.id).toBeTypeOf('string')
       expect(taskProps.labels[0].value.name).toBe('label')
       expect(taskProps.labels[0]).toBeInstanceOf(Label)
-      expect(taskProps.labels[0].value.id).toBeTypeOf('string')
       expect(taskProps.labels[1].value.name).toBe('label2')
-      expect(taskProps.labels[1].value.id).toBe(TEST_ID)
       expect(taskProps.labels[1]).toBeInstanceOf(Label)
       expect(taskProps.project).toBeInstanceOf(Project)
       expect(taskProps.project?.value.name).toBe('project')
@@ -241,15 +237,19 @@ describe('task', () => {
     it.concurrent('Don`t send correct props', async () => {
       const taskRepository = new InMemoryTaskRepository(taskConfig)
       const createTask = new CreateTask(taskRepository)
-      await expect(
-        createTask.create({
+      try {
+        await createTask.create({
           // @ts-expect-error test
           task: {},
           userId: TEST_ID
         })
-      ).rejects.toThrowError(
-        '["Title is required","Description is required","Order is required","Pomodoro is required","Labels is required"]'
-      )
+        expect(true).toBe(false)
+      } catch (e) {
+        expect(e).toBeInstanceOf(ValidationError)
+        expect((e as Error).message).toBe(
+          '["Title is required","Description is required","Order is required","Pomodoro is required","Labels is required"]'
+        )
+      }
     })
     it.concurrent('Don`t send correct types ', async () => {
       const taskRepository = new InMemoryTaskRepository(taskConfig)
@@ -263,8 +263,7 @@ describe('task', () => {
             labels: 'foo',
             order: 'bar',
             project: {
-              name: {},
-              id: 'foo'
+              name: {}
             },
             pomodoro: 'baz'
           },
@@ -275,15 +274,15 @@ describe('task', () => {
         expect(error).toBeInstanceOf(ValidationError)
         const e = error as ValidationError
         expect(e.message).toBe(
-          '["Invalid type on On \'title\'. expected string, received number","Invalid type on On \'description\'. expected string, received number","Invalid type on On \'order\'. expected number, received string","Invalid project id","Invalid type on On \'project.name\'. expected string, received object","Invalid type on On \'pomodoro\'. expected object, received string","Invalid type on On \'labels\'. expected array, received string"]'
+          '["Invalid type on \'title\'. expected string, received number","Invalid type on \'description\'. expected string, received number","Invalid type on \'order\'. expected number, received string","Invalid type on \'project.name\'. expected string, received object","Invalid type on \'pomodoro\'. expected object, received string","Invalid type on \'labels\'. expected array, received string"]'
         )
       }
     })
     it.concurrent('Don`t send correct lengths', async () => {
       const taskRepository = new InMemoryTaskRepository(taskConfig)
       const createTask = new CreateTask(taskRepository)
-      await expect(
-        createTask.create({
+      try {
+        await createTask.create({
           task: {
             ...baseTask,
             order: -1,
@@ -292,15 +291,19 @@ describe('task', () => {
           },
           userId: TEST_ID
         })
-      ).rejects.toThrowError(
-        '["Title should be at least 3 characters","Description should be at least 3 characters","Order should be equals or greater than 0"]'
-      )
+        expect(true).toBe(false)
+      } catch (e) {
+        expect(e).toBeInstanceOf(ValidationError)
+        expect((e as Error).message).toBe(
+          '["Title should be at least 3 characters","Description should be at least 3 characters","Order should be equals or greater than 0"]'
+        )
+      }
     })
     it.concurrent('Don`t correct userId', async () => {
       const taskRepository = new InMemoryTaskRepository(taskConfig)
       const createTask = new CreateTask(taskRepository)
-      await expect(
-        createTask.create({
+      try {
+        await createTask.create({
           task: {
             ...baseTask,
             title: 'title',
@@ -308,9 +311,13 @@ describe('task', () => {
           },
           userId: 'asdjkah-asldjkh'
         })
-      ).rejects.toThrowError(
-        '["User ID should be a valid UUID(something like this: \'string-string-string-string-string\')"]'
-      )
+        expect(true).toBe(false)
+      } catch (e) {
+        expect(e).toBeInstanceOf(ValidationError)
+        expect((e as Error).message).toBe(
+          '["User ID should be a valid UUID(something like this: \'string-string-string-string-string\')"]'
+        )
+      }
     })
   })
 })
