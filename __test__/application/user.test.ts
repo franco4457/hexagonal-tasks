@@ -331,7 +331,7 @@ describe.concurrent('User', async () => {
       } catch (e) {
         expect(e).toBeInstanceOf(ValidationError)
         expect((e as Error).message).toBe(
-          '["Invalid type on On \'name\'. expected string, received number","Invalid type on On \'lastname\'. expected string, received object","Invalid type on On \'username\'. expected string, received number","Invalid type on On \'email\'. expected string, received array","Invalid type on On \'password\'. expected string, received number"]'
+          '["Invalid type on \'name\'. expected string, received number","Invalid type on \'lastname\'. expected string, received object","Invalid type on \'username\'. expected string, received number","Invalid type on \'email\'. expected string, received array","Invalid type on \'password\'. expected string, received number"]'
         )
       }
     })
