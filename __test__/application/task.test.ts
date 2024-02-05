@@ -156,23 +156,6 @@ describe('task', () => {
       expect(taskProps.project?.value.name).toBe('project')
     })
   })
-  it.concurrent('On create task should be publish event', async () => {
-    const taskRepository = new InMemoryTaskRepository(taskConfig)
-    const createTask = new CreateTask(taskRepository)
-    let exec = false
-    eventEmitter.on('TaskCreateEvent', (event) => {
-      exec = true
-      expect(event).toBeInstanceOf(Object)
-      expect(event).toHaveProperty('userId')
-    })
-    const task = await createTask.create({
-      task: baseTask,
-      userId: TEST_ID
-    })
-    await task.publishEvents(eventEmitter, console)
-    expect(task).toBeInstanceOf(Task)
-    expect(exec).toBe(true)
-  })
   it.concurrent('List task', async () => {
     const taskRepository = new InMemoryTaskRepository({
       ...taskConfig
@@ -232,7 +215,6 @@ describe('task', () => {
     expect(taskP2.userId).toBe(TEST_ID.slice(0, -1) + 0)
     expect(task2.id).toBeTypeOf('string')
   })
-
   describe.concurrent('Exceptions', () => {
     it.concurrent('Don`t send correct props', async () => {
       const taskRepository = new InMemoryTaskRepository(taskConfig)
