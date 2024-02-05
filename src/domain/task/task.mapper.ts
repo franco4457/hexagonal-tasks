@@ -11,8 +11,8 @@ export class TaskMapper implements Mapper<Task, TaskModel, TaskResponseDto> {
       createdAt,
       updatedAt,
       is_completed: isCompleted,
-      podomoro_actual: actual,
-      podomoro_estimated: estimated,
+      pomodoro_actual: actual,
+      pomodoro_estimated: estimated,
       labels,
       project_name: projectName,
       ...props
@@ -50,8 +50,8 @@ export class TaskMapper implements Mapper<Task, TaskModel, TaskResponseDto> {
     const record: TaskModel = {
       ...props,
       is_completed: isCompleted,
-      podomoro_actual: pomo.actual,
-      podomoro_estimated: pomo.estimated,
+      pomodoro_actual: pomo.actual,
+      pomodoro_estimated: pomo.estimated,
       id,
       labels: labels.map((label) => ({ name: label.value.name })),
       project_name: project?.value.name ?? null,

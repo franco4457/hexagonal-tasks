@@ -31,8 +31,8 @@ export type TaskPropsCreate = Omit<TaskProps, 'isCompleted' | 'labels' | 'projec
 export type TaskModel = Omit<TaskProps, 'isCompleted' | 'pomodoro' | 'labels' | 'project'> & {
   id: string
   is_completed: boolean
-  podomoro_estimated: number
-  podomoro_actual: number
+  pomodoro_estimated: number
+  pomodoro_actual: number
   labels: Array<{ name: string }>
   project_name: string | null
   createdAt: Date
