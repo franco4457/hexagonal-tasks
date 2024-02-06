@@ -1,14 +1,14 @@
 import { type TaskRepository } from '@/domain/task'
 
-interface AddProjectProps {
+interface SetProjectProps {
   taskId: string
   project: { name: string }
 }
 
-export class TaskAddProject {
+export class TaskSetProject {
   constructor(private readonly taskRepository: TaskRepository) {}
 
-  async addProject(props: AddProjectProps): Promise<void> {
+  async setProject(props: SetProjectProps): Promise<void> {
     const task = await this.taskRepository.getTask(props.taskId)
     task.setProject(props.project)
     await this.taskRepository.transaction(async () => {
