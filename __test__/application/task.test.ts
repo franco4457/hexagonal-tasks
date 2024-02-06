@@ -1,15 +1,17 @@
-import { TEST_ID } from './../utils/constants'
-import { ListTasks, CreateTask } from '@/application/task'
+import { REPO_CONFIG, TEST_ID } from './../utils/constants'
+import {
+  ListTasks,
+  CreateTask,
+  TaskAddLabels,
+  TaskRemoveLabel,
+  TaskRemoveProject,
+  TaskSetProject
+} from '@/application/task'
 import { ValidationError } from '@/domain/core'
-import { Label, Project, Task } from '@/domain/task'
+import { Label, Project, Task, type TaskModel } from '@/domain/task'
 import { InMemoryTaskRepository } from '@/infraestructure/repository/in-memory'
-import EventEmitter2 from 'eventemitter2'
 
-const eventEmitter = new EventEmitter2()
-const taskConfig = {
-  eventEmitter,
-  appContext: 'TEST'
-}
+const taskConfig = REPO_CONFIG
 
 const baseTask = {
   title: 'title',
@@ -20,8 +22,22 @@ const baseTask = {
     estimated: 1
   }
 }
+const TASK_MODEL: TaskModel = {
+  userId: TEST_ID,
+  id: TEST_ID,
+  title: 'title',
+  description: 'description',
+  order: 1,
+  labels: [],
+  pomodoro_actual: 0,
+  pomodoro_estimated: 1,
+  is_completed: false,
+  project_name: null,
+  createdAt: new Date(),
+  updatedAt: new Date()
+}
 
-describe('task', () => {
+describe.concurrent('task', () => {
   it.concurrent('Create task', async () => {
     const taskRepository = new InMemoryTaskRepository({
       ...taskConfig
@@ -215,6 +231,132 @@ describe('task', () => {
     expect(taskP2.userId).toBe(TEST_ID.slice(0, -1) + 0)
     expect(task2.id).toBeTypeOf('string')
   })
+  it.concurrent('Add label to task', async () => {
+    const now = new Date()
+    const taskRepository = new InMemoryTaskRepository({
+      ...taskConfig,
+      tasks: [
+        {
+          ...TASK_MODEL,
+          createdAt: now,
+          updatedAt: now
+        }
+      ]
+    })
+    let task = await taskRepository.getTask(TEST_ID)
+    expect(task).toBeInstanceOf(Task)
+    expect(task.getProps().labels).toHaveLength(0)
+
+    const addLabel = new TaskAddLabels(taskRepository)
+    await addLabel.addLabel({
+      taskId: TEST_ID,
+      label: [{ name: 'label' }]
+    })
+    task = await taskRepository.getTask(TEST_ID)
+    expect(task).toBeInstanceOf(Task)
+    expect(task.getProps().labels).toHaveLength(1)
+    const label = task.getProps().labels[0]
+    expect(label).toBeInstanceOf(Label)
+    expect(label).toEqual(new Label({ name: 'label' }))
+  })
+  it.concurrent('Add labels to task', async () => {
+    const now = new Date()
+    const taskRepository = new InMemoryTaskRepository({
+      ...taskConfig,
+      tasks: [
+        {
+          ...TASK_MODEL,
+          createdAt: now,
+          updatedAt: now
+        }
+      ]
+    })
+    let task = await taskRepository.getTask(TEST_ID)
+    expect(task).toBeInstanceOf(Task)
+    expect(task.getProps().labels).toHaveLength(0)
+
+    const addLabel = new TaskAddLabels(taskRepository)
+    await addLabel.addLabel({
+      taskId: TEST_ID,
+      label: [{ name: 'label' }, { name: 'label2' }]
+    })
+    task = await taskRepository.getTask(TEST_ID)
+    expect(task).toBeInstanceOf(Task)
+    expect(task.getProps().labels).toHaveLength(2)
+    const [label, label2] = task.getProps().labels
+    expect(label).toBeInstanceOf(Label)
+    expect(label).toEqual(new Label({ name: 'label' }))
+    expect(label2).toBeInstanceOf(Label)
+    expect(label2).toEqual(new Label({ name: 'label2' }))
+  })
+  it.concurrent('Remove label to task', async () => {
+    const now = new Date()
+    const taskRepository = new InMemoryTaskRepository({
+      ...taskConfig,
+      tasks: [
+        {
+          ...TASK_MODEL,
+          labels: [{ name: 'label-to-remove' }, { name: 'label-rot-remove' }],
+          createdAt: now,
+          updatedAt: now
+        }
+      ]
+    })
+    let task = await taskRepository.getTask(TEST_ID)
+    expect(task).toBeInstanceOf(Task)
+    expect(task.getProps().labels).toHaveLength(2)
+
+    const addLabel = new TaskRemoveLabel(taskRepository)
+    await addLabel.removeLabel({
+      taskId: TEST_ID,
+      labelName: 'label-to-remove'
+    })
+    task = await taskRepository.getTask(TEST_ID)
+    expect(task).toBeInstanceOf(Task)
+    expect(task.getProps().labels).toHaveLength(1)
+    const label = task.getProps().labels[0]
+    expect(label).toBeInstanceOf(Label)
+    expect(label).toEqual(new Label({ name: 'label-rot-remove' }))
+  })
+  it.concurrent('Set project to task', async () => {
+    const InMemoryUserRepository = new InMemoryTaskRepository({
+      ...taskConfig,
+      tasks: [{ ...TASK_MODEL }]
+    })
+
+    let task = await InMemoryUserRepository.getTask(TEST_ID)
+    expect(task).toBeInstanceOf(Task)
+    expect(task.getProps().project).toBe(null)
+
+    const setProject = new TaskSetProject(InMemoryUserRepository)
+    await setProject.setProject({
+      taskId: TEST_ID,
+      project: { name: 'project' }
+    })
+
+    task = await InMemoryUserRepository.getTask(TEST_ID)
+    expect(task.getProps().project).toBeInstanceOf(Project)
+    expect(task.getProps().project).toEqual(new Project({ name: 'project' }))
+  })
+  it.concurrent('Remove project to task', async () => {
+    const InMemoryUserRepository = new InMemoryTaskRepository({
+      ...taskConfig,
+      tasks: [{ ...TASK_MODEL, project_name: 'project' }]
+    })
+
+    let task = await InMemoryUserRepository.getTask(TEST_ID)
+    expect(task).toBeInstanceOf(Task)
+    expect(task.getProps().project).toBeInstanceOf(Project)
+    expect(task.getProps().project).toEqual(new Project({ name: 'project' }))
+
+    const removeProject = new TaskRemoveProject(InMemoryUserRepository)
+    await removeProject.removeProject({
+      taskId: TEST_ID
+    })
+
+    task = await InMemoryUserRepository.getTask(TEST_ID)
+    expect(task.getProps().project).toBe(null)
+  })
   describe.concurrent('Exceptions', () => {
     it.concurrent('Don`t send correct props', async () => {
       const taskRepository = new InMemoryTaskRepository(taskConfig)
@@ -301,5 +443,6 @@ describe('task', () => {
         )
       }
     })
+    // TODO: Check if exceptions need to be tested in [add/remove]: [Label/Template]
   })
 })
