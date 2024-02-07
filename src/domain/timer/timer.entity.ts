@@ -130,7 +130,7 @@ export class Timer extends AggregateRoot<TimerProps> {
         aggregateId: this.id,
         userId: this.props.userId,
         duration: this.currentDuration - (this.props.stoppedAt - this.props.startedAt),
-        staredAt: now,
+        startedAt: now,
         stoppedAt: this.props.stoppedAt
       })
     )
