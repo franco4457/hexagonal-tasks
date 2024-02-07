@@ -96,7 +96,7 @@ export class Timer extends AggregateRoot<TimerProps> {
         aggregateId: this.id,
         userId: this.props.userId,
         duration: this.currentDuration,
-        staredAt: now
+        startedAt: now
       })
     )
   }
