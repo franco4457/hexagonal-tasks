@@ -129,7 +129,7 @@ export class Timer extends AggregateRoot<TimerProps> {
       new TimerResumeEvent({
         aggregateId: this.id,
         userId: this.props.userId,
-        duration: this.currentDuration - (this.props.stoppedAt - this.props.startedAt),
+        duration: this.currentDuration - (this.props.startedAt - this.props.stoppedAt),
         startedAt: now,
         stoppedAt: this.props.stoppedAt
       })
