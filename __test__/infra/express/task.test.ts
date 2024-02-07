@@ -42,14 +42,8 @@ describe('Task', () => {
     expect(task.isCompleted).toBe(false)
     expect(task.description).toBe('description')
     expect(task.userId).toBe(TEST_ID)
-    expect(task.labels).toEqual([
-      { id: expect.any(String), name: 'label' },
-      { id: TEST_ID, name: 'label2' }
-    ])
-    expect(task.project).toEqual({
-      id: expect.any(String),
-      name: 'project'
-    })
+    expect(task.labels).toEqual([{ name: 'label' }, { name: 'label2' }])
+    expect(task.project).toEqual({ name: 'project' })
   })
   it.concurrent('GET /task', async () => {
     const res = await request(app).get('/api/v1/task')
@@ -71,14 +65,8 @@ describe('Task', () => {
     expect(task2.isCompleted).toBe(false)
     expect(task2.description).toBe('description')
     expect(task2.userId).toBe(TEST_ID)
-    expect(task2.labels).toEqual([
-      { id: expect.any(String), name: 'label' },
-      { id: TEST_ID, name: 'label2' }
-    ])
-    expect(task2.project).toEqual({
-      id: expect.any(String),
-      name: 'project'
-    })
+    expect(task2.labels).toEqual([{ name: 'label' }, { name: 'label2' }])
+    expect(task2.project).toEqual({ name: 'project' })
   })
 
   it.concurrent('POST /task - error missig fields', async () => {
@@ -156,33 +144,33 @@ describe('Task', () => {
           expected: 'string',
           received: 'object',
           path: ['title'],
-          message: "Invalid type on On 'title'. expected string, received object"
+          message: "Invalid type on 'title'. expected string, received object"
         },
         {
           code: 'invalid_type',
           expected: 'string',
           received: 'number',
           path: ['description'],
-          message: "Invalid type on On 'description'. expected string, received number"
+          message: "Invalid type on 'description'. expected string, received number"
         },
         {
           code: 'invalid_type',
           expected: 'number',
           received: 'string',
           path: ['order'],
-          message: "Invalid type on On 'order'. expected number, received string"
+          message: "Invalid type on 'order'. expected number, received string"
         },
         {
           code: 'invalid_type',
           expected: 'string',
           received: 'object',
           path: ['project', 'name'],
-          message: "Invalid type on On 'project.name'. expected string, received object"
+          message: "Invalid type on 'project.name'. expected string, received object"
         },
         {
           code: 'invalid_type',
           expected: 'object',
-          message: "Invalid type on On 'pomodoro'. expected object, received array",
+          message: "Invalid type on 'pomodoro'. expected object, received array",
           path: ['pomodoro'],
           received: 'array'
         },
@@ -192,16 +180,16 @@ describe('Task', () => {
           expected: 'array',
           received: 'object',
           path: ['labels'],
-          message: "Invalid type on On 'labels'. expected array, received object"
+          message: "Invalid type on 'labels'. expected array, received object"
         }
       ],
       errors: [
-        "Invalid type on On 'title'. expected string, received object",
-        "Invalid type on On 'description'. expected string, received number",
-        "Invalid type on On 'order'. expected number, received string",
-        "Invalid type on On 'project.name'. expected string, received object",
-        "Invalid type on On 'pomodoro'. expected object, received array",
-        "Invalid type on On 'labels'. expected array, received object"
+        "Invalid type on 'title'. expected string, received object",
+        "Invalid type on 'description'. expected string, received number",
+        "Invalid type on 'order'. expected number, received string",
+        "Invalid type on 'project.name'. expected string, received object",
+        "Invalid type on 'pomodoro'. expected object, received array",
+        "Invalid type on 'labels'. expected array, received object"
       ],
       message: 'Invalid Task'
     })
@@ -289,13 +277,7 @@ describe('Task', () => {
     expect(task2.isCompleted).toBe(false)
     expect(task2.description).toBe('description')
     expect(task2.userId).toBe(TEST_ID)
-    expect(task2.labels).toEqual([
-      { id: expect.any(String), name: 'label' },
-      { id: TEST_ID, name: 'label2' }
-    ])
-    expect(task2.project).toEqual({
-      id: expect.any(String),
-      name: 'project'
-    })
+    expect(task2.labels).toEqual([{ name: 'label' }, { name: 'label2' }])
+    expect(task2.project).toEqual({ name: 'project' })
   })
 })
