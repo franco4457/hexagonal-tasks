@@ -68,6 +68,18 @@ describe.concurrent('Timer Domain', () => {
   })
 
   describe.concurrent('Timer Domain Events', () => {
+    const toBeCloser = ({
+      value,
+      compare,
+      gap = 3
+    }: {
+      value: number
+      compare: number
+      gap?: number
+    }): void => {
+      expect(value).toBeGreaterThanOrEqual(compare)
+      expect(value).toBeLessThanOrEqual(compare + gap)
+    }
     it.concurrent('On create Timer', async () => {
       const timer = Timer.create({
         userId: TEST_ID
@@ -79,15 +91,14 @@ describe.concurrent('Timer Domain', () => {
       expect(e.userId).toBe(TEST_ID)
     })
     it.concurrent('On start Timer', async () => {
+      const now = Date.now()
       const timer = new Timer({
         id: TEST_ID,
         props: { ...TEST_PROPS }
       })
-
-      const now = Date.now()
       timer.start()
       expect(timer.getProps().status.isRunning()).toBe(true)
-      expect(timer.getProps().startedAt).toBe(now)
+      toBeCloser({ value: timer.getProps().startedAt, compare: now })
       expect(timer.getProps().stoppedAt).toBe(0)
 
       const events = timer.domainEvents
@@ -97,7 +108,8 @@ describe.concurrent('Timer Domain', () => {
       expect(e.aggregateId).toBe(timer.id)
       expect(e.userId).toBe(TEST_ID)
       expect(e.duration).toBe(timer.currentDuration)
-      expect(e.staredAt).toBe(now)
+
+      toBeCloser({ value: e.startedAt, compare: now })
     })
     it.concurrent('On stop Timer', async () => {
       const now = Date.now()
@@ -111,7 +123,7 @@ describe.concurrent('Timer Domain', () => {
       })
       timer.stop()
       expect(timer.getProps().status.isPaused()).toBe(true)
-      expect(timer.getProps().stoppedAt).toBe(now)
+      toBeCloser({ value: timer.getProps().stoppedAt, compare: now })
 
       const events = timer.domainEvents
       expect(events).toHaveLength(1)
@@ -120,7 +132,8 @@ describe.concurrent('Timer Domain', () => {
       expect(e.aggregateId).toBe(timer.id)
       expect(e.userId).toBe(TEST_ID)
       expect(e.stage).toBe(StageEnum.POMODORO)
-      expect(e.stoppedAt).toBe(now)
+
+      toBeCloser({ value: e.stoppedAt, compare: now })
     })
     it.concurrent('On resume Timer', async () => {
       const now = Date.now()
@@ -135,7 +148,7 @@ describe.concurrent('Timer Domain', () => {
       })
       timer.resume()
       expect(timer.getProps().status.isRunning()).toBe(true)
-      expect(timer.getProps().startedAt).toBe(now)
+      toBeCloser({ value: timer.getProps().startedAt, compare: now })
 
       const events = timer.domainEvents
       expect(events).toHaveLength(1)
@@ -143,8 +156,8 @@ describe.concurrent('Timer Domain', () => {
       expect(e).toBeInstanceOf(TimerResumeEvent)
       expect(e.aggregateId).toBe(timer.id)
       expect(e.userId).toBe(TEST_ID)
-      expect(e.duration).toBe(timer.currentDuration)
-      expect(e.staredAt).toBe(now)
+      toBeCloser({ value: e.duration, compare: timer.currentDuration, gap: 5 })
+      toBeCloser({ value: e.startedAt, compare: now })
     })
     it.concurrent('On finish Timer', async () => {
       const now = Date.now()
