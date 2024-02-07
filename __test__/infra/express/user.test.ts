@@ -144,43 +144,43 @@ describe('User', () => {
           expected: 'string',
           received: 'number',
           path: ['name'],
-          message: "Invalid type on On 'name'. expected string, received number"
+          message: "Invalid type on 'name'. expected string, received number"
         },
         {
           code: 'invalid_type',
           expected: 'string',
           received: 'object',
           path: ['lastname'],
-          message: "Invalid type on On 'lastname'. expected string, received object"
+          message: "Invalid type on 'lastname'. expected string, received object"
         },
         {
           code: 'invalid_type',
           expected: 'string',
           received: 'number',
           path: ['username'],
-          message: "Invalid type on On 'username'. expected string, received number"
+          message: "Invalid type on 'username'. expected string, received number"
         },
         {
           code: 'invalid_type',
           expected: 'string',
           received: 'array',
           path: ['email'],
-          message: "Invalid type on On 'email'. expected string, received array"
+          message: "Invalid type on 'email'. expected string, received array"
         },
         {
           code: 'invalid_type',
           expected: 'string',
           received: 'number',
           path: ['password'],
-          message: "Invalid type on On 'password'. expected string, received number"
+          message: "Invalid type on 'password'. expected string, received number"
         }
       ],
       errors: [
-        "Invalid type on On 'name'. expected string, received number",
-        "Invalid type on On 'lastname'. expected string, received object",
-        "Invalid type on On 'username'. expected string, received number",
-        "Invalid type on On 'email'. expected string, received array",
-        "Invalid type on On 'password'. expected string, received number"
+        "Invalid type on 'name'. expected string, received number",
+        "Invalid type on 'lastname'. expected string, received object",
+        "Invalid type on 'username'. expected string, received number",
+        "Invalid type on 'email'. expected string, received array",
+        "Invalid type on 'password'. expected string, received number"
       ],
       message: 'Invalid user'
     })
