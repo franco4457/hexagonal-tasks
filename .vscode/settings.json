@@ -16,6 +16,7 @@
     "infra/user",
     "infra/task",
     "infra/timer",
-    "infra/project"
+    "infra/project",
+    "application/api"
   ]
 }
