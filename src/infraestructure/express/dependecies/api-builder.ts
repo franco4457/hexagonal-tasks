@@ -6,6 +6,8 @@ import { MainRouter } from '../routes'
 import EventEmitter2 from 'eventemitter2'
 import { AssignTaskWhenIsCreatedEventHandler } from '@/application/user'
 import { asClass, asValue, createContainer } from 'awilix'
+import { ProjectRepository } from '@/domain/project'
+import { TimerRepository } from '@/domain/timer'
 
 const eventhandlers = [AssignTaskWhenIsCreatedEventHandler]
 
@@ -36,6 +38,20 @@ export class ApiBuilderExpress implements IApiBuilder {
     }
   }
 
+  setTimerRepository(timerRepository: TimerRepository): IApiBuilder {
+    this.container.register({
+      timerRepository: asValue(timerRepository)
+    })
+    return this
+  }
+
+  setProjectRepository(projectRepository: ProjectRepository): IApiBuilder {
+    this.container.register({
+      projectRepository: asValue(projectRepository)
+    })
+    return this
+  }
+
   reset(): IApiBuilder {
     this.api = new ApiExpress()
     return this
@@ -61,6 +77,12 @@ export class ApiBuilderExpress implements IApiBuilder {
     }
     if (!(this.container.resolve('userRepository') instanceof UserRepository)) {
       throw new Error('UserRepository not set')
+    }
+    if (!(this.container.resolve('timerRepository') instanceof TimerRepository)) {
+      throw new Error('TimerRepository not set')
+    }
+    if (!(this.container.resolve('projectRepository') instanceof ProjectRepository)) {
+      throw new Error('ProjectRepository not set')
     }
 
     eventhandlers.forEach((Handler) => {
