@@ -1,11 +1,18 @@
 import {
-  UserAddLabel,
-  UserAddTemplate,
-  UserLogin,
-  UserRegister,
-  UserRemoveLabel,
-  UserRemoveTemplate,
-  UserUpdateTemplate
+  UserAddLabelService,
+  UserAddTemplateService,
+  LoginUserService,
+  UserRegisterService,
+  UserRemoveLabelService,
+  UserRemoveTemplateService,
+  UserUpdateTemplateService,
+  LoginUserCommand,
+  RegisterUserCommand,
+  UserAddLabelCommand,
+  UserAddTemplateCommand,
+  UserRemoveTemplateCommand,
+  UserUpdateTemplateCommand,
+  UserRemoveLabelCommand
 } from '@/application/user'
 import { ValidationError } from '@/domain/core'
 import {
@@ -60,8 +67,8 @@ describe.concurrent('User', async () => {
   it.concurrent('login user', async () => {
     const inMemoryUserRepository = new InMemoryUserRepository(repoConfig)
 
-    const userLogin = new UserLogin(inMemoryUserRepository)
-    const user = await userLogin.login(userMock)
+    const userLogin = new LoginUserService(inMemoryUserRepository)
+    const user = await userLogin.execute(new LoginUserCommand(userMock))
     const userProps = user.getProps()
     expect(user).instanceOf(User)
     expect(userProps.name).toEqual('test')
@@ -80,8 +87,8 @@ describe.concurrent('User', async () => {
 
     const inMemoryUserRepository = new InMemoryUserRepository(repoConfig)
 
-    const userRegister = new UserRegister(inMemoryUserRepository)
-    const user = await userRegister.register(newUser)
+    const userRegister = new UserRegisterService(inMemoryUserRepository)
+    const user = await userRegister.execute(new RegisterUserCommand(newUser))
     const userProps = user.getProps()
     expect(expectResult.name).toEqual(userProps.name)
     expect(expectResult.email).toEqual(userProps.email)
@@ -96,8 +103,10 @@ describe.concurrent('User', async () => {
   })
   it.concurrent('Add label to user', async () => {
     const inMemoryUserRepository = new InMemoryUserRepository(repoConfig)
-    const addLablel = new UserAddLabel(inMemoryUserRepository)
-    await addLablel.addLabel({ userId: TEST_ID, label: { name: 'test-label' } })
+    const addLablel = new UserAddLabelService(inMemoryUserRepository)
+    await addLablel.execute(
+      new UserAddLabelCommand({ userId: TEST_ID, label: { name: 'test-label' } })
+    )
     const user = await inMemoryUserRepository.getById(TEST_ID)
     expect(user).toBeInstanceOf(User)
     expect(user.labels).toHaveLength(1)
@@ -140,8 +149,8 @@ describe.concurrent('User', async () => {
     expect(user.labels[0].id).toBe(TEST_ID)
     expect(user.labels[1]).toBeInstanceOf(Label)
 
-    const removeLabel = new UserRemoveLabel(inMemoryUserRepository)
-    await removeLabel.removeLabel({ userId: TEST_ID, labelId: TEST_ID })
+    const removeLabel = new UserRemoveLabelService(inMemoryUserRepository)
+    await removeLabel.execute(new UserRemoveLabelCommand({ userId: TEST_ID, labelId: TEST_ID }))
     user = await inMemoryUserRepository.getById(TEST_ID)
     expect(user.labels).toHaveLength(1)
     const label = user.labels[0]
@@ -151,12 +160,12 @@ describe.concurrent('User', async () => {
   })
   it.concurrent('Add template to User', async () => {
     const inMemoryUserRepository = new InMemoryUserRepository(repoConfig)
-    const addTemplate = new UserAddTemplate(inMemoryUserRepository)
+    const addTemplate = new UserAddTemplateService(inMemoryUserRepository)
     const newTemp = {
       name: 'test-template',
       tasks: [{ ...MOCK_TASK_TEMPLATE }]
     }
-    await addTemplate.addTemplate({ userId: TEST_ID, template: newTemp })
+    await addTemplate.execute(new UserAddTemplateCommand({ userId: TEST_ID, template: newTemp }))
     const user = await inMemoryUserRepository.getById(TEST_ID)
     expect(user).toBeInstanceOf(User)
     expect(user.templates).toHaveLength(1)
@@ -204,8 +213,10 @@ describe.concurrent('User', async () => {
     expect(user.templates[0].id).toBe(TEST_ID)
     expect(user.templates[1]).toBeInstanceOf(Template)
 
-    const removeTemplate = new UserRemoveTemplate(inMemoryUserRepository)
-    await removeTemplate.removeTemplate({ userId: TEST_ID, templateId: TEST_ID })
+    const removeTemplate = new UserRemoveTemplateService(inMemoryUserRepository)
+    await removeTemplate.execute(
+      new UserRemoveTemplateCommand({ userId: TEST_ID, templateId: TEST_ID })
+    )
     user = await inMemoryUserRepository.getById(TEST_ID)
     expect(user.templates).toHaveLength(1)
     const template = user.templates[0]
@@ -242,24 +253,26 @@ describe.concurrent('User', async () => {
       ...mockTemplate,
       tasks: [new TaskTemplate({ ...MOCK_TASK_TEMPLATE })]
     })
-    const updateTemplate = new UserUpdateTemplate(inMemoryUserRepository)
-    await updateTemplate.updateTemplate({
-      userId: TEST_ID,
-      templateId: TEST_ID,
-      newProps: {
-        name: 'updated-name',
-        tasks: [
-          {
-            ...MOCK_TASK_TEMPLATE,
-            name: 'updated-task',
-            description: 'updated-description',
-            order: 2,
-            pomodoroEstimated: 2,
-            projectId: TEST_ID
-          }
-        ]
-      }
-    })
+    const updateTemplate = new UserUpdateTemplateService(inMemoryUserRepository)
+    await updateTemplate.execute(
+      new UserUpdateTemplateCommand({
+        userId: TEST_ID,
+        templateId: TEST_ID,
+        newProps: {
+          name: 'updated-name',
+          tasks: [
+            {
+              ...MOCK_TASK_TEMPLATE,
+              name: 'updated-task',
+              description: 'updated-description',
+              order: 2,
+              pomodoroEstimated: 2,
+              projectId: TEST_ID
+            }
+          ]
+        }
+      })
+    )
 
     user = await inMemoryUserRepository.getById(TEST_ID)
     expect(user.templates).toHaveLength(1)
@@ -284,9 +297,9 @@ describe.concurrent('User', async () => {
     it.concurrent('should throw error when user not found', async () => {
       const inMemoryUserRepository = new InMemoryUserRepository(repoConfig)
 
-      const userLogin = new UserLogin(inMemoryUserRepository)
+      const userLogin = new LoginUserService(inMemoryUserRepository)
       try {
-        await userLogin.login({ ...userMock, email: 'lalala' })
+        await userLogin.execute(new LoginUserCommand({ ...userMock, email: 'lalala' }))
       } catch (e) {
         expect(e).toBeInstanceOf(UserNotFound)
         expect((e as Error).message).toBe('User with email: lalala not found')
@@ -295,9 +308,9 @@ describe.concurrent('User', async () => {
     it.concurrent('should throw error when password is invalid', async () => {
       const inMemoryUserRepository = new InMemoryUserRepository(repoConfig)
 
-      const userLogin = new UserLogin(inMemoryUserRepository)
+      const userLogin = new LoginUserService(inMemoryUserRepository)
       try {
-        await userLogin.login({ ...userMock, password: 'lalala' })
+        await userLogin.execute(new LoginUserCommand({ ...userMock, password: 'lalala' }))
       } catch (e) {
         // Throw same error to avoid security issues
         expect(e).toBeInstanceOf(UserNotFound)
@@ -306,9 +319,10 @@ describe.concurrent('User', async () => {
     })
     it.concurrent('should thorw a validation error if dont send required fields', async () => {
       const inMemoryUserRepository = new InMemoryUserRepository(repoConfig)
-      const userRegister = new UserRegister(inMemoryUserRepository)
+      const userRegister = new UserRegisterService(inMemoryUserRepository)
       try {
-        await userRegister.register({})
+        // @ts-expect-error Testing invalid input
+        await userRegister.execute({})
       } catch (e) {
         expect(e).toBeInstanceOf(ValidationError)
         expect((e as Error).message).toBe(
@@ -318,14 +332,19 @@ describe.concurrent('User', async () => {
     })
     it.concurrent('should thorw a validation error if send invalid fields', async () => {
       const inMemoryUserRepository = new InMemoryUserRepository(repoConfig)
-      const userRegister = new UserRegister(inMemoryUserRepository)
+      const userRegister = new UserRegisterService(inMemoryUserRepository)
 
       try {
-        await userRegister.register({
+        await userRegister.execute({
+          // @ts-expect-error Testing invalid input
           name: 1,
+          // @ts-expect-error Testing invalid input
           lastname: {},
+          // @ts-expect-error Testing invalid input
           username: 10,
+          // @ts-expect-error Testing invalid input
           email: [],
+          // @ts-expect-error Testing invalid input
           password: 11.5
         })
       } catch (e) {
@@ -350,10 +369,10 @@ describe.concurrent('User', async () => {
         ]
       })
 
-      const userRegister = new UserRegister(inMemoryUserRepository)
+      const userRegister = new UserRegisterService(inMemoryUserRepository)
 
       try {
-        await userRegister.register(newUser)
+        await userRegister.execute(new RegisterUserCommand(newUser))
       } catch (e) {
         expect(e).toBeInstanceOf(Error)
         expect((e as Error).message).toBe('User with email: new@mail.com already exist')
