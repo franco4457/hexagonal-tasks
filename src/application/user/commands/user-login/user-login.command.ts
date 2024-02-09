@@ -1,9 +1,9 @@
 import { Command, type CommandProps } from '@/domain/core'
 
-export class LoginUserCommand extends Command {
+export class UserLoginCommand extends Command {
   readonly email: string
   readonly password: string
-  constructor(props: CommandProps<LoginUserCommand>) {
+  constructor(props: CommandProps<UserLoginCommand>) {
     super(props)
     this.email = props.email
     this.password = props.password

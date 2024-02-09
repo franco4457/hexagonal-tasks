@@ -1,11 +1,11 @@
 import { type ICommandHandler } from '@/domain/core'
 import { type User, type UserRepository, UserNotFound } from '@/domain/user'
-import { type LoginUserCommand } from './login-user.command'
+import { type UserLoginCommand } from './user-login.command'
 
-export class LoginUserService implements ICommandHandler<LoginUserCommand, User> {
+export class UserLoginService implements ICommandHandler<UserLoginCommand, User> {
   constructor(private readonly userRepository: UserRepository) {}
 
-  async execute(command: LoginUserCommand): Promise<User> {
+  async execute(command: UserLoginCommand): Promise<User> {
     const user = await this.userRepository.getByEmail(command.email)
     const isValidPass = await user.getProps().password.compare(command.password)
     if (!isValidPass) throw new UserNotFound(command.email, 'email')

@@ -1,13 +1,13 @@
 import { Command, type CommandProps } from '@/domain/core'
 
-export class RegisterUserCommand extends Command {
+export class UserRegisterCommand extends Command {
   readonly name: string
   readonly lastname: string
   readonly username: string
   readonly email: string
   readonly password: string
 
-  constructor(props: CommandProps<RegisterUserCommand>) {
+  constructor(props: CommandProps<UserRegisterCommand>) {
     super(props)
     this.email = props.email
     this.lastname = props.lastname
