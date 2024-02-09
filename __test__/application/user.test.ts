@@ -1,13 +1,13 @@
 import {
   UserAddLabelService,
   UserAddTemplateService,
-  LoginUserService,
+  UserLoginService,
   UserRegisterService,
   UserRemoveLabelService,
   UserRemoveTemplateService,
   UserUpdateTemplateService,
-  LoginUserCommand,
-  RegisterUserCommand,
+  UserLoginCommand,
+  UserRegisterCommand,
   UserAddLabelCommand,
   UserAddTemplateCommand,
   UserRemoveTemplateCommand,
@@ -67,8 +67,8 @@ describe.concurrent('User', async () => {
   it.concurrent('login user', async () => {
     const inMemoryUserRepository = new InMemoryUserRepository(repoConfig)
 
-    const userLogin = new LoginUserService(inMemoryUserRepository)
-    const user = await userLogin.execute(new LoginUserCommand(userMock))
+    const userLogin = new UserLoginService(inMemoryUserRepository)
+    const user = await userLogin.execute(new UserLoginCommand(userMock))
     const userProps = user.getProps()
     expect(user).instanceOf(User)
     expect(userProps.name).toEqual('test')
@@ -88,7 +88,7 @@ describe.concurrent('User', async () => {
     const inMemoryUserRepository = new InMemoryUserRepository(repoConfig)
 
     const userRegister = new UserRegisterService(inMemoryUserRepository)
-    const user = await userRegister.execute(new RegisterUserCommand(newUser))
+    const user = await userRegister.execute(new UserRegisterCommand(newUser))
     const userProps = user.getProps()
     expect(expectResult.name).toEqual(userProps.name)
     expect(expectResult.email).toEqual(userProps.email)
@@ -297,9 +297,9 @@ describe.concurrent('User', async () => {
     it.concurrent('should throw error when user not found', async () => {
       const inMemoryUserRepository = new InMemoryUserRepository(repoConfig)
 
-      const userLogin = new LoginUserService(inMemoryUserRepository)
+      const userLogin = new UserLoginService(inMemoryUserRepository)
       try {
-        await userLogin.execute(new LoginUserCommand({ ...userMock, email: 'lalala' }))
+        await userLogin.execute(new UserLoginCommand({ ...userMock, email: 'lalala' }))
       } catch (e) {
         expect(e).toBeInstanceOf(UserNotFound)
         expect((e as Error).message).toBe('User with email: lalala not found')
@@ -308,9 +308,9 @@ describe.concurrent('User', async () => {
     it.concurrent('should throw error when password is invalid', async () => {
       const inMemoryUserRepository = new InMemoryUserRepository(repoConfig)
 
-      const userLogin = new LoginUserService(inMemoryUserRepository)
+      const userLogin = new UserLoginService(inMemoryUserRepository)
       try {
-        await userLogin.execute(new LoginUserCommand({ ...userMock, password: 'lalala' }))
+        await userLogin.execute(new UserLoginCommand({ ...userMock, password: 'lalala' }))
       } catch (e) {
         // Throw same error to avoid security issues
         expect(e).toBeInstanceOf(UserNotFound)
@@ -372,7 +372,7 @@ describe.concurrent('User', async () => {
       const userRegister = new UserRegisterService(inMemoryUserRepository)
 
       try {
-        await userRegister.execute(new RegisterUserCommand(newUser))
+        await userRegister.execute(new UserRegisterCommand(newUser))
       } catch (e) {
         expect(e).toBeInstanceOf(Error)
         expect((e as Error).message).toBe('User with email: new@mail.com already exist')
