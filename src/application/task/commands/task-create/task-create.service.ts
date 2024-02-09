@@ -1,24 +1,14 @@
-import { valdiateID } from '@/domain/core'
-import { validateTask, type TaskPropsCreate, Task, type TaskRepository } from '@/domain/task'
+import { type ICommandHandler, valdiateID } from '@/domain/core'
+import { validateTask, Task, type TaskRepository } from '@/domain/task'
 import { Pomodoro } from '@/domain/task/value-objects'
-import { type User } from '@/domain/user'
+import { type TaskCreateCommand } from './task-create.command'
 
-interface CreateTaskProps {
-  task: Omit<TaskPropsCreate, 'userId' | 'pomodoro' | 'project' | 'labels'> & {
-    pomodoro: {
-      estimated: number
-    }
-    labels: Array<{ name: string; id?: string }>
-    project?: { name: string; id?: string } | null
-  }
-  userId: User['id']
-}
-export class CreateTask {
+export class TaskCreateService implements ICommandHandler<TaskCreateCommand, Task | Task[]> {
   constructor(private readonly taskRepository: TaskRepository) {}
 
-  async create(props: CreateTaskProps): Promise<Task>
-  async create(props: CreateTaskProps[]): Promise<Task[]>
-  async create(props: CreateTaskProps | CreateTaskProps[]): Promise<Task | Task[]> {
+  async execute(props: TaskCreateCommand): Promise<Task>
+  async execute(props: TaskCreateCommand[]): Promise<Task[]>
+  async execute(props: TaskCreateCommand | TaskCreateCommand[]): Promise<Task | Task[]> {
     if (Array.isArray(props)) {
       const tasks = await Promise.all(
         props.map(async ({ task, ...p }) => {
