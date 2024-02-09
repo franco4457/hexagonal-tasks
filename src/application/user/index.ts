@@ -1,7 +1,6 @@
 export * from './handlers'
 export * from './user-add-label'
 export * from './user-add-template'
-export * from './user-login'
 export * from './commands'
 export * from './user-remove-label'
 export * from './user-remove-template'
