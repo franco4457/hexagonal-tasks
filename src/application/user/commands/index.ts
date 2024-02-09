@@ -1,2 +1,7 @@
 export * from './login-user'
 export * from './register-user'
+export * from './user-add-label'
+export * from './user-add-template'
+export * from './user-remove-label'
+export * from './user-remove-template'
+export * from './user-update-template'
