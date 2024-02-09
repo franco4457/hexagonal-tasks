@@ -1,11 +1,16 @@
 import { REPO_CONFIG, TEST_ID } from './../utils/constants'
 import {
   ListTasks,
-  CreateTask,
-  TaskAddLabels,
-  TaskRemoveLabel,
-  TaskRemoveProject,
-  TaskSetProject
+  TaskCreateService,
+  TaskAddLabelsService,
+  TaskRemoveLabelService,
+  TaskRemoveProjectService,
+  TaskSetProjectService,
+  TaskCreateCommand,
+  TaskAddLabelCommand,
+  TaskRemoveLabelCommand,
+  TaskSetProjectCommand,
+  TaskRemoveProjectCommand
 } from '@/application/task'
 import { ValidationError } from '@/domain/core'
 import { Label, Project, Task, type TaskModel } from '@/domain/task'
@@ -42,11 +47,10 @@ describe.concurrent('task', () => {
     const taskRepository = new InMemoryTaskRepository({
       ...taskConfig
     })
-    const createTask = new CreateTask(taskRepository)
-    const task = await createTask.create({
-      task: baseTask,
-      userId: TEST_ID
-    })
+    const createTask = new TaskCreateService(taskRepository)
+    const task = await createTask.execute(
+      new TaskCreateCommand({ task: baseTask, userId: TEST_ID })
+    )
     expect(task).toBeInstanceOf(Task)
     const taskProps = task.getProps()
     expect(taskProps.title).toEqual('title')
@@ -58,11 +62,13 @@ describe.concurrent('task', () => {
     const taskRepository = new InMemoryTaskRepository({
       ...taskConfig
     })
-    const createTask = new CreateTask(taskRepository)
-    const task = await createTask.create({
-      task: { ...baseTask, project: { name: 'project' } },
-      userId: TEST_ID
-    })
+    const createTask = new TaskCreateService(taskRepository)
+    const task = await createTask.execute(
+      new TaskCreateCommand({
+        task: { ...baseTask, project: { name: 'project' } },
+        userId: TEST_ID
+      })
+    )
     const taskProps = task.getProps()
     expect(taskProps.project).toBeInstanceOf(Project)
     expect(taskProps.project?.value.name).toBe('project')
@@ -71,20 +77,22 @@ describe.concurrent('task', () => {
     const taskRepository = new InMemoryTaskRepository({
       ...taskConfig
     })
-    const createTask = new CreateTask(taskRepository)
-    const task = await createTask.create({
-      task: {
-        ...baseTask,
-        labels: [
-          { name: 'label' },
-          {
-            id: TEST_ID,
-            name: 'label2'
-          }
-        ]
-      },
-      userId: TEST_ID
-    })
+    const createTask = new TaskCreateService(taskRepository)
+    const task = await createTask.execute(
+      new TaskCreateCommand({
+        task: {
+          ...baseTask,
+          labels: [
+            { name: 'label' },
+            {
+              id: TEST_ID,
+              name: 'label2'
+            }
+          ]
+        },
+        userId: TEST_ID
+      })
+    )
     const taskProps = task.getProps()
     expect(taskProps.labels).toBeInstanceOf(Array)
     expect(taskProps.labels).toHaveLength(2)
@@ -97,11 +105,13 @@ describe.concurrent('task', () => {
     const taskRepository = new InMemoryTaskRepository({
       ...taskConfig
     })
-    const createTask = new CreateTask(taskRepository)
-    const task = await createTask.create({
-      task: { ...baseTask, labels: [{ name: 'label' }], project: { name: 'project' } },
-      userId: TEST_ID
-    })
+    const createTask = new TaskCreateService(taskRepository)
+    const task = await createTask.execute(
+      new TaskCreateCommand({
+        task: { ...baseTask, labels: [{ name: 'label' }], project: { name: 'project' } },
+        userId: TEST_ID
+      })
+    )
     expect(task).toBeInstanceOf(Task)
     const taskProps = task.getProps()
     expect(taskProps.title).toEqual('title')
@@ -116,12 +126,15 @@ describe.concurrent('task', () => {
   })
   it.concurrent('Create multiple task', async () => {
     const taskRepository = new InMemoryTaskRepository(taskConfig)
-    const createTask = new CreateTask(taskRepository)
-    const tasks = await createTask.create(
-      Array.from({ length: 10 }, (_, i) => i).map((i) => ({
-        task: { ...baseTask, title: `test-title-${i}`, description: `test-desc-${i}` },
-        userId: TEST_ID.slice(0, -1) + i
-      }))
+    const createTask = new TaskCreateService(taskRepository)
+    const tasks = await createTask.execute(
+      Array.from({ length: 10 }, (_, i) => i).map(
+        (i) =>
+          new TaskCreateCommand({
+            task: { ...baseTask, title: `test-title-${i}`, description: `test-desc-${i}` },
+            userId: TEST_ID.slice(0, -1) + i
+          })
+      )
     )
     expect(tasks).toBeInstanceOf(Array)
     expect(tasks).toHaveLength(10)
@@ -136,24 +149,27 @@ describe.concurrent('task', () => {
   })
   it.concurrent('Create multiple task with project and labels', async () => {
     const taskRepository = new InMemoryTaskRepository(taskConfig)
-    const createTask = new CreateTask(taskRepository)
-    const tasks = await createTask.create(
-      Array.from({ length: 3 }, (_, i) => i).map((i) => ({
-        task: {
-          ...baseTask,
-          title: `test-title-${i}`,
-          description: `test-desc-${i}`,
-          labels: [
-            { name: 'label' },
-            {
-              id: TEST_ID,
-              name: 'label2'
-            }
-          ],
-          project: { name: 'project' }
-        },
-        userId: TEST_ID.slice(0, -1) + i
-      }))
+    const createTask = new TaskCreateService(taskRepository)
+    const tasks = await createTask.execute(
+      Array.from({ length: 3 }, (_, i) => i).map(
+        (i) =>
+          new TaskCreateCommand({
+            task: {
+              ...baseTask,
+              title: `test-title-${i}`,
+              description: `test-desc-${i}`,
+              labels: [
+                { name: 'label' },
+                {
+                  id: TEST_ID,
+                  name: 'label2'
+                }
+              ],
+              project: { name: 'project' }
+            },
+            userId: TEST_ID.slice(0, -1) + i
+          })
+      )
     )
     expect(tasks).toBeInstanceOf(Array)
     expect(tasks).toHaveLength(3)
@@ -176,12 +192,15 @@ describe.concurrent('task', () => {
     const taskRepository = new InMemoryTaskRepository({
       ...taskConfig
     })
-    const createTask = new CreateTask(taskRepository)
-    await createTask.create(
-      Array.from({ length: 10 }, (_, i) => i).map((i) => ({
-        task: { ...baseTask, title: `test-title-${i}`, description: `test-desc-${i}` },
-        userId: TEST_ID.slice(0, -1) + i
-      }))
+    const createTask = new TaskCreateService(taskRepository)
+    await createTask.execute(
+      Array.from({ length: 10 }, (_, i) => i).map(
+        (i) =>
+          new TaskCreateCommand({
+            task: { ...baseTask, title: `test-title-${i}`, description: `test-desc-${i}` },
+            userId: TEST_ID.slice(0, -1) + i
+          })
+      )
     )
     const listTasks = new ListTasks(taskRepository)
     const tasks = await listTasks.getAll()
@@ -200,18 +219,23 @@ describe.concurrent('task', () => {
     const taskRepository = new InMemoryTaskRepository({
       ...taskConfig
     })
-    const createTask = new CreateTask(taskRepository)
+    const createTask = new TaskCreateService(taskRepository)
     await Promise.all([
-      await createTask.create(
-        Array.from({ length: 10 }, (_, i) => i).map((i) => ({
-          task: { ...baseTask, title: `test-title-${i}`, description: `test-desc-${i}` },
-          userId: TEST_ID.slice(0, -1) + i
-        }))
+      await createTask.execute(
+        Array.from({ length: 10 }, (_, i) => i).map(
+          (i) =>
+            new TaskCreateCommand({
+              task: { ...baseTask, title: `test-title-${i}`, description: `test-desc-${i}` },
+              userId: TEST_ID.slice(0, -1) + i
+            })
+        )
       ),
-      createTask.create({
-        task: { ...baseTask, title: 'test-title-10', description: 'test-desc-10' },
-        userId: TEST_ID.slice(0, -1) + 0
-      })
+      createTask.execute(
+        new TaskCreateCommand({
+          task: { ...baseTask, title: 'test-title-10', description: 'test-desc-10' },
+          userId: TEST_ID.slice(0, -1) + 0
+        })
+      )
     ])
     const listTasks = new ListTasks(taskRepository)
     const tasks = await listTasks.getByUserId(TEST_ID.slice(0, -1) + 0)
@@ -247,11 +271,13 @@ describe.concurrent('task', () => {
     expect(task).toBeInstanceOf(Task)
     expect(task.getProps().labels).toHaveLength(0)
 
-    const addLabel = new TaskAddLabels(taskRepository)
-    await addLabel.addLabel({
-      taskId: TEST_ID,
-      label: [{ name: 'label' }]
-    })
+    const addLabel = new TaskAddLabelsService(taskRepository)
+    await addLabel.execute(
+      new TaskAddLabelCommand({
+        taskId: TEST_ID,
+        label: [{ name: 'label' }]
+      })
+    )
     task = await taskRepository.getTask(TEST_ID)
     expect(task).toBeInstanceOf(Task)
     expect(task.getProps().labels).toHaveLength(1)
@@ -275,11 +301,13 @@ describe.concurrent('task', () => {
     expect(task).toBeInstanceOf(Task)
     expect(task.getProps().labels).toHaveLength(0)
 
-    const addLabel = new TaskAddLabels(taskRepository)
-    await addLabel.addLabel({
-      taskId: TEST_ID,
-      label: [{ name: 'label' }, { name: 'label2' }]
-    })
+    const addLabel = new TaskAddLabelsService(taskRepository)
+    await addLabel.execute(
+      new TaskAddLabelCommand({
+        taskId: TEST_ID,
+        label: [{ name: 'label' }, { name: 'label2' }]
+      })
+    )
     task = await taskRepository.getTask(TEST_ID)
     expect(task).toBeInstanceOf(Task)
     expect(task.getProps().labels).toHaveLength(2)
@@ -306,11 +334,13 @@ describe.concurrent('task', () => {
     expect(task).toBeInstanceOf(Task)
     expect(task.getProps().labels).toHaveLength(2)
 
-    const addLabel = new TaskRemoveLabel(taskRepository)
-    await addLabel.removeLabel({
-      taskId: TEST_ID,
-      labelName: 'label-to-remove'
-    })
+    const addLabel = new TaskRemoveLabelService(taskRepository)
+    await addLabel.execute(
+      new TaskRemoveLabelCommand({
+        taskId: TEST_ID,
+        labelName: 'label-to-remove'
+      })
+    )
     task = await taskRepository.getTask(TEST_ID)
     expect(task).toBeInstanceOf(Task)
     expect(task.getProps().labels).toHaveLength(1)
@@ -328,11 +358,13 @@ describe.concurrent('task', () => {
     expect(task).toBeInstanceOf(Task)
     expect(task.getProps().project).toBe(null)
 
-    const setProject = new TaskSetProject(InMemoryUserRepository)
-    await setProject.setProject({
-      taskId: TEST_ID,
-      project: { name: 'project' }
-    })
+    const setProject = new TaskSetProjectService(InMemoryUserRepository)
+    await setProject.execute(
+      new TaskSetProjectCommand({
+        taskId: TEST_ID,
+        project: { name: 'project' }
+      })
+    )
 
     task = await InMemoryUserRepository.getTask(TEST_ID)
     expect(task.getProps().project).toBeInstanceOf(Project)
@@ -349,10 +381,12 @@ describe.concurrent('task', () => {
     expect(task.getProps().project).toBeInstanceOf(Project)
     expect(task.getProps().project).toEqual(new Project({ name: 'project' }))
 
-    const removeProject = new TaskRemoveProject(InMemoryUserRepository)
-    await removeProject.removeProject({
-      taskId: TEST_ID
-    })
+    const removeProject = new TaskRemoveProjectService(InMemoryUserRepository)
+    await removeProject.execute(
+      new TaskRemoveProjectCommand({
+        taskId: TEST_ID
+      })
+    )
 
     task = await InMemoryUserRepository.getTask(TEST_ID)
     expect(task.getProps().project).toBe(null)
@@ -360,13 +394,15 @@ describe.concurrent('task', () => {
   describe.concurrent('Exceptions', () => {
     it.concurrent('Don`t send correct props', async () => {
       const taskRepository = new InMemoryTaskRepository(taskConfig)
-      const createTask = new CreateTask(taskRepository)
+      const createTask = new TaskCreateService(taskRepository)
       try {
-        await createTask.create({
-          // @ts-expect-error test
-          task: {},
-          userId: TEST_ID
-        })
+        await createTask.execute(
+          new TaskCreateCommand({
+            // @ts-expect-error test
+            task: {},
+            userId: TEST_ID
+          })
+        )
         expect(true).toBe(false)
       } catch (e) {
         expect(e).toBeInstanceOf(ValidationError)
@@ -377,22 +413,29 @@ describe.concurrent('task', () => {
     })
     it.concurrent('Don`t send correct types ', async () => {
       const taskRepository = new InMemoryTaskRepository(taskConfig)
-      const createTask = new CreateTask(taskRepository)
+      const createTask = new TaskCreateService(taskRepository)
       try {
-        await createTask.create({
-          // @ts-expect-error test
-          task: {
-            title: 0,
-            description: 0,
-            labels: 'foo',
-            order: 'bar',
-            project: {
-              name: {}
+        await createTask.execute(
+          new TaskCreateCommand({
+            task: {
+              // @ts-expect-error test
+              title: 0,
+              // @ts-expect-error test
+              description: 0,
+              // @ts-expect-error test
+              labels: 'foo',
+              // @ts-expect-error test
+              order: 'bar',
+              project: {
+                // @ts-expect-error test
+                name: {}
+              },
+              // @ts-expect-error test
+              pomodoro: 'baz'
             },
-            pomodoro: 'baz'
-          },
-          userId: TEST_ID
-        })
+            userId: TEST_ID
+          })
+        )
         expect(true).toBe(false)
       } catch (error) {
         expect(error).toBeInstanceOf(ValidationError)
@@ -404,17 +447,19 @@ describe.concurrent('task', () => {
     })
     it.concurrent('Don`t send correct lengths', async () => {
       const taskRepository = new InMemoryTaskRepository(taskConfig)
-      const createTask = new CreateTask(taskRepository)
+      const createTask = new TaskCreateService(taskRepository)
       try {
-        await createTask.create({
-          task: {
-            ...baseTask,
-            order: -1,
-            title: 't',
-            description: 'd'
-          },
-          userId: TEST_ID
-        })
+        await createTask.execute(
+          new TaskCreateCommand({
+            task: {
+              ...baseTask,
+              order: -1,
+              title: 't',
+              description: 'd'
+            },
+            userId: TEST_ID
+          })
+        )
         expect(true).toBe(false)
       } catch (e) {
         expect(e).toBeInstanceOf(ValidationError)
@@ -425,16 +470,18 @@ describe.concurrent('task', () => {
     })
     it.concurrent('Don`t correct userId', async () => {
       const taskRepository = new InMemoryTaskRepository(taskConfig)
-      const createTask = new CreateTask(taskRepository)
+      const createTask = new TaskCreateService(taskRepository)
       try {
-        await createTask.create({
-          task: {
-            ...baseTask,
-            title: 'title',
-            description: 'description'
-          },
-          userId: 'asdjkah-asldjkh'
-        })
+        await createTask.execute(
+          new TaskCreateCommand({
+            task: {
+              ...baseTask,
+              title: 'title',
+              description: 'description'
+            },
+            userId: 'asdjkah-asldjkh'
+          })
+        )
         expect(true).toBe(false)
       } catch (e) {
         expect(e).toBeInstanceOf(ValidationError)
