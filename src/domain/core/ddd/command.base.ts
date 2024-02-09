@@ -3,7 +3,7 @@ import { isEmpty } from '../guard'
 import { ArgumentNotProvided } from '../exeptions'
 
 export interface ICommandHandler<TCommmand extends Command, Result = unknown> {
-  excute: (command: TCommmand) => Promise<Result>
+  execute: (command: TCommmand) => Promise<Result>
 }
 
 export type CommandProps<T> = Omit<T, 'id' | 'metadata'> & Partial<Command>
