@@ -6,7 +6,7 @@ import { type RegisterUserCommand } from './register-user.command'
 export class UserRegisterService implements ICommandHandler<RegisterUserCommand, User> {
   constructor(private readonly userRepository: UserRepository) {}
 
-  async excute(command: RegisterUserCommand): Promise<User> {
+  async execute(command: RegisterUserCommand): Promise<User> {
     const userInput = await validateUser(command)
     const password = await Password.create(userInput.password)
     const user = User.create({ ...userInput, password })
