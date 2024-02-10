@@ -1,6 +1,6 @@
 import { InMemoryProjectRepository } from '@/infraestructure/repository/in-memory'
 import { REPO_CONFIG, TEST_ID } from '../utils'
-import { ProjectCreate } from '@/application/project'
+import { ProjectCreateCommand, ProjectCreateService } from '@/application/project'
 import { Project, ProjectNotFound } from '@/domain/project'
 import { ProjectAddPomodoroCountEventHandler } from '@/application/project/handlers/add-project-pomodoro-count.event-handler'
 import { TaskUpdateActualPomodoroEvent } from '@/domain/task'
@@ -9,11 +9,13 @@ import { ValidationError } from '@/domain/core'
 describe.concurrent('Project', () => {
   it.concurrent('Create project', async () => {
     const inMemoryProjectRepository = new InMemoryProjectRepository(REPO_CONFIG)
-    const createProject = new ProjectCreate(inMemoryProjectRepository)
-    const project = await createProject.create({
-      name: 'Project name',
-      userId: TEST_ID
-    })
+    const createProject = new ProjectCreateService(inMemoryProjectRepository)
+    const project = await createProject.execute(
+      new ProjectCreateCommand({
+        name: 'Project name',
+        userId: TEST_ID
+      })
+    )
     expect(project).toBeInstanceOf(Project)
     expect(project.getProps()).toEqual({
       id: expect.any(String),
@@ -56,9 +58,9 @@ describe.concurrent('Project', () => {
   describe.concurrent('Exceptions', async () => {
     it.concurrent('Incorrect props on create', async () => {
       const inMemoryProjectRepository = new InMemoryProjectRepository(REPO_CONFIG)
-      const createProject = new ProjectCreate(inMemoryProjectRepository)
+      const createProject = new ProjectCreateService(inMemoryProjectRepository)
       try {
-        await createProject.create({ name: '', userId: '' })
+        await createProject.execute(new ProjectCreateCommand({ name: '', userId: '' }))
         expect(true).toBe(false)
       } catch (e) {
         expect(e).toBeInstanceOf(ValidationError)
@@ -69,10 +71,10 @@ describe.concurrent('Project', () => {
     })
     it.concurrent('Incorrect types props on create', async () => {
       const inMemoryProjectRepository = new InMemoryProjectRepository(REPO_CONFIG)
-      const createProject = new ProjectCreate(inMemoryProjectRepository)
+      const createProject = new ProjectCreateService(inMemoryProjectRepository)
       try {
         // @ts-expect-error Testing incorrect types
-        await createProject.create({ name: 1, userId: {} })
+        await createProject.execute(new ProjectCreateCommand({ name: 1, userId: {} }))
         expect(true).toBe(false)
       } catch (e) {
         expect(e).toBeInstanceOf(ValidationError)
