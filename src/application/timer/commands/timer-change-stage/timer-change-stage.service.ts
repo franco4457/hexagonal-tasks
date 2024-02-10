@@ -1,15 +1,11 @@
-import { ValidationError } from '@/domain/core'
+import { type ICommandHandler, ValidationError } from '@/domain/core'
 import { type TimerRepository } from '@/domain/timer'
-
-export interface TimerChangeStageProps {
-  timerId: string
-  stage: 'pomodoro' | 'shortBreak' | 'longBreak'
-}
+import { type TimerChangeStageCommand } from './timer-change-stage.command'
 
 // XXX: check if it's better to use a factory call for changeStage method
-export class TimerChangeStage {
+export class TimerChangeStageService implements ICommandHandler<TimerChangeStageCommand, void> {
   constructor(private readonly timerRepository: TimerRepository) {}
-  async change({ timerId, stage }: TimerChangeStageProps): Promise<void> {
+  async execute({ timerId, stage }: TimerChangeStageCommand): Promise<void> {
     const timer = await this.timerRepository.getTimer(timerId)
 
     if (stage === 'pomodoro') {
