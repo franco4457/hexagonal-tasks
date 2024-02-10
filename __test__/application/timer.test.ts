@@ -11,7 +11,16 @@ import {
   Timer,
   TimerFieldRequired
 } from '@/domain/timer'
-import { TimerFinish, TimerResume, TimerStar, TimerStop } from '@/application/timer'
+import {
+  TimerFinishCommand,
+  TimerFinishService,
+  TimerResumeCommand,
+  TimerResumeService,
+  TimerStarService,
+  TimerStartCommand,
+  TimerStopCommand,
+  TimerStopService
+} from '@/application/timer'
 
 const TIMER_BASE = {
   userId: TEST_ID,
@@ -51,8 +60,8 @@ describe.concurrent('Timer', async () => {
 
   it.concurrent('start timer', async () => {
     await timerRepository.create(new Timer({ id: TEST_ID, props: { ...TIMER_BASE } }))
-    const startTimer = new TimerStar(timerRepository)
-    await startTimer.start({ userId: TEST_ID })
+    const startTimer = new TimerStarService(timerRepository)
+    await startTimer.execute(new TimerStartCommand({ userId: TEST_ID }))
     const timer = await timerRepository.getTimer(TEST_ID)
     const props = timer.getProps()
     expect(props.startedAt).toBeGreaterThanOrEqual(now)
@@ -72,8 +81,8 @@ describe.concurrent('Timer', async () => {
     expect(timer.getProps().status.isRunning()).toBe(true)
     expect(timer.getProps().startedAt).toBeGreaterThanOrEqual(now)
 
-    const stopTimer = new TimerStop(timerRepository)
-    await stopTimer.stop({ userId: TEST_ID })
+    const stopTimer = new TimerStopService(timerRepository)
+    await stopTimer.execute(new TimerStopCommand({ userId: TEST_ID }))
     const stoppedTimer = await timerRepository.getTimer(TEST_ID)
     const stoppedProps = stoppedTimer.getProps()
     expect(stoppedProps.startedAt).toBeGreaterThanOrEqual(now)
@@ -99,8 +108,8 @@ describe.concurrent('Timer', async () => {
     const timer = await timerRepository.getTimer(TEST_ID)
     expect(timer.getProps().status.isPaused()).toBe(true)
 
-    const startTimer = new TimerResume(timerRepository)
-    await startTimer.resume({ userId: TEST_ID })
+    const startTimer = new TimerResumeService(timerRepository)
+    await startTimer.execute(new TimerResumeCommand({ userId: TEST_ID }))
     const resumedTimer = await timerRepository.getTimer(TEST_ID)
     const resumedProps = resumedTimer.getProps()
     expect(resumedProps.startedAt).toBeGreaterThanOrEqual(now)
@@ -118,8 +127,8 @@ describe.concurrent('Timer', async () => {
     const timer = await timerRepository.getTimer(TEST_ID)
     expect(timer.getProps().status.isRunning()).toBe(true)
 
-    const finishTimer = new TimerFinish(timerRepository)
-    await finishTimer.finish({ userId: TEST_ID })
+    const finishTimer = new TimerFinishService(timerRepository)
+    await finishTimer.execute(new TimerFinishCommand({ userId: TEST_ID }))
     const finishedTimer = await timerRepository.getTimer(TEST_ID)
     const finishedProps = finishedTimer.getProps()
     expect(finishedProps.startedAt).toBe(0)
@@ -136,8 +145,8 @@ describe.concurrent('Timer', async () => {
     const timer = await timerRepository.getTimer(TEST_ID)
     expect(timer.getProps().status.isRunning()).toBe(true)
 
-    const finishTimer = new TimerFinish(timerRepository)
-    await finishTimer.finish({ userId: TEST_ID })
+    const finishTimer = new TimerFinishService(timerRepository)
+    await finishTimer.execute(new TimerFinishCommand({ userId: TEST_ID }))
     const finishedTimer = await timerRepository.getTimer(TEST_ID)
     const finishedProps = finishedTimer.getProps()
     expect(finishedProps.startedAt).toBe(0)
