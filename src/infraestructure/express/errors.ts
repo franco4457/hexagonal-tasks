@@ -1,4 +1,4 @@
-import { AlreadyExist, DomainError, NotFound, ValidationError } from '@/domain/core'
+import { DomainError, ValidationError } from '@/domain/core'
 import { type ErrorRequestHandler } from 'express'
 
 export const mainErrorHanlder: ErrorRequestHandler = (err, _req, res, _next) => {
@@ -10,14 +10,6 @@ export const mainErrorHanlder: ErrorRequestHandler = (err, _req, res, _next) => 
   res.status(statusCode)
   if (err instanceof ValidationError) {
     res.json({ error: true, ...resErr, errors: JSON.parse(err.message), message: err.name })
-    return
-  }
-  if (err instanceof AlreadyExist) {
-    res.json({ error: true, ...resErr, message: err.message })
-    return
-  }
-  if (err instanceof NotFound) {
-    res.json({ error: true, ...resErr, message: err.message })
     return
   }
   res.json({ error: true, ...resErr, message: err.message })
