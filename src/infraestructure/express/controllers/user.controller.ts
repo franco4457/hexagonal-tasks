@@ -1,5 +1,6 @@
 import { UserLoginService, UserRegisterService } from '@/application/user'
 import { UserMapper, type UserRepository } from '@/domain/user'
+import { UserAuthorizationBearer } from '@/infraestructure/authorization'
 import type { Request, Response, NextFunction } from 'express'
 
 export class UserController {
@@ -15,7 +16,8 @@ export class UserController {
     const body = req.body
     try {
       const user = await this.userRegister.execute(body)
-      res.status(200).json({ user: this.mapper.toResponse(user) })
+      const token = UserAuthorizationBearer.create({ id: user.id })
+      res.status(200).json({ token })
     } catch (error) {
       next(error)
     }
@@ -25,7 +27,8 @@ export class UserController {
     const body = req.body
     try {
       const user = await this.userLogin.execute(body)
-      res.status(200).json({ user: this.mapper.toResponse(user) })
+      const token = UserAuthorizationBearer.create({ id: user.id })
+      res.status(200).json({ token })
     } catch (error) {
       next(error)
     }
@@ -39,4 +42,6 @@ export class UserController {
       next(error)
     }
   }
+
+  // TODO: GET /user
 }
