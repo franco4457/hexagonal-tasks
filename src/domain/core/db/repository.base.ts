@@ -4,6 +4,9 @@ import type { LoggerPort } from '../logger.port'
 import type { RepositoryPort } from '../repository.port'
 import type { Mapper } from '../mapper'
 
+export interface RepositoryQueryConfig {
+  raw?: boolean
+}
 export abstract class RepositoryBase<
   Aggregate extends AggregateRoot<any>,
   DbModel extends Record<string, unknown>
