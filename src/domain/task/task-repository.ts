@@ -4,7 +4,7 @@ import type { User } from '../user'
 import { type Task, type TaskModel } from './task.entity'
 import { TaskMapper } from './task.mapper'
 
-interface SortOptions extends RepositoryQueryConfig {
+export interface SortOptions extends RepositoryQueryConfig {
   order: 'ASC' | 'DESC'
   sortBy: keyof TaskModel
 }
@@ -19,10 +19,10 @@ export interface ITaskRepository {
     config?: RepositoryQueryConfig
   ) => Promise<Task[] | TaskModel[]>
 
-  getTasksByUserIdSortedBy: (
-    userId: User['id'],
-    config?: SortOptions
-  ) => Promise<Task[] | TaskModel[]>
+  getTasksByUserIdSortedBy: <Q extends SortOptions>(
+    userId: string,
+    config?: Q
+  ) => Promise<Q['raw'] extends true ? TaskModel[] : Task[]>
 
   updateLabels: (props: { task: Task }) => Promise<void>
 
@@ -44,13 +44,10 @@ export abstract class TaskRepository
   abstract getTasksByUserId(userId: User['id'], config: { raw: true }): Promise<TaskModel[]>
   abstract getTasksByUserId(userId: User['id'], config?: RepositoryQueryConfig): Promise<Task[]>
 
-  abstract getTasksByUserIdSortedBy: ((
-    userId: User['id'],
-    config: Omit<SortOptions, 'raw'> & {
-      raw: true
-    }
-  ) => Promise<TaskModel[]>) &
-    ((userId: User['id'], config?: SortOptions) => Promise<Task[]>)
+  abstract getTasksByUserIdSortedBy<Q extends SortOptions>(
+    userId: string,
+    config?: Q
+  ): Promise<Q['raw'] extends true ? TaskModel[] : Task[]>
 
   abstract create(task: Task): Promise<Task>
   abstract create(task: Task[]): Promise<Task[]>
