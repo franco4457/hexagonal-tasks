@@ -1,13 +1,15 @@
 import type EventEmitter2 from 'eventemitter2'
-import { type LoggerPort, RepositoryBase } from '../core'
+import { type LoggerPort, RepositoryBase, type RepositoryQueryConfig } from '../core'
 import type { User, UserModel } from './user.entity'
 import { UserMapper } from './user.mapper'
 import { type Label, type Template } from './entities'
 
 export interface IUserRepository {
-  getById: (id: string) => Promise<User>
-  getByEmail: (email: string) => Promise<User>
-  getAll: () => Promise<User[]>
+  getById: (id: string, config?: RepositoryQueryConfig) => Promise<User>
+  getByEmail: (email: string, config?: RepositoryQueryConfig) => Promise<User>
+  getAll: (config?: RepositoryQueryConfig) => Promise<User[]>
+
+  /** ---- MUTATIONS ---- */
   create: (user: User) => Promise<User>
 
   addTemplate: (props: { user: User; template: Template }) => Promise<Template>
@@ -30,9 +32,11 @@ export abstract class UserRepository
   }
 
   protected readonly mapper = new UserMapper()
-  abstract getById(id: string): Promise<User>
-  abstract getByEmail(email: string): Promise<User>
-  abstract getAll(): Promise<User[]>
+  abstract getById(id: string, config?: RepositoryQueryConfig): Promise<User>
+  abstract getByEmail(email: string, config?: RepositoryQueryConfig): Promise<User>
+  abstract getAll(config?: RepositoryQueryConfig): Promise<User[]>
+
+  /** ---- MUTATIONS ---- */
   abstract create(user: User): Promise<User>
 
   // Templates
