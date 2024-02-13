@@ -5,3 +5,5 @@ export const REPO_CONFIG = {
   appContext: 'TEST',
   eventEmitter: new EventEmitter2()
 }
+export const MOCK_TOKEN =
+  'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6ImMyZDdlMGUwLTRlMGEtNGI3YS04YzdlLTJhOWE5YjBhM2IxYSIsImlhdCI6MTcwNzc4NTM0N30.F-sCWFjQ8DzpkRYjzlUPBgt70KfIR0ANwNuxKGw88DE'
