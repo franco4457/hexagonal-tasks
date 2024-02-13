@@ -21,7 +21,7 @@ export interface ITaskRepository {
 
   getTasksByUserIdSortedBy: <Q extends SortOptions>(
     userId: string,
-    config?: Q
+    config: Q
   ) => Promise<Q['raw'] extends true ? TaskModel[] : Task[]>
 
   updateLabels: (props: { task: Task }) => Promise<void>
@@ -46,7 +46,7 @@ export abstract class TaskRepository
 
   abstract getTasksByUserIdSortedBy<Q extends SortOptions>(
     userId: string,
-    config?: Q
+    config: Q
   ): Promise<Q['raw'] extends true ? TaskModel[] : Task[]>
 
   abstract create(task: Task): Promise<Task>
