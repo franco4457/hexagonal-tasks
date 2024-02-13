@@ -54,12 +54,20 @@ export class TaskController {
     }
   }
 
+  private resolveUserId(req: Request): string {
+    const { userId } = req.params
+    if (userId != null) return userId
+    return req.userAuth.decodedToken.id
+  }
+
   async getByUserId(req: Request, res: Response, next: NextFunction): Promise<void> {
     try {
-      const { userId } = req.params
       // TODO: test this
       const { sort = 'true' } = req.query
-      const query = new TaskByUserIdQuery({ userId, sortByOrder: sort === 'true' })
+      const query = new TaskByUserIdQuery({
+        userId: this.resolveUserId(req),
+        sortByOrder: sort === 'true'
+      })
       const tasks = this.queryByUserId.execute(query)
       res.status(200).json({ tasks })
     } catch (error) {
