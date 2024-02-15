@@ -1,15 +1,13 @@
-import type { IApiBuilder } from '@/application/api/builder'
-import { TaskRepository } from '@/domain/task'
-import { UserRepository } from '@/domain/user'
 import { ApiExpress } from '../api'
-import { MainRouter } from '../routes'
-import EventEmitter2 from 'eventemitter2'
-import { AssignTaskWhenIsCreatedEventHandler } from '@/application/user'
 import { asClass, asValue, createContainer } from 'awilix'
+import { eventsHandlers } from './events-handlers'
+import { MainRouter } from '../routes'
 import { ProjectRepository } from '@/domain/project'
+import { TaskRepository } from '@/domain/task'
 import { TimerRepository } from '@/domain/timer'
-
-const eventhandlers = [AssignTaskWhenIsCreatedEventHandler]
+import { UserRepository } from '@/domain/user'
+import EventEmitter2 from 'eventemitter2'
+import type { IApiBuilder } from '@/application/api/builder'
 
 class EventEmitter extends EventEmitter2 {
   // eslint-disable-next-line @typescript-eslint/no-useless-constructor
@@ -85,19 +83,22 @@ export class ApiBuilderExpress implements IApiBuilder {
       throw new Error('ProjectRepository not set')
     }
 
-    eventhandlers.forEach((Handler) => {
+    eventsHandlers.forEach((handler) => {
       const instance = this.container
         .register({
-          [Handler.name]: asClass(Handler).singleton()
+          [handler.name]: asClass(handler).singleton()
         })
-        .resolve(Handler.name)
-      this.container.resolve('eventEmitter').on(Handler.EVENT_NAME, instance.handle.bind(instance))
+        .resolve(handler.name)
+      this.container
+        .resolve('eventEmitter')
+        .on((handler as any).EVENT_NAME, instance.handle.bind(instance))
     })
 
     this.api.build(
       new MainRouter(
         this.container.resolve('userRepository'),
-        this.container.resolve('taskRepository')
+        this.container.resolve('taskRepository'),
+        this.container.resolve('timerRepository')
       )
     )
     return this.api
