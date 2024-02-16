@@ -16,7 +16,7 @@ import {
   TimerFinishService,
   TimerResumeCommand,
   TimerResumeService,
-  TimerStarService,
+  TimerStartService,
   TimerStartCommand,
   TimerStopCommand,
   TimerStopService
@@ -60,7 +60,7 @@ describe.concurrent('Timer', async () => {
 
   it.concurrent('start timer', async () => {
     await timerRepository.create(new Timer({ id: TEST_ID, props: { ...TIMER_BASE } }))
-    const startTimer = new TimerStarService(timerRepository)
+    const startTimer = new TimerStartService(timerRepository)
     await startTimer.execute(new TimerStartCommand({ userId: TEST_ID }))
     const timer = await timerRepository.getTimer(TEST_ID)
     const props = timer.getProps()
