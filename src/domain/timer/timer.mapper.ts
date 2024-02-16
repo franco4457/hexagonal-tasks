@@ -52,6 +52,7 @@ export class TimerMapper implements Mapper<Timer, TimerModel, TimerResponseDto> 
     response.duration = domain.currentDuration - (elapsed - props.stoppedAt - now)
     response.stageInterval = props.stage.stageInterval
     response.currentStage = props.stage.currentStage
+    response.pomodoroCounter = props.pomodoroCounter
     return response
   }
 }

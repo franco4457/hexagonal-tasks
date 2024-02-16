@@ -8,4 +8,5 @@ export class TimerResponseDto extends ResponseBase {
   duration!: number
   stageInterval!: number
   currentStage!: string
+  pomodoroCounter!: number
 }
