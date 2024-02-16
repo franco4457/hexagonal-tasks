@@ -46,12 +46,7 @@ export class InMemoryProjectRepository extends ProjectRepository {
   }
 
   async getByUserId(userId: string): Promise<Project[]> {
-    return this.projects.reduce<Project[]>((acc, project) => {
-      if (project.userId === userId) {
-        acc.push(this.mapper.toDomain(project))
-      }
-      return acc
-    }, [])
+    return this.projects.filter((project) => project.userId === userId).map(this.mapper.toDomain)
   }
 
   async getByNameAndUserId(query: { name: string; userId: string }): Promise<Project> {
