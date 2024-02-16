@@ -32,12 +32,12 @@ export class ProjectMapper implements Mapper<Project, ProjectModel, ProjectRespo
     return record
   }
 
-  toResponse(project: any): ProjectResponseDto {
+  toResponse(project: Project): ProjectResponseDto {
     const { id, createdAt, updatedAt, ...props } = project.getProps()
     const response = new ProjectResponseDto({ id, createdAt, updatedAt })
     response.name = props.name
     response.userId = props.userId
     response.pomodoroCount = props.pomodoroCount
-    return project
+    return response
   }
 }
