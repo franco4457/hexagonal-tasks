@@ -20,8 +20,9 @@ export class TaskController {
   }
 
   async create(req: Request, res: Response, next: NextFunction): Promise<void> {
+    const { id: userId } = req.userAuth.decodedToken
     try {
-      const { userId, title, description, order, pomodoro, labels, project } = req.body
+      const { title, description, order, pomodoro, labels, project } = req.body
       const task = await this.createTask.execute(
         new TaskCreateCommand({
           task: { title, description, order, pomodoro, labels, project },
@@ -35,10 +36,13 @@ export class TaskController {
   }
 
   async bulkCreate(req: Request, res: Response, next: NextFunction): Promise<void> {
+    const { id: userId } = req.userAuth.decodedToken
     try {
       const { data } = req.body as { data: [] }
-      const tasksCreated = await this.createTask.execute(data)
-      res.status(201).json({ tasks: tasksCreated.map((task) => this.mapper.toResponse(task)) })
+      const tasksCreated = await this.createTask.execute(
+        data.map(({ task }) => new TaskCreateCommand({ task, userId }))
+      )
+      res.status(201).json({ tasks: tasksCreated.map(this.mapper.toResponse) })
     } catch (error) {
       next(error)
     }
