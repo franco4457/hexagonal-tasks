@@ -1,6 +1,6 @@
 import { Unauthorized } from '../exeptions'
 import { isEmpty } from '../guard'
-import { sign, verify } from 'jsonwebtoken'
+import { JsonWebTokenError, sign, verify } from 'jsonwebtoken'
 import { JWT_SECRET } from '@/config'
 
 type AuthorizationBearerProps = `Bearer ${string}` | string
@@ -11,7 +11,14 @@ export class AuthorizationBearer<DataToken extends Record<string, unknown>> {
     this.validate(props)
     this._value = props
     const token = this._value.split(' ')[1]
-    this._decodedToken = verify(token, JWT_SECRET) as DataToken
+    try {
+      this._decodedToken = verify(token, JWT_SECRET) as DataToken
+    } catch (error) {
+      if (error instanceof JsonWebTokenError && error.message === 'jwt malformed') {
+        throw new Unauthorized('Authorization token is malformed')
+      }
+      throw error
+    }
   }
 
   static create(props: Record<string, unknown>): string {
