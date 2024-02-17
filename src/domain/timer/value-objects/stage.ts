@@ -1,4 +1,5 @@
 import { ValueObject } from '@/domain/core'
+import { InvalidStage } from '../timer.exceptions'
 
 export enum StageEnum {
   SHORT_BREAK = 'short_break',
@@ -38,10 +39,10 @@ export class Stage extends ValueObject<StageProps> {
 
   protected validate(value: StageProps): void {
     if (value.stageInterval < 0) {
-      throw new Error('Stage interval must be greater than 0')
+      throw new InvalidStage('Stage interval must be greater than 0')
     }
     if (!Object.values(StageEnum).includes(value.currentStage)) {
-      throw new Error('Invalid stage')
+      throw new InvalidStage('Invalid stage')
     }
   }
 }

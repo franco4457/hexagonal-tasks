@@ -7,6 +7,12 @@ export class InvalidCurrentStage extends DomainError {
   }
 }
 
+export class InvalidStage extends DomainError {
+  constructor(message: string = 'Invalid stage') {
+    super(message, { name: 'InvalidStage', statusCode: 400 })
+  }
+}
+
 export class TimerFieldRequired extends IsRequired<keyof Timer | keyof Timer['props']> {}
 
 export class TimerAlreadyExists extends AlreadyExist {
