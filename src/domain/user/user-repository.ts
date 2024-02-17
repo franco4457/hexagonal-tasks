@@ -2,7 +2,7 @@ import type EventEmitter2 from 'eventemitter2'
 import { type LoggerPort, RepositoryBase, type RepositoryQueryConfig } from '../core'
 import type { User, UserModel } from './user.entity'
 import { UserMapper } from './user.mapper'
-import { type Label, type Template } from './entities'
+import { type TemplateModel, type Label, type Template, type LabelModel } from './entities'
 
 export interface IUserRepository {
   getById: (id: string, config?: RepositoryQueryConfig) => Promise<User>
@@ -12,13 +12,19 @@ export interface IUserRepository {
   /** ---- MUTATIONS ---- */
   create: (user: User) => Promise<User>
 
+  getTemplatesByUserId: (
+    userId: string,
+    config?: RepositoryQueryConfig
+  ) => Promise<Template[] | TemplateModel[]>
   addTemplate: (props: { user: User; template: Template }) => Promise<Template>
-  getTemplatesByUserId: (userId: string) => Promise<Template[]>
   updateTemplate: (props: { user: User; template: Template }) => Promise<Template>
   removeTemplate: (props: { user: User; templateId: Template['id'] }) => Promise<void>
 
+  getLabelsByUserId: (
+    userId: string,
+    config?: RepositoryQueryConfig
+  ) => Promise<Label[] | LabelModel[]>
   addLabelToUser: (props: { user: User; label: Label }) => Promise<Label>
-  getLabelsByUserId: (userId: string) => Promise<Label[]>
   removeLabel: (props: { user: User; labelId: Label['id'] }) => Promise<void>
 }
 
@@ -40,13 +46,16 @@ export abstract class UserRepository
   abstract create(user: User): Promise<User>
 
   // Templates
+  abstract getTemplatesByUserId(userId: string, config: { raw: true }): Promise<TemplateModel[]>
+  abstract getTemplatesByUserId(userId: string, config?: RepositoryQueryConfig): Promise<Template[]>
   abstract addTemplate(props: { user: User; template: Template }): Promise<Template>
-  abstract getTemplatesByUserId(userId: string): Promise<Template[]>
   abstract updateTemplate(props: { user: User; template: Template }): Promise<Template>
   abstract removeTemplate(props: { user: User; templateId: Template['id'] }): Promise<void>
 
   // Labels
+  abstract getLabelsByUserId(userId: string, config: { raw: true }): Promise<LabelModel[]>
+  abstract getLabelsByUserId(userId: string, config?: RepositoryQueryConfig): Promise<Label[]>
+
   abstract addLabelToUser(props: { user: User; label: Label }): Promise<Label>
-  abstract getLabelsByUserId(userId: string): Promise<Label[]>
   abstract removeLabel(props: { user: User; labelId: Label['id'] }): Promise<void>
 }
