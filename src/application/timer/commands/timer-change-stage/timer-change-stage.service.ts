@@ -1,5 +1,5 @@
-import { type ICommandHandler, ValidationError } from '@/domain/core'
-import { type TimerRepository } from '@/domain/timer'
+import { type ICommandHandler } from '@/domain/core'
+import { InvalidStage, type TimerRepository } from '@/domain/timer'
 import { type TimerChangeStageCommand } from './timer-change-stage.command'
 
 // XXX: check if it's better to use a factory call for changeStage method
@@ -15,7 +15,7 @@ export class TimerChangeStageService implements ICommandHandler<TimerChangeStage
     } else if (stage === 'longBreak') {
       timer.changeToLongBreakStage()
     } else {
-      throw new ValidationError(
+      throw new InvalidStage(
         `Stage '${
           stage as string
         }' is not valid. Permitted stages are: 'pomodoro', 'shortBreak', 'longBreak'.`
