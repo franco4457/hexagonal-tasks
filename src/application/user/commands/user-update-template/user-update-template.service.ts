@@ -1,10 +1,12 @@
-import { TaskTemplate, type UserRepository } from '@/domain/user'
+import { TaskTemplate, type Template, type UserRepository } from '@/domain/user'
 import { type UserUpdateTemplateCommand } from './user-update-template.command'
 import { type ICommandHandler } from '@/domain/core'
 
-export class UserUpdateTemplateService implements ICommandHandler<UserUpdateTemplateCommand, void> {
+export class UserUpdateTemplateService
+  implements ICommandHandler<UserUpdateTemplateCommand, Template>
+{
   constructor(private readonly userRepository: UserRepository) {}
-  async execute(command: UserUpdateTemplateCommand): Promise<void> {
+  async execute(command: UserUpdateTemplateCommand): Promise<Template> {
     const user = await this.userRepository.getById(command.userId)
     const newTasks = command.newProps.tasks.map((task) => new TaskTemplate(task))
     const newTemplate = user.updateTemplate({
@@ -20,5 +22,6 @@ export class UserUpdateTemplateService implements ICommandHandler<UserUpdateTemp
         template: newTemplate
       })
     })
+    return newTemplate
   }
 }
