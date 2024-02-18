@@ -8,6 +8,7 @@ export class UserController {
   private readonly userRegister: UserRegisterService
   private readonly userLogin: UserLoginService
   private readonly userByIdQuery: UserByUserIdQueryHandler
+
   private readonly mapper = new UserMapper()
   constructor(private readonly userRepostory: UserRepository) {
     this.userRegister = new UserRegisterService(this.userRepostory)
