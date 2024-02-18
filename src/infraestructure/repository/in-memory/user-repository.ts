@@ -1,4 +1,13 @@
-import { UserRepository, type User, type UserModel, type Label, type Template } from '@/domain/user'
+import { type RepositoryQueryConfig } from '@/domain/core'
+import {
+  UserRepository,
+  type User,
+  type UserModel,
+  type Label,
+  type Template,
+  type TemplateModel,
+  type LabelModel
+} from '@/domain/user'
 import { UserAlreadyExist, UserNotFound, UserPropNotFound } from '@/domain/user/user.exceptions'
 import { Logger } from '@/infraestructure/logger'
 import type EventEmitter2 from 'eventemitter2'
@@ -61,14 +70,26 @@ export class InMemoryUserRepository extends UserRepository {
     return this.users.map((user) => this.mapper.toDomain(user))
   }
 
-  async getTemplatesByUserId(userId: string): Promise<Template[]> {
+  async getTemplatesByUserId(userId: string, config: { raw: true }): Promise<TemplateModel[]>
+  async getTemplatesByUserId(userId: string, config?: RepositoryQueryConfig): Promise<Template[]>
+  async getTemplatesByUserId(
+    userId: string,
+    config?: RepositoryQueryConfig
+  ): Promise<TemplateModel[] | Template[]> {
     const { user } = this.userFinder({ value: userId })
-    return user.templates.map(this.mapper.templateMapper.toDomain)
+    return config?.raw === true
+      ? user.templates
+      : user.templates.map(this.mapper.templateMapper.toDomain)
   }
 
-  async getLabelsByUserId(userId: string): Promise<Label[]> {
+  async getLabelsByUserId(userId: string, config: { raw: true }): Promise<LabelModel[]>
+  async getLabelsByUserId(userId: string, config?: RepositoryQueryConfig): Promise<Label[]>
+  async getLabelsByUserId(
+    userId: string,
+    config?: RepositoryQueryConfig
+  ): Promise<Label[] | LabelModel[]> {
     const { user } = this.userFinder({ value: userId })
-    return user.labels.map(this.mapper.labelMapper.toDomain)
+    return config?.raw === true ? user.labels : user.labels.map(this.mapper.labelMapper.toDomain)
   }
 
   /* ------ COMMANDS METHODS ------ */
