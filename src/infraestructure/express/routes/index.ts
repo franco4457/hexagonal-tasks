@@ -1,7 +1,7 @@
 import type { UserRepository } from '@/domain/user'
 import type { TaskRepository } from '@/domain/task'
 import e from 'express'
-import { UserRouter } from './user.route'
+import { UserRouter } from './user'
 import { healthRouter } from './health.route'
 import { TaskRouter } from './task.route'
 import { type TimerRepository } from '@/domain/timer'
