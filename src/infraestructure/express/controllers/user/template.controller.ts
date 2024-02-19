@@ -7,7 +7,7 @@ import {
   UserUpdateTemplateCommand,
   UserUpdateTemplateService
 } from '@/application/user'
-import { type UserRepository } from '@/domain/user'
+import { validateTemplate, type UserRepository, UserMapper } from '@/domain/user'
 import type { Request, Response, NextFunction } from 'express'
 
 export class TemplateController {
@@ -16,6 +16,7 @@ export class TemplateController {
   private readonly userRemoveTemplate: UserRemoveTemplateService
 
   private readonly templateByUserId: TemplateByUserIdQueryHandler
+  private readonly mapper = new UserMapper().templateMapper
   constructor(private readonly userRepostory: UserRepository) {
     this.userAddTemplate = new UserAddTemplateService(this.userRepostory)
     this.userUpdateTemplate = new UserUpdateTemplateService(this.userRepostory)
@@ -24,11 +25,14 @@ export class TemplateController {
   }
 
   async addTemplate(req: Request, res: Response, next: NextFunction): Promise<void> {
-    const { id } = req.userAuth.decodedToken
-    const body = req.body
+    const { id: userId } = req.userAuth.decodedToken
+
     try {
-      await this.userAddTemplate.execute(new UserAddTemplateCommand({ ...body, id }))
-      res.status(201).end()
+      const template = await validateTemplate(req.body)
+      const newTemplate = await this.userAddTemplate.execute(
+        new UserAddTemplateCommand({ template, userId })
+      )
+      res.status(201).json({ template: this.mapper.toResponse(newTemplate) })
     } catch (error) {
       next(error)
     }
@@ -36,9 +40,11 @@ export class TemplateController {
 
   async updateTemplate(req: Request, res: Response, next: NextFunction): Promise<void> {
     const { id: userId } = req.userAuth.decodedToken
-    const body = req.body
     try {
-      await this.userUpdateTemplate.execute(new UserUpdateTemplateCommand({ ...body, userId }))
+      const newProps = await validateTemplate(req.body)
+      await this.userUpdateTemplate.execute(
+        new UserUpdateTemplateCommand({ templateId: req.body.id, newProps, userId })
+      )
       res.status(201).end()
     } catch (error) {
       next(error)
