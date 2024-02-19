@@ -10,9 +10,10 @@ export const customErrorMap: z.ZodErrorMap = (error, ctx) => {
         return { message: ctx.defaultError }
       }
       return {
-        message: `Invalid type on '${error.path
-          .map((p) => (!isNaN(Number(p)) ? `[${p}]` : p))
-          .join('.')}'. expected ${error.expected}, received ${error.received}`
+        message: `Invalid type on '${error.path.reduce((acc, curr) => {
+          if (acc === '') return curr
+          return !isNaN(Number(curr)) ? `${acc}[${curr}]` : `${acc}.${curr}`
+        }, '')}'. expected ${error.expected}, received ${error.received}`
       }
     default:
       return { message: ctx.defaultError }
