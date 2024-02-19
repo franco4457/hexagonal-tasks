@@ -13,7 +13,7 @@ export class TemplateRouter {
 
     this.templateRouter.post('/', this.templateController.addTemplate.bind(this.templateController))
     this.templateRouter.put(
-      '/login',
+      '/',
       this.templateController.updateTemplate.bind(this.templateController)
     )
     this.templateRouter.delete(
