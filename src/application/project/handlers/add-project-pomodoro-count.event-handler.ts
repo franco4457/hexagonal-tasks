@@ -14,17 +14,12 @@ export class ProjectAddPomodoroCountEventHandler extends EventHandler {
 
   async handle(event: TaskUpdateActualPomodoroEvent): Promise<void> {
     if (event.projectName == null) return
-    try {
-      const project = await this.projectRepository.getByNameAndUserId({
-        name: event.projectName,
-        userId: event.userId
-      })
-      await this.projectRepository.save(project, async () => {
-        await this.projectRepository.sumPomodoroCount(project.id)
-      })
-    } catch (error) {
-      console.error(error)
-      throw error
-    }
+    const project = await this.projectRepository.getByNameAndUserId({
+      name: event.projectName,
+      userId: event.userId
+    })
+    await this.projectRepository.save(project, async () => {
+      await this.projectRepository.sumPomodoroCount(project.id)
+    })
   }
 }
