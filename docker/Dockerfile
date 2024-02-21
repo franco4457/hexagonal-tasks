@@ -1,19 +1,18 @@
 FROM node:20-alpine3.18 as base
+ENV PNPM_HOME="/pnpm"
+ENV PATH="$PNPM_HOME:$PATH"
+RUN corepack enable
+
 
 FROM base as deps-prod
 WORKDIR /app
-
-RUN mkdir -p /app
-RUN npm i -g pnpm
-
-COPY ./package.json ./pnpm-lock.yaml ./
-RUN pnpm install --prod --frozen-lockfile
+COPY package.json pnpm-lock.yaml scripts/install-deps-prod.sh ./
+RUN sh install-deps-prod.sh
 
 FROM base as builder
 WORKDIR /app
 COPY --from=deps-prod /app/node_modules /app/node_modules
 COPY . /app
-
 RUN pnpm build
 
 FROM base as prod
@@ -21,6 +20,7 @@ WORKDIR /app
 ENV NODE_ENV production
 COPY --from=builder /app/dist /app/dist
 COPY --from=deps-prod /app/node_modules /app/node_modules
+COPY .env /app
 
 EXPOSE 3000
 

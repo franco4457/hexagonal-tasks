@@ -6,8 +6,8 @@ RUN corepack enable
 FROM base as deps
 WORKDIR /app
 RUN mkdir -p /app
-COPY package.json  ./
-RUN pnpm install 
+COPY package.json scripts/install-depencies.sh ./
+RUN sh install-depencies.sh
 
 FROM base as dev
 WORKDIR /app
