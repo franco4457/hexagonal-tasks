@@ -14,7 +14,7 @@ const testTask = {
 }
 
 // TODO: Check all test don't depend on each other
-describe('Task', async () => {
+describe.concurrent('Task', async () => {
   const app = (await api).getInstance()
   it.concurrent('POST /task', async () => {
     const res = await request(app)

@@ -54,7 +54,7 @@ describe.concurrent('User', async () => {
     expect(user).toHaveProperty('username')
     expect(user).not.toHaveProperty('password')
   })
-  it('POST /user/login - error not found user', async () => {
+  it.concurrent('POST /user/login - error not found user', async () => {
     const res = await request(app)
       .post('/api/v1/user/login')
       .send({ ...testLogin, email: 'lalala' })
