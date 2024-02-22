@@ -1,7 +1,9 @@
-import type { IPrivateUser } from '@/domain/user'
+import type { UserModel } from '@/domain/user'
 import { Schema } from 'mongoose'
+import { TEMPLATE_DI_REF } from './template/model'
+import { LABEL_DI_REF } from './label/model'
 
-export const userSchema = new Schema<IPrivateUser & { _id: string }>(
+export const userSchema = new Schema<UserModel & { _id: string }>(
   {
     _id: {
       type: 'string',
@@ -31,6 +33,28 @@ export const userSchema = new Schema<IPrivateUser & { _id: string }>(
     },
     password: {
       type: 'string'
+    },
+    labels: [
+      {
+        type: Schema.Types.UUID,
+        ref: LABEL_DI_REF,
+        default: []
+      }
+    ],
+    templates: [
+      {
+        type: Schema.Types.UUID,
+        ref: TEMPLATE_DI_REF,
+        default: []
+      }
+    ],
+    createdAt: {
+      type: 'date',
+      required: true
+    },
+    updatedAt: {
+      type: 'date',
+      required: true
     }
   },
   {
