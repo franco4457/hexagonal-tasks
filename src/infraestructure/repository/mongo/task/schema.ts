@@ -1,31 +1,57 @@
-import { type ITask } from '@/domain/task'
+import { type TaskModel } from '@/domain/task'
 import { Schema } from 'mongoose'
-import { UserModel } from '../user/model'
+import { USER_DI_REF } from '../user/model'
 
-export const taskSchema = new Schema<ITask & { _id: ITask['id'] }>(
+export const taskSchema = new Schema<TaskModel & { _id: TaskModel['id'] }>(
   {
     _id: {
       type: 'string',
       required: true,
       unique: true
     },
-    title: {
-      type: 'string',
-      required: true
-    },
-    description: 'string',
     id: {
       type: 'string',
       required: true,
       unique: true,
       index: true
     },
+    title: {
+      type: 'string',
+      required: true
+    },
+    is_completed: {
+      type: Boolean,
+      required: true
+    },
+    pomodoro_estimated: {
+      type: Number,
+      required: true
+    },
+    pomodoro_actual: {
+      type: Number,
+      required: true
+    },
+    description: 'string',
+    order: {
+      type: 'number',
+      required: true
+    },
+    labels: [
+      {
+        name: {
+          type: 'string',
+          required: true
+        }
+      }
+    ],
+    project_name: String,
     userId: {
       type: 'string',
-      ref: UserModel
+      ref: USER_DI_REF
     }
   },
   {
-    _id: false
+    _id: false,
+    timestamps: true
   }
 )
