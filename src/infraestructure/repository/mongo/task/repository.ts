@@ -1,39 +1,53 @@
-import { TaskRepository, Task, type ITaskInput, TaskNotFound } from '@/domain/task'
+import {
+  TaskRepository,
+  type Task,
+  TaskNotFound,
+  type TaskModel,
+  type SortOptions
+} from '@/domain/task'
 import { conn } from '../connect'
-import { TaskModel } from './model'
-import { type IUserRepository } from '@/domain/user'
+import { TaskMongoModel } from './model'
+import { type User } from '@/domain/user'
+import type EventEmitter2 from 'eventemitter2'
+import { Logger } from '@/infraestructure/logger'
+import { type RepositoryQueryConfig } from '@/domain/core'
+import type mongoose from 'mongoose'
 
+type TypedReturn<T extends SortOptions> = T['raw'] extends true ? TaskModel[] : Task[]
 export class MongoTaskRepository extends TaskRepository {
-  private taskModel!: typeof TaskModel
+  private mongoose: typeof mongoose | null = null
 
-  constructor({ aggregates = {} }: { aggregates?: { userRepo?: IUserRepository } } = {}) {
-    super({ aggregates })
-    if (this.taskModel != null) {
-      return this
-    }
+  private readonly taskModel = TaskMongoModel
 
-    conn()
-      .then(() => {
-        this.taskModel = TaskModel
-      })
-      .catch((error) => {
-        console.log('MONGO_TASK conn', error)
-        throw new Error('Unable to connect to database')
-      })
+  constructor({
+    tasks = [],
+    appContext,
+    eventEmitter
+  }: {
+    tasks?: TaskModel[]
+    appContext?: string
+    eventEmitter: EventEmitter2
+  }) {
+    super({
+      logger: new Logger({ appContext, context: MongoTaskRepository.name }),
+      eventEmitter
+    })
+    this.taskModel.insertMany(tasks).catch((error) => {
+      this.logger.error('Error inserting tasks', error)
+    })
   }
 
-  getTasks = async (): Promise<Task[]> => {
+  private async conn(): Promise<typeof mongoose> {
+    if (this.mongoose != null) return this.mongoose
+    this.mongoose = await conn()
+    return this.mongoose
+  }
+
+  async getTasks(): Promise<Task[]> {
     try {
+      await this.conn()
       const repoTasks = await this.taskModel.find()
-      const tasks = repoTasks.map(
-        (repoTask) =>
-          new Task({
-            id: repoTask.id,
-            title: repoTask.title,
-            description: repoTask.description,
-            userId: repoTask.userId
-          })
-      )
+      const tasks = repoTasks.map(this.mapper.toDomain)
       return tasks
     } catch (error) {
       console.log('MONGO_TASK getTasks', error)
@@ -41,41 +55,67 @@ export class MongoTaskRepository extends TaskRepository {
     }
   }
 
-  getTasksByUserId = async (userId: string): Promise<Task[]> => {
+  async getTask(id: string): Promise<Task> {
     try {
-      const repoTasks = await this.taskModel.find({ userId })
-      const tasks = repoTasks.map(
-        (repoTask) =>
-          new Task({
-            id: repoTask.id,
-            title: repoTask.title,
-            description: repoTask.description,
-            userId: repoTask.userId
-          })
-      )
-      return tasks
-    } catch (error) {
-      console.log('MONGO_TASK getTasksByUserId', error)
-      throw new Error('Unable to get tasks')
-    }
-  }
-
-  getTask = async (id: string): Promise<Task> => {
-    try {
+      await this.conn()
       const repoTask = await this.taskModel.findById(id)
       if (repoTask == null) throw new TaskNotFound(id)
-      const task = new Task(repoTask)
-      return task
+      return this.mapper.toDomain(repoTask)
     } catch (error) {
       console.log('MONGO_TASK getTask', error)
       throw new Error('Unable to get task')
     }
   }
 
-  create = async (newTask: ITaskInput): Promise<Task> => {
+  async getTasksByUserIdSortedBy<Q extends SortOptions>(
+    userId: string,
+    config: Q
+  ): Promise<Q['raw'] extends true ? TaskModel[] : Task[]> {
     try {
-      const task = Task.create(newTask)
-      await this.taskModel.create({ ...task, _id: task.id })
+      await this.conn()
+      const repoTasks = await this.taskModel
+        .find({ userId })
+        .sort([[config.sortBy, config.order === 'ASC' ? 1 : -1]])
+      return config?.raw === true
+        ? (repoTasks as unknown as TypedReturn<Q>)
+        : (repoTasks.map((task) => this.mapper.toDomain(task)) as TypedReturn<Q>)
+    } catch (error) {
+      console.log('MONGO_TASK getTasksByUserIdSortedBy', error)
+      throw new Error('Unable to get tasks')
+    }
+  }
+
+  async getTasksByUserId(userId: User['id'], config: { raw: true }): Promise<TaskModel[]>
+  async getTasksByUserId(userId: User['id'], config?: RepositoryQueryConfig): Promise<Task[]>
+  async getTasksByUserId(
+    userId: User['id'],
+    config?: RepositoryQueryConfig
+  ): Promise<Task[] | TaskModel[]> {
+    try {
+      await this.conn()
+      const repoTasks = await this.taskModel.find({ userId })
+      return config?.raw === true ? repoTasks : repoTasks.map(this.mapper.toDomain)
+    } catch (error) {
+      console.log('MONGO_TASK getTasksByUserId', error)
+      throw new Error('Unable to get tasks')
+    }
+  }
+
+  async create(task: Task): Promise<Task>
+  async create(task: Task[]): Promise<Task[]>
+  async create(task: Task | Task[]): Promise<Task | Task[]> {
+    const tasksIds = Array.isArray(task) ? task.map((t) => t.id) : [task.id]
+    this.logger.debug(
+      `creating ${tasksIds.length} entities to "task" table: ${tasksIds.join(', ')}`
+    )
+    const tasks = Array.isArray(task) ? task : [task]
+    try {
+      tasks.forEach(async (t) => {
+        await this.save(t, async () => {
+          await this.conn()
+          await this.taskModel.create(this.mapper.toPersistence(t))
+        })
+      })
       return task
     } catch (error) {
       console.log('MONGO_TASK create', error)
@@ -83,15 +123,35 @@ export class MongoTaskRepository extends TaskRepository {
     }
   }
 
-  setUser = async (id: string, userId: string): Promise<void> => {
+  async updateLabels(props: { task: Task }): Promise<void> {
+    this.logger.debug('updating labels to task:', props.task.id)
     try {
-      const user = await this.aggregates?.userRepo?.getById(userId)
-      if (user == null) throw new Error('User not found')
-      const repoTask = await this.taskModel.findByIdAndUpdate(id, { userId: user.id })
-      if (repoTask == null) throw new TaskNotFound(id)
+      await this.save(props.task, async () => {
+        await this.conn()
+        const task = await this.taskModel.findById(props.task.id)
+        if (task == null) throw new TaskNotFound(props.task.id)
+        task.labels = props.task.getProps().labels.map((label) => ({ name: label.name }))
+        await task.save()
+      })
     } catch (error) {
-      await this.taskModel.deleteOne({ _id: id })
-      throw error
+      console.log('MONGO_TASK updateLabels', error)
+      throw new Error('Unable to update labels')
+    }
+  }
+
+  async updateProject(props: { task: Task }): Promise<void> {
+    this.logger.debug('updating project to task:', props.task.id)
+    try {
+      await this.save(props.task, async () => {
+        await this.conn()
+        const task = await this.taskModel.findById(props.task.id)
+        if (task == null) throw new TaskNotFound(props.task.id)
+        task.project_name = props.task.getProps().project?.name ?? null
+        await task.save()
+      })
+    } catch (error) {
+      console.log('MONGO_TASK updateProject', error)
+      throw new Error('Unable to update project')
     }
   }
 }
