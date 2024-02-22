@@ -17,17 +17,10 @@ export const labelSchema = new Schema<LabelModel & { _id: string }>(
     name: {
       type: 'string',
       required: true
-    },
-    createdAt: {
-      type: 'date',
-      required: true
-    },
-    updatedAt: {
-      type: 'date',
-      required: true
     }
   },
   {
-    _id: false
+    _id: false,
+    timestamps: true
   }
 )

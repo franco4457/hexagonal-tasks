@@ -47,17 +47,10 @@ export const userSchema = new Schema<UserModel & { _id: string }>(
         ref: TEMPLATE_DI_REF,
         default: []
       }
-    ],
-    createdAt: {
-      type: 'date',
-      required: true
-    },
-    updatedAt: {
-      type: 'date',
-      required: true
-    }
+    ]
   },
   {
-    _id: false
+    _id: false,
+    timestamps: true
   }
 )
