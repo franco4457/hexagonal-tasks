@@ -4,14 +4,29 @@ import { Timer, type TimerModel } from './timer.entity'
 import { Duration, Stage, StageEnum, Status, StatusEnum } from './value-objects'
 
 export class TimerMapper implements Mapper<Timer, TimerModel, TimerResponseDto> {
-  toDomain({ id, createdAt, updatedAt, duration, stage, status, ...props }: TimerModel): Timer {
+  toDomain({
+    id,
+    createdAt,
+    updatedAt,
+    stageInterval,
+    currentStage,
+    longBreak,
+    shortBreak,
+    pomodoro,
+    status,
+    ...props
+  }: TimerModel): Timer {
     const timer = new Timer({
       props: {
         status: new Status(StatusEnum[status]),
-        duration: new Duration(duration),
+        duration: new Duration({
+          longBreak,
+          shortBreak,
+          pomodoro
+        }),
         stage: new Stage({
-          stageInterval: stage.stageInterval,
-          currentStage: StageEnum[stage.currentStage]
+          stageInterval,
+          currentStage: StageEnum[currentStage]
         }),
         ...props
       },
@@ -22,6 +37,7 @@ export class TimerMapper implements Mapper<Timer, TimerModel, TimerResponseDto> 
 
   toPersistence(timer: Timer): TimerModel {
     const props = timer.getProps()
+    const { longBreak, pomodoro, shortBreak } = props.duration.value
     return {
       id: props.id,
       currentTaskId: props.currentTaskId,
@@ -30,11 +46,11 @@ export class TimerMapper implements Mapper<Timer, TimerModel, TimerResponseDto> 
       startedAt: props.startedAt,
       stoppedAt: props.stoppedAt,
       status: props.status.getStatusKey(),
-      duration: props.duration.value,
-      stage: {
-        stageInterval: props.stage.stageInterval,
-        currentStage: props.stage.getCurrentStageKey()
-      },
+      longBreak,
+      pomodoro,
+      shortBreak,
+      stageInterval: props.stage.stageInterval,
+      currentStage: props.stage.getCurrentStageKey(),
       createdAt: props.createdAt,
       updatedAt: props.updatedAt
     }

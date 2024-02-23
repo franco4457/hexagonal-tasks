@@ -40,11 +40,11 @@ export interface TimerCreateProps {
 export type TimerModel = Omit<TimerProps, 'status' | 'duration' | 'stage'> & {
   id: string
   status: keyof typeof StatusEnum
-  duration: DurationProps
-  stage: {
-    stageInterval: number
-    currentStage: keyof typeof StageEnum
-  }
+  pomodoro: number
+  shortBreak: number
+  longBreak: number
+  stageInterval: number
+  currentStage: keyof typeof StageEnum
   createdAt: Date
   updatedAt: Date
 }
