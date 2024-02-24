@@ -15,11 +15,17 @@ export class TaskMapper implements Mapper<Task, TaskModel, TaskResponseDto> {
       pomodoro_estimated: estimated,
       labels,
       project_name: projectName,
-      ...props
+      title,
+      description,
+      userId,
+      order
     } = raw
     const task = new Task({
       props: {
-        ...props,
+        title,
+        description,
+        order,
+        userId,
         pomodoro: new Pomodoro({
           actual,
           estimated
