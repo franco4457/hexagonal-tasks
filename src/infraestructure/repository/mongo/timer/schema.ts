@@ -5,6 +5,7 @@ import { TASK_DI_REF } from '../task/model'
 
 export const timerSchema = new Schema<TimerModel & { _id: TimerModel['id'] }>(
   {
+    _id: { type: 'string', required: true, unique: true },
     id: { type: 'string', required: true, unique: true, index: true },
     userId: { type: 'string', ref: USER_DI_REF },
     currentTaskId: { type: 'string', ref: TASK_DI_REF },

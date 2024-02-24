@@ -47,11 +47,17 @@ export class MongoTimerRepository extends TimerRepository {
 
   async create(timer: Timer): Promise<Timer> {
     this.logger.debug(`creating entity to "timer" table: ${timer.id}`)
-    await this.save(timer, async () => {
-      await this.conn()
-      await this.timers.create(this.mapper.toPersistence(timer))
-    })
-    return timer
+    try {
+      await this.save(timer, async () => {
+        await this.conn()
+        const repoTimer = this.mapper.toPersistence(timer)
+        await this.timers.create({ ...repoTimer, _id: repoTimer.id })
+      })
+      return timer
+    } catch (error) {
+      console.log('MONGO_TIMER_CREATE', error)
+      throw error
+    }
   }
 
   async update(props: Timer): Promise<Timer> {
