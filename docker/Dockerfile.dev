@@ -1,4 +1,4 @@
-FROM node:20-alpine as base
+FROM node:20-alpine3.18 as base
 ENV PNPM_HOME="/pnpm"
 ENV PATH="$PNPM_HOME:$PATH"
 RUN corepack enable
@@ -6,8 +6,8 @@ RUN corepack enable
 FROM base as deps
 WORKDIR /app
 RUN mkdir -p /app
-COPY package.json scripts/install-depencies.sh ./
-RUN sh install-depencies.sh
+COPY package.json ./
+RUN pnpm install
 
 FROM base as dev
 WORKDIR /app

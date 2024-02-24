@@ -6,8 +6,8 @@ RUN corepack enable
 
 FROM base as deps-prod
 WORKDIR /app
-COPY package.json pnpm-lock.yaml scripts/install-deps-prod.sh ./
-RUN sh install-deps-prod.sh
+COPY package.json pnpm-lock.yaml  ./
+RUN pnpm install --prod --frozen-lockfile
 
 FROM base as builder
 WORKDIR /app
