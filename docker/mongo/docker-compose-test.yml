@@ -1,23 +1,25 @@
 version: '3.9'
 services:
   hextasks-mongo-test:
-    build: 
+    build:
       context: ../..
-      dockerfile: ./docker/mongo/Dockerfile
+      dockerfile: ./docker/Dockerfile.dev
       target: test
     ports:
-      - "3000:3000"
+      - '3000:3000'
     links:
       - mongo
     volumes:
-      - ../..:/home/app
+      - ../..:/app
     environment:
       - DIALECT=MONGODB
       - DB_URL=mongodb://admin:secret@mongo:27017/hextasks?authSource=admin
+    depends_on:
+      - mongo
   mongo:
     image: mongo
     ports:
-      - "27017:27017"
+      - '27017:27017'
     environment:
       - MONGO_INITDB_ROOT_USERNAME=admin
       - MONGO_INITDB_ROOT_PASSWORD=secret
