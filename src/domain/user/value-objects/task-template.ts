@@ -11,10 +11,10 @@ export interface TaskTemplateProps {
 export class TaskTemplate extends ValueObject<TaskTemplateProps> {
   protected validate(value: TaskTemplateProps): void {
     const { name, description, order, pomodoroEstimated, projectId } = value
-    if (name.length < 3) {
+    if (name?.length < 3) {
       throw new ValidationError('Template name must be at least 3 characters long')
     }
-    if (description.length < 3) {
+    if (description?.length < 3) {
       throw new ValidationError('Template description must be at least 3 characters long')
     }
     if (order < 0) {
