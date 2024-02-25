@@ -45,7 +45,8 @@ export class MongoProjectRepository extends ProjectRepository {
     this.logger.debug(`creating entity to "project" table: ${project.id}`)
     await this.save(project, async () => {
       await this.conn()
-      await this.projectModel.create(this.mapper.toPersistence(project))
+      const newProject = this.mapper.toPersistence(project)
+      await this.projectModel.create({ ...newProject, _id: newProject.id })
     })
   }
 
