@@ -57,7 +57,7 @@ export class MongoUserRepository extends UserRepository {
       return user
     } catch (error) {
       console.log('MONGO_USER getByEmail', error)
-      throw new Error('Unable to get user')
+      throw error
     }
   }
 
@@ -65,11 +65,11 @@ export class MongoUserRepository extends UserRepository {
     try {
       await this.conn()
       const repoUsers = await this.users.find().populate('labels').populate('templates')
-      const users = repoUsers.map(this.mapper.toDomain)
+      const users = repoUsers.map((u) => this.mapper.toDomain(u))
       return users
     } catch (error) {
       console.log('MONGO_USER getAll', error)
-      throw new Error('Unable to get users')
+      throw error
     }
   }
 
@@ -79,8 +79,16 @@ export class MongoUserRepository extends UserRepository {
     userId: string,
     config?: RepositoryQueryConfig
   ): Promise<Label[] | LabelModel[]> {
-    const labels = await this.labels.find({ userId })
-    return config?.raw === true ? labels : labels.map(this.mapper.labelMapper.toDomain)
+    const user = await this.users.findById(userId).populate('labels').exec()
+    if (user == null) throw new UserNotFound(userId)
+    return config?.raw === true
+      ? user.labels.map(({ createdAt, updatedAt, id, name }) => ({
+          id,
+          name,
+          createdAt,
+          updatedAt
+        }))
+      : user.labels.map(this.mapper.labelMapper.toDomain)
   }
 
   async getTemplatesByUserId(userId: string, config: { raw: true }): Promise<TemplateModel[]>
@@ -89,25 +97,37 @@ export class MongoUserRepository extends UserRepository {
     userId: string,
     config?: RepositoryQueryConfig
   ): Promise<TemplateModel[] | Template[]> {
-    const templates = await this.templates.find({ userId })
-    return config?.raw === true ? templates : templates.map(this.mapper.templateMapper.toDomain)
+    const user = await this.users.findById(userId).populate('templates').exec()
+    if (user == null) throw new UserNotFound(userId)
+    const templates = user.templates
+    // FIXME: this is a workaround to avoid a bug in the mapper
+    return config?.raw === true
+      ? templates.map(({ id, name, tasks, createdAt, updatedAt }) => ({
+          id,
+          name,
+          tasks: tasks.map(({ description, name, order, pomodoroEstimated, projectId }) => ({
+            description,
+            name,
+            order,
+            pomodoroEstimated,
+            projectId
+          })),
+          createdAt,
+          updatedAt
+        }))
+      : templates.map(this.mapper.templateMapper.toDomain)
   }
 
   /* ------ COMMANDS METHODS ------ */
   async create(user: User): Promise<User> {
-    try {
-      const exist = await this.users.findOne({ email: user.getProps().email })
-      if (exist != null) throw new UserAlreadyExist(user.getProps().email, 'email')
-      const newUser = this.mapper.toPersistence(user)
-      await this.save(user, async () => {
-        await this.conn()
-        await this.users.create({ ...newUser, _id: newUser.id })
-      })
-      return user
-    } catch (error) {
-      console.log('MONGO_USER create', error)
-      throw error
-    }
+    const exist = await this.users.findOne({ email: user.getProps().email })
+    if (exist != null) throw new UserAlreadyExist(user.getProps().email, 'email')
+    const newUser = this.mapper.toPersistence(user)
+    await this.save(user, async () => {
+      await this.conn()
+      await this.users.create({ ...newUser, _id: newUser.id })
+    })
+    return user
   }
 
   async addTemplate(props: { user: User; template: Template }): Promise<Template> {
@@ -117,10 +137,9 @@ export class MongoUserRepository extends UserRepository {
         await this.conn()
         const user = await this.users.findById(props.user.id)
         if (user == null) throw new UserNotFound(props.user.id)
-        const newTemplate = await this.templates.create({
-          ...props.template,
-          _id: props.template.id
-        })
+        const newTemplate = await this.templates.create(
+          this.mapper.templateMapper.toPersistence(props.template)
+        )
         user.templates.push(newTemplate)
         await user.save()
       })
@@ -136,10 +155,10 @@ export class MongoUserRepository extends UserRepository {
     try {
       await this.save(props.user, async () => {
         await this.conn()
-        const template = await this.templates.findById(props.template.id, props.template)
+        const template = await this.templates.findOne({ id: props.template.id })
         // TODO: add a custom error
         if (template == null) throw new Error('Template not found')
-        template.set(props.template)
+        template.set(this.mapper.templateMapper.toPersistence(props.template))
         await template.save()
       })
       return props.template
@@ -154,7 +173,7 @@ export class MongoUserRepository extends UserRepository {
     try {
       await this.save(props.user, async () => {
         await this.conn()
-        await this.labels.findByIdAndDelete(props.templateId)
+        await this.templates.findOneAndDelete({ id: props.templateId })
       })
     } catch (error) {
       console.log('MONGO_USER removeTemplate', error)
@@ -169,8 +188,10 @@ export class MongoUserRepository extends UserRepository {
         await this.conn()
         const user = await this.users.findById(props.user.id)
         if (user == null) throw new UserNotFound(props.user.id)
-        const newLabel = await this.labels.create({ ...props.label, _id: props.label.id })
-        user.labels.push(newLabel)
+        const newLabel = await this.labels.create({
+          ...this.mapper.labelMapper.toPersistence(props.label)
+        })
+        user.labels = [...user.labels, newLabel]
         await user.save()
       })
       return props.label
@@ -185,7 +206,7 @@ export class MongoUserRepository extends UserRepository {
     try {
       await this.save(props.user, async () => {
         await this.conn()
-        await this.labels.findByIdAndDelete(props.labelId)
+        await this.labels.findOneAndDelete({ id: props.labelId })
       })
     } catch (error) {
       console.log('MONGO_USER removeLabel', error)
