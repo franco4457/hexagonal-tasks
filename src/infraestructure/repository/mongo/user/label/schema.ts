@@ -3,11 +3,6 @@ import { Schema } from 'mongoose'
 
 export const labelSchema = new Schema<LabelModel & { _id: string }>(
   {
-    _id: {
-      type: 'string',
-      required: true,
-      unique: true
-    },
     id: {
       type: 'string',
       required: true,
@@ -20,7 +15,6 @@ export const labelSchema = new Schema<LabelModel & { _id: string }>(
     }
   },
   {
-    _id: false,
     timestamps: true
   }
 )

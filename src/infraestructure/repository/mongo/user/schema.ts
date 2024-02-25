@@ -28,22 +28,21 @@ export const userSchema = new Schema<UserModel & { _id: string }>(
     lastname: 'string',
     username: {
       type: 'string',
-      required: true,
-      unique: true
+      required: true
     },
     password: {
       type: 'string'
     },
     labels: [
       {
-        type: Schema.Types.UUID,
+        type: Schema.Types.ObjectId,
         ref: LABEL_DI_REF,
         default: []
       }
     ],
     templates: [
       {
-        type: Schema.Types.UUID,
+        type: Schema.Types.ObjectId,
         ref: TEMPLATE_DI_REF,
         default: []
       }

@@ -3,11 +3,6 @@ import { Schema } from 'mongoose'
 
 export const templateSchema = new Schema<TemplateModel & { _id: string }>(
   {
-    _id: {
-      type: 'string',
-      required: true,
-      unique: true
-    },
     id: {
       type: 'string',
       required: true,
@@ -41,7 +36,6 @@ export const templateSchema = new Schema<TemplateModel & { _id: string }>(
     ]
   },
   {
-    _id: false,
     timestamps: true
   }
 )
