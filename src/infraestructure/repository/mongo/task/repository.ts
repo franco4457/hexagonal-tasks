@@ -51,7 +51,7 @@ export class MongoTaskRepository extends TaskRepository {
       return tasks
     } catch (error) {
       console.log('MONGO_TASK getTasks', error)
-      throw new Error('Unable to get tasks')
+      throw error
     }
   }
 
@@ -63,7 +63,7 @@ export class MongoTaskRepository extends TaskRepository {
       return this.mapper.toDomain(repoTask)
     } catch (error) {
       console.log('MONGO_TASK getTask', error)
-      throw new Error('Unable to get task')
+      throw error
     }
   }
 
@@ -81,7 +81,7 @@ export class MongoTaskRepository extends TaskRepository {
         : (repoTasks.map((task) => this.mapper.toDomain(task)) as TypedReturn<Q>)
     } catch (error) {
       console.log('MONGO_TASK getTasksByUserIdSortedBy', error)
-      throw new Error('Unable to get tasks')
+      throw error
     }
   }
 
@@ -97,7 +97,7 @@ export class MongoTaskRepository extends TaskRepository {
       return config?.raw === true ? repoTasks : repoTasks.map(this.mapper.toDomain)
     } catch (error) {
       console.log('MONGO_TASK getTasksByUserId', error)
-      throw new Error('Unable to get tasks')
+      throw error
     }
   }
 
@@ -113,13 +113,13 @@ export class MongoTaskRepository extends TaskRepository {
       tasks.forEach(async (t) => {
         await this.save(t, async () => {
           await this.conn()
-          await this.taskModel.create(this.mapper.toPersistence(t))
+          await this.taskModel.create({ ...this.mapper.toPersistence(t), _id: t.id })
         })
       })
       return task
     } catch (error) {
       console.log('MONGO_TASK create', error)
-      throw new Error('Unable to create task')
+      throw error
     }
   }
 
@@ -135,7 +135,7 @@ export class MongoTaskRepository extends TaskRepository {
       })
     } catch (error) {
       console.log('MONGO_TASK updateLabels', error)
-      throw new Error('Unable to update labels')
+      throw error
     }
   }
 
@@ -151,7 +151,7 @@ export class MongoTaskRepository extends TaskRepository {
       })
     } catch (error) {
       console.log('MONGO_TASK updateProject', error)
-      throw new Error('Unable to update project')
+      throw error
     }
   }
 }
