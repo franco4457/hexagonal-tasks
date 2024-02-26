@@ -14,7 +14,11 @@ export class TimerMapper implements Mapper<Timer, TimerModel, TimerResponseDto> 
     shortBreak,
     pomodoro,
     status,
-    ...props
+    currentTaskId,
+    userId,
+    startedAt,
+    stoppedAt,
+    pomodoroCounter
   }: TimerModel): Timer {
     const timer = new Timer({
       props: {
@@ -28,8 +32,14 @@ export class TimerMapper implements Mapper<Timer, TimerModel, TimerResponseDto> 
           stageInterval,
           currentStage: StageEnum[currentStage]
         }),
-        ...props
+        currentTaskId,
+        userId,
+        startedAt,
+        stoppedAt,
+        pomodoroCounter
       },
+      createdAt,
+      updatedAt,
       id
     })
     return timer
