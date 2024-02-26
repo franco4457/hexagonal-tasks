@@ -26,7 +26,7 @@ const testTemplate = {
   ]
 }
 // TODO: Check all test don't depend on each other
-describe.concurrent('User', async () => {
+describe.sequential('User', async () => {
   const app = (await api).getInstance()
   it.concurrent('GET /user/all', async () => {
     const res = await request(app).get('/api/v1/user/all')
@@ -40,7 +40,7 @@ describe.concurrent('User', async () => {
     expect(res.body.users[0]).toHaveProperty('username')
     expect(res.body.users[0]).not.toHaveProperty('password')
   })
-  it.concurrent('POST /user/login', async () => {
+  it('POST /user/login', async () => {
     const {
       body: { token }
     } = await request(app).post('/api/v1/user/login').send(testLogin)
@@ -54,7 +54,7 @@ describe.concurrent('User', async () => {
     expect(user).toHaveProperty('username')
     expect(user).not.toHaveProperty('password')
   })
-  it.concurrent('POST /user/login - error not found user', async () => {
+  it('POST /user/login - error not found user', async () => {
     const res = await request(app)
       .post('/api/v1/user/login')
       .send({ ...testLogin, email: 'lalala' })
@@ -65,7 +65,7 @@ describe.concurrent('User', async () => {
       message: 'User with email: lalala not found'
     })
   })
-  it.concurrent('POST /user/login - error invalid password', async () => {
+  it('POST /user/login - error invalid password', async () => {
     const res = await request(app)
       .post('/api/v1/user/login')
       .send({ ...testLogin, password: 'invalid' })
@@ -79,7 +79,7 @@ describe.concurrent('User', async () => {
     // check if only password is invalid
     expect((await request(app).post('/api/v1/user/login').send(testLogin)).status).toBe(200)
   })
-  it.concurrent('POST /user/register', async () => {
+  it('POST /user/register', async () => {
     const {
       body: { token }
     } = await request(app)
@@ -96,7 +96,7 @@ describe.concurrent('User', async () => {
     expect(updatedAt).toBeDefined()
     expect(user).toEqual(testUser)
   })
-  it.concurrent('POST /user/register - error missing fields', async () => {
+  it('POST /user/register - error missing fields', async () => {
     const res = await request(app).post('/api/v1/user/register').send({})
     expect(res.status).toBe(422)
     expect(res.body).toEqual({
@@ -149,7 +149,7 @@ describe.concurrent('User', async () => {
       message: 'Invalid user'
     })
   })
-  it.concurrent('POST /user/register - error invalid types', async () => {
+  it('POST /user/register - error invalid types', async () => {
     const res = await request(app).post('/api/v1/user/register').send({
       name: 1,
       lastname: {},
@@ -208,7 +208,7 @@ describe.concurrent('User', async () => {
       message: 'Invalid user'
     })
   })
-  it.concurrent('POST /user/register - error user already exist', async () => {
+  it('POST /user/register - error user already exist', async () => {
     await request(app)
       .post('/api/v1/user/register')
       .send({ password: 'Pass1234', ...testUser, email: 'test2@email.com' })
@@ -223,7 +223,7 @@ describe.concurrent('User', async () => {
     })
   })
 
-  describe.concurrent('User/Label', async () => {
+  describe('User/Label', async () => {
     let token = ''
     beforeAll(async () => {
       const {
@@ -231,14 +231,14 @@ describe.concurrent('User', async () => {
       } = await request(app).post('/api/v1/user/login').send(testLogin)
       token = t
     })
-    it.concurrent('GET /user/label', async () => {
+    it('GET /user/label', async () => {
       const res = await request(app)
         .get('/api/v1/user/label')
         .set('Authorization', 'Bearer ' + token)
       expect(res.status).toBe(200)
       expect(res.body).toEqual({ labels: [] })
     })
-    it.concurrent('POST /user/label', async () => {
+    it('POST /user/label', async () => {
       const res = await request(app)
         .post('/api/v1/user/label')
         .send({ name: 'test' })
@@ -268,12 +268,12 @@ describe.concurrent('User', async () => {
       })
     })
 
-    // XXX: this test depends on the previous one
-    it.concurrent('DELETE /user/label/:id', async () => {
+    it('DELETE /user/label/:id', async () => {
       const res1 = await request(app)
-        .get('/api/v1/user/label')
+        .post('/api/v1/user/label')
+        .send({ name: 'test' })
         .set('Authorization', 'Bearer ' + token)
-      const labelId = res1.body.labels[0].id
+      const labelId = res1.body.id
       const res = await request(app)
         .delete(`/api/v1/user/label/${labelId}`)
         .set('Authorization', 'Bearer ' + token)
@@ -282,9 +282,9 @@ describe.concurrent('User', async () => {
       const res2 = await request(app)
         .get('/api/v1/user/label')
         .set('Authorization', 'Bearer ' + token)
-      expect(res2.body).toEqual({ labels: [] })
+      expect(res2.body.labels).not.toContainEqual({ id: labelId, name: 'test' })
     })
-    it.concurrent('POST /user/label - error missing fields', async () => {
+    it('POST /user/label - error missing fields', async () => {
       const res = await request(app)
         .post('/api/v1/user/label')
         .send({})
@@ -307,7 +307,7 @@ describe.concurrent('User', async () => {
       })
     })
   })
-  describe.concurrent('User/Template', async () => {
+  describe('User/Template', async () => {
     // Token used for all test
     let token = ''
     beforeAll(async () => {
@@ -316,14 +316,14 @@ describe.concurrent('User', async () => {
       } = await request(app).post('/api/v1/user/login').send(testLogin)
       token = t
     })
-    it.concurrent('GET /user/template', async () => {
+    it('GET /user/template', async () => {
       const res = await request(app)
         .get('/api/v1/user/template')
         .set('Authorization', 'Bearer ' + token)
       expect(res.status).toBe(200)
       expect(res.body).toEqual({ templates: [] })
     })
-    it.concurrent('POST /user/template', async () => {
+    it('POST /user/template', async () => {
       const res = await request(app)
         .post('/api/v1/user/template')
         .send(testTemplate)
@@ -349,9 +349,10 @@ describe.concurrent('User', async () => {
     })
     it('PUT /user/template', async () => {
       const res1 = await request(app)
-        .get('/api/v1/user/template')
+        .post('/api/v1/user/template')
+        .send(testTemplate)
         .set('Authorization', 'Bearer ' + token)
-      const templateId = res1.body.templates[0].id
+      const templateId = res1.body.template.id
       const res = await request(app)
         .put('/api/v1/user/template')
         .send({
@@ -410,7 +411,7 @@ describe.concurrent('User', async () => {
       const template = res2.body.templates.find((t: any) => t.id === templateId)
       expect(template).toBeUndefined()
     })
-    it.concurrent('POST /user/template - error missing fields', async () => {
+    it('POST /user/template - error missing fields', async () => {
       const res = await request(app)
         .post('/api/v1/user/template')
         .send({})
@@ -439,7 +440,7 @@ describe.concurrent('User', async () => {
         message: 'Invalid template'
       })
     })
-    it.concurrent('POST /user/template - error invalid types', async () => {
+    it('POST /user/template - error invalid types', async () => {
       const res = await request(app)
         .post('/api/v1/user/template')
         .send({ name: 1, tasks: 1 })
@@ -471,7 +472,7 @@ describe.concurrent('User', async () => {
         message: 'Invalid template'
       })
     })
-    it.concurrent('POST /user/template - error invalid tasks requireds', async () => {
+    it('POST /user/template - error invalid tasks requireds', async () => {
       const res = await request(app)
         .post('/api/v1/user/template')
         .send({ name: 'test', tasks: [{}] })
@@ -527,7 +528,7 @@ describe.concurrent('User', async () => {
         message: 'Invalid template'
       })
     })
-    it.concurrent('POST /user/template - error invalid tasks types', async () => {
+    it('POST /user/template - error invalid tasks types', async () => {
       const res = await request(app)
         .post('/api/v1/user/template')
         .send({
