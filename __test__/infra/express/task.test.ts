@@ -14,9 +14,9 @@ const testTask = {
 }
 
 // TODO: Check all test don't depend on each other
-describe.concurrent('Task', async () => {
+describe.sequential('Task', async () => {
   const app = (await api).getInstance()
-  it.concurrent('POST /task', async () => {
+  it('POST /task', async () => {
     const res = await request(app)
       .post('/api/v1/task')
       .send(testTask)
@@ -31,7 +31,7 @@ describe.concurrent('Task', async () => {
     expect(task.labels).toEqual([])
     expect(task.project).toBe(null)
   })
-  it.concurrent('POST /task - whit project and labels', async () => {
+  it('POST /task - whit project and labels', async () => {
     const res = await request(app)
       .post('/api/v1/task')
       .send({
@@ -50,7 +50,7 @@ describe.concurrent('Task', async () => {
     expect(task.labels).toEqual([{ name: 'label' }, { name: 'label2' }])
     expect(task.project).toEqual({ name: 'project' })
   })
-  it.concurrent('GET /task/all', async () => {
+  it('GET /task/all', async () => {
     const res = await request(app).get('/api/v1/task/all')
     expect(res.status).toBe(200)
     const { tasks } = res.body
@@ -74,7 +74,7 @@ describe.concurrent('Task', async () => {
     expect(task2.project).toEqual({ name: 'project' })
   })
 
-  it.concurrent('POST /task/bulk', async () => {
+  it('POST /task/bulk', async () => {
     const res = await request(app)
       .post('/api/v1/task/bulk')
       .send({
@@ -118,8 +118,8 @@ describe.concurrent('Task', async () => {
     expect(task2.labels).toEqual([{ name: 'label' }, { name: 'label2' }])
     expect(task2.project).toEqual({ name: 'project' })
   })
-  describe.concurrent('Exceptions', async () => {
-    it.concurrent('POST /task - error missig fields', async () => {
+  describe('Exceptions', async () => {
+    it('POST /task - error missig fields', async () => {
       const res = await request(app).post('/api/v1/task').send({}).set('Authorization', MOCK_TOKEN)
       expect(res.status).toBe(422)
       expect(res.body).toEqual({
@@ -173,7 +173,7 @@ describe.concurrent('Task', async () => {
         message: 'Invalid Task'
       })
     })
-    it.concurrent('POST /task - error invalid types', async () => {
+    it('POST /task - error invalid types', async () => {
       const res = await request(app)
         .post('/api/v1/task')
         .send({
@@ -245,7 +245,7 @@ describe.concurrent('Task', async () => {
         message: 'Invalid Task'
       })
     })
-    it.concurrent('POST /task/', async () => {
+    it('POST /task/', async () => {
       const res = await request(app).get('/api/v1/task')
       expect(res.status).toBe(401)
       expect(res.body).toEqual({
