@@ -1,7 +1,7 @@
 import request from 'supertest'
 import api from '@/infraestructure/express/app'
 
-describe.concurrent('Timer', async () => {
+describe('Timer', async () => {
   const app = (await api).getInstance()
   let counterId = 0
   const createToken = async (): Promise<string> => {
@@ -16,7 +16,7 @@ describe.concurrent('Timer', async () => {
       })
       .then((res) => res.body.token)
   }
-  it.concurrent('GET /timer', async () => {
+  it('GET /timer', async () => {
     const now = Date.now()
     const token = await createToken()
     const res = await request(app).get('/api/v1/timer').set('Authorization', `Bearer ${token}`)
@@ -32,7 +32,7 @@ describe.concurrent('Timer', async () => {
     expect(timer.duration).toBeGreaterThanOrEqual(now)
     expect(timer.stageInterval).toBe(4)
   })
-  it.concurrent('PUT /start', async () => {
+  it('PUT /start', async () => {
     const token = await createToken()
     const res = await request(app)
       .put('/api/v1/timer/start')
@@ -47,7 +47,7 @@ describe.concurrent('Timer', async () => {
     expect(timer.pomodoroCounter).toBe(0)
     expect(timer.currentStage).toBe('pomodoro')
   })
-  it.concurrent('PUT /stop', async () => {
+  it('PUT /stop', async () => {
     const token = await createToken()
     await request(app).put('/api/v1/timer/start').set('Authorization', `Bearer ${token}`)
     const res = await request(app).put('/api/v1/timer/stop').set('Authorization', `Bearer ${token}`)
@@ -58,7 +58,7 @@ describe.concurrent('Timer', async () => {
     expect(timer.status).toBe('PAUSED')
   })
 
-  it.concurrent('PUT /resume', async () => {
+  it('PUT /resume', async () => {
     const token = await createToken()
     await request(app).put('/api/v1/timer/start').set('Authorization', `Bearer ${token}`)
     await request(app).put('/api/v1/timer/stop').set('Authorization', `Bearer ${token}`)
@@ -71,7 +71,7 @@ describe.concurrent('Timer', async () => {
     const timer = body.timer
     expect(timer.status).toBe('RUNNING')
   })
-  it.concurrent('PUT /finish', async () => {
+  it('PUT /finish', async () => {
     const token = await createToken()
     await request(app).put('/api/v1/timer/start').set('Authorization', `Bearer ${token}`)
     const res = await request(app)
@@ -85,7 +85,7 @@ describe.concurrent('Timer', async () => {
     expect(timer.pomodoroCounter).toBe(1)
   })
 
-  it.concurrent('PUT /change-stage/:timerId', async () => {
+  it('PUT /change-stage/:timerId', async () => {
     const token = await createToken()
     const { body } = await request(app).get('/api/v1/timer').set('Authorization', `Bearer ${token}`)
     const res = await request(app)
@@ -99,8 +99,8 @@ describe.concurrent('Timer', async () => {
     expect(timer.pomodoroCounter).toBe(0)
     expect(timer.currentStage).toBe('long_break')
   })
-  describe.concurrent('Exceptions', async () => {
-    it.concurrent('GET /timer - dont send token', async () => {
+  describe('Exceptions', async () => {
+    it('GET /timer - dont send token', async () => {
       const res = await request(app).get('/api/v1/timer')
       expect(res.status).toBe(401)
       expect(res.body).toEqual({
@@ -110,7 +110,7 @@ describe.concurrent('Timer', async () => {
       })
     })
   })
-  it.concurrent('PUT /change-stage/:timerId - invalid stage', async () => {
+  it('PUT /change-stage/:timerId - invalid stage', async () => {
     const token = await createToken()
     const { body } = await request(app).get('/api/v1/timer').set('Authorization', `Bearer ${token}`)
     const res = await request(app)
