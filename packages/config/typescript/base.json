@@ -15,8 +15,6 @@
     "noFallthroughCasesInSwitch": true,
     "moduleResolution": "node",
     "types": ["vitest/globals"],
-    "rootDir": "./",
-    "outDir": "./build",
     "skipLibCheck": true
   },
   "exclude": ["node_modules", "build"]
