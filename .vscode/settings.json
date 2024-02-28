@@ -17,6 +17,7 @@
     "infra/task",
     "infra/timer",
     "infra/project",
-    "application/api"
+    "application/api",
+    "config/typescript"
   ]
 }
