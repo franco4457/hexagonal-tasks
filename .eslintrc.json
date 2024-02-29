@@ -9,6 +9,7 @@
     "ecmaVersion": "latest",
     "sourceType": "module"
   },
+  "ignorePatterns": ["node_modules/", "dist/", "build/"],
   "rules": {
     "@typescript-eslint/space-before-function-paren": "off",
     "@typescript-eslint/no-misused-promises": "off",
