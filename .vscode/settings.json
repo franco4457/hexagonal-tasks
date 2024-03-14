@@ -18,6 +18,7 @@
     "infra/timer",
     "infra/project",
     "application/api",
-    "config/typescript"
+    "config/typescript",
+    "config/eslint"
   ]
 }
