@@ -19,6 +19,7 @@
     "infra/project",
     "application/api",
     "config/typescript",
-    "config/eslint"
+    "config/eslint",
+    "root"
   ]
 }
