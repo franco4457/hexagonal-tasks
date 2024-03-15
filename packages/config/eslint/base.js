@@ -3,12 +3,13 @@ const { resolve } = require('node:path')
 const project = resolve(process.cwd(), 'tsconfig.json')
 
 module.exports = {
-  extends: ['standard-with-typescript', 'eslint-config-turbo'],
+  extends: ['standard-with-typescript'],
   env: {
     browser: true,
     es2021: true,
     node: true
   },
+  include: ['**/*.ts', '**/*.tsx', '**/*.js', '**/*.jsx'],
   parserOptions: {
     project,
     ecmaVersion: 'latest',
