@@ -42,7 +42,6 @@ export default function generator(plop: PlopTypes.NodePlopAPI): void {
           description,
           outDir: gen
         }
-        console.log({ ...answers, data })
         actions.push({
           type: 'addMany',
           destination: `{{ turbo.paths.root }}/packages/{{outDir}}/{{dashCase ${gen}Name}}`,
@@ -52,7 +51,6 @@ export default function generator(plop: PlopTypes.NodePlopAPI): void {
           abortOnFail: true,
           globOptions: { dot: true }
         })
-        console.log({ actions })
         return actions
       }
     })
