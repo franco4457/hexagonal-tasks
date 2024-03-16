@@ -9,7 +9,6 @@ module.exports = {
     es2021: true,
     node: true
   },
-  include: ['**/*.ts', '**/*.tsx', '**/*.js', '**/*.jsx'],
   parserOptions: {
     project,
     ecmaVersion: 'latest',
