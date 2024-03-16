@@ -28,6 +28,7 @@
     "create:app": "turbo gen application"
   },
   "devDependencies": {
+    "@application/api": "workspace:*",
     "@config/eslint": "workspace:*",
     "@config/typescript": "workspace:*",
     "@domain/core": "workspace:*",
