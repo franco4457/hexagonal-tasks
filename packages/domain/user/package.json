@@ -1,0 +1,18 @@
+{
+  "name": "@domain/user",
+  "version": "0.0.0",
+  "description": "User of Pomodoro App",
+  "main": "src/index.ts",
+  "scripts": {
+    "lint": "eslint --ext .ts,.tsx ."
+  },
+  "dependencies": {
+    "@domain/core": "workspace:*",
+    "eventemitter2": "^6.4.9",
+    "zod": "^3.22.4"
+  },
+  "devDependencies": {
+    "@config/eslint": "workspace:*",
+    "@config/typescript": "workspace:*"
+  }
+}
