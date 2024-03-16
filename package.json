@@ -30,6 +30,7 @@
     "@config/eslint": "workspace:*",
     "@config/typescript": "workspace:*",
     "@domain/core": "workspace:*",
+    "@domain/user": "workspace:*",
     "@swc/core": "^1.3.100",
     "@turbo/gen": "^1.12.5",
     "@types/bcrypt": "^5.0.2",

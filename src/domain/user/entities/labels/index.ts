@@ -1,5 +1,0 @@
-export * from './label.dto'
-export * from './label.entity'
-export * from './label.exceptions'
-export * from './label.mapper'
-export * from './label.schema'
