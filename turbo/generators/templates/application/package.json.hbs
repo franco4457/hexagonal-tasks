@@ -1,0 +1,16 @@
+{
+  "name": "@application/{{applicationName}}",
+  "version": "0.0.0",
+  "description": "{{description}}",
+  "main": "src/index.ts",
+  "scripts": {
+    "lint": "eslint --ext .ts,.tsx ."
+  },
+  "dependencies": {
+    "@domain/core": "workspace:*"
+  },
+  "devDependencies": {
+    "@config/eslint": "workspace:*",
+    "@config/typescript": "workspace:*"
+  }
+}

@@ -24,7 +24,8 @@
     "lint": "eslint --ext .jsx,.js,.ts,.tsx .",
     "typecheck": "tsc --noEmit",
     "test": "vitest",
-    "create:domain": "turbo gen domain"
+    "create:domain": "turbo gen domain",
+    "create:app": "turbo gen application"
   },
   "devDependencies": {
     "@config/eslint": "workspace:*",
