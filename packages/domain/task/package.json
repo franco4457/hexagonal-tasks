@@ -1,0 +1,19 @@
+{
+  "name": "@domain/task",
+  "version": "0.0.0",
+  "description": "Pomodoro tasks",
+  "main": "src/index.ts",
+  "scripts": {
+    "lint": "eslint --ext .ts,.tsx ."
+  },
+  "dependencies": {
+    "@domain/core": "workspace:*",
+    "@domain/user": "workspace:*",
+    "eventemitter2": "^6.4.9",
+    "zod": "^3.22.4"
+  },
+  "devDependencies": {
+    "@config/eslint": "workspace:*",
+    "@config/typescript": "workspace:*"
+  }
+}
