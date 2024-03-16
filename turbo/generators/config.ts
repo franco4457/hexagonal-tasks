@@ -49,7 +49,8 @@ export default function generator(plop: PlopTypes.NodePlopAPI): void {
           templateFiles: `{{ turbo.paths.root }}/turbo/generators/templates/${gen}/**`,
           base: `{{ turbo.paths.root }}/turbo/generators/templates/${gen}`,
           data,
-          abortOnFail: true
+          abortOnFail: true,
+          globOptions: { dot: true }
         })
         console.log({ actions })
         return actions
