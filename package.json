@@ -31,6 +31,7 @@
     "@application/api": "workspace:*",
     "@application/project": "workspace:*",
     "@application/task": "workspace:*",
+    "@application/timer": "workspace:*",
     "@config/eslint": "workspace:*",
     "@config/typescript": "workspace:*",
     "@domain/core": "workspace:*",
