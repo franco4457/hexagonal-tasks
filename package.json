@@ -25,7 +25,8 @@
     "typecheck": "tsc --noEmit",
     "test": "vitest",
     "create:domain": "turbo gen domain",
-    "create:app": "turbo gen application"
+    "create:app": "turbo gen application",
+    "create:infra": "turbo gen infrastructure"
   },
   "devDependencies": {
     "@application/api": "workspace:*",
