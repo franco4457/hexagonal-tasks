@@ -30,6 +30,7 @@
   "devDependencies": {
     "@application/api": "workspace:*",
     "@application/project": "workspace:*",
+    "@application/task": "workspace:*",
     "@config/eslint": "workspace:*",
     "@config/typescript": "workspace:*",
     "@domain/core": "workspace:*",
