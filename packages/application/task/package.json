@@ -1,0 +1,17 @@
+{
+  "name": "@application/task",
+  "version": "0.0.0",
+  "description": "Use cases and applications for Tasks",
+  "main": "src/index.ts",
+  "scripts": {
+    "lint": "eslint --ext .ts,.tsx ."
+  },
+  "dependencies": {
+    "@domain/core": "workspace:*",
+    "@domain/task": "workspace:*"
+  },
+  "devDependencies": {
+    "@config/eslint": "workspace:*",
+    "@config/typescript": "workspace:*"
+  }
+}
