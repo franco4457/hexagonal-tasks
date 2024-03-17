@@ -7,7 +7,6 @@
     "lint": "eslint --ext .ts,.tsx ."
   },
   "dependencies": {
-    "@domain/core": "workspace:*",
     "@domain/project": "workspace:*",
     "@domain/task": "workspace:*",
     "@domain/timer": "workspace:*",
