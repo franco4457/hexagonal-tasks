@@ -21,6 +21,7 @@
     "config/typescript",
     "config/eslint",
     "root",
-    "infra/logger"
+    "infra/logger",
+    "infra/repo-in-memory"
   ]
 }
