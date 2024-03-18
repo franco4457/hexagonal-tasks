@@ -23,6 +23,7 @@
     "root",
     "infra/logger",
     "infra/repo-in-memory",
-    "infra/repo-mongo"
+    "infra/repo-mongo",
+    "infra/repo-postgres"
   ]
 }
