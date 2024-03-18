@@ -22,6 +22,7 @@
     "config/eslint",
     "root",
     "infra/logger",
-    "infra/repo-in-memory"
+    "infra/repo-in-memory",
+    "infra/repo-mongo"
   ]
 }
