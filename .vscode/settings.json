@@ -20,6 +20,7 @@
     "application/api",
     "config/typescript",
     "config/eslint",
-    "root"
+    "root",
+    "infra/logger"
   ]
 }
