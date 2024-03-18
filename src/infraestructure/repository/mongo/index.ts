@@ -1,4 +1,1 @@
-export * from './connect'
-export * from './seeds'
-export * from './task'
-export * from './user'
+export * from '@infrastructure/repository-mongo'

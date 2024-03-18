@@ -57,6 +57,7 @@
     "@infrastructure/authorization": "workspace:*",
     "@infrastructure/logger": "workspace:*",
     "@infrastructure/repository-in-memory": "workspace:*",
+    "@infrastructure/repository-mongo": "workspace:*",
     "awilix": "^10.0.1",
     "bcrypt": "5.1.0",
     "dotenv": "^16.3.1",
