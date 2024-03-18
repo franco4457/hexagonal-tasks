@@ -3,12 +3,13 @@ const { resolve } = require('node:path')
 const project = resolve(process.cwd(), 'tsconfig.json')
 
 module.exports = {
-  extends: ['standard-with-typescript'],
+  extends: ['love'],
   env: {
     browser: true,
     es2021: true,
     node: true
   },
+  parser: '@typescript-eslint/parser',
   parserOptions: {
     project,
     ecmaVersion: 'latest',
