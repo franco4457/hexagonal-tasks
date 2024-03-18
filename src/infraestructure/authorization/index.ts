@@ -1,1 +1,1 @@
-export * from './user-bearer-auth'
+export * from '@infrastructure/authorization'
