@@ -15,7 +15,8 @@
     "api"
   ],
   "workspaces": [
-    "./packages/**/*"
+    "./packages/**/*",
+    "./apps/*"
   ],
   "scripts": {
     "build": "tsup",

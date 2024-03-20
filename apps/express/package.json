@@ -1,0 +1,39 @@
+{
+  "name": "@app/express",
+  "version": "0.0.0",
+  "private": true,
+  "main": "build/src/index.js",
+  "description": "Express backend for Pomodoro App",
+  "scripts": {
+    "lint": "eslint --ext .ts,.tsx .",
+    "start": "node build/src/index.js",
+    "build": "swc ./src -d build"
+  },
+  "dependencies": {
+    "@application/api": "workspace:*",
+    "@application/project": "workspace:*",
+    "@application/task": "workspace:*",
+    "@application/timer": "workspace:*",
+    "@application/user": "workspace:*",
+    "@domain/core": "workspace:*",
+    "@domain/project": "workspace:*",
+    "@domain/task": "workspace:*",
+    "@domain/timer": "workspace:*",
+    "@domain/user": "workspace:*",
+    "@infrastructure/authorization": "workspace:*",
+    "@infrastructure/logger": "workspace:*",
+    "@infrastructure/repository-in-memory": "workspace:*",
+    "@infrastructure/repository-mongo": "workspace:*",
+    "@infrastructure/repository-postgres": "workspace:*",
+    "awilix": "^10.0.1",
+    "dotenv": "^16.3.1",
+    "eventemitter2": "^6.4.9",
+    "express": "^4.18.2"
+  },
+  "devDependencies": {
+    "@config/eslint": "workspace:*",
+    "@config/typescript": "workspace:*",
+    "@swc/cli": "^0.3.10",
+    "@swc/core": "^1.3.100"
+  }
+}

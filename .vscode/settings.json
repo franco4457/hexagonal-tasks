@@ -24,6 +24,7 @@
     "infra/logger",
     "infra/repo-in-memory",
     "infra/repo-mongo",
-    "infra/repo-postgres"
+    "infra/repo-postgres",
+    "apps/express"
   ]
 }
