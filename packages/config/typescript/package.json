@@ -6,6 +6,9 @@
   "publishConfig": {
     "access": "public"
   },
+  "bin": {
+    "ts-check": "./bin/ts-check"
+  },
   "devDependencies": {
     "typescript": "^5.4.2"
   }
