@@ -3,11 +3,11 @@ import type { ApiExpress } from '../api'
 import {
   MongoTaskRepository,
   MongoUserRepository,
-  testMongoSeeds
+  testMongoSeeds,
+  MongoProjectRepository,
+  MongoTimerRepository
 } from '@infrastructure/repository-mongo'
 import { NODE_ENV } from '#/config'
-import { MongoProjectRepository } from '@infrastructure/repository-mongo'
-import { MongoTimerRepository } from '@infrastructure/repository-mongo'
 
 export const createMongoApi = async (): Promise<ApiExpress> => {
   if (NODE_ENV === 'test') await testMongoSeeds()

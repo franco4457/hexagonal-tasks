@@ -21,7 +21,7 @@ export class ProjectController {
     try {
       const project = await this.projectCreateService.execute(
         new ProjectCreateCommand({
-          ...body,
+          name: body.name,
           userId: id
         })
       )
@@ -35,7 +35,7 @@ export class ProjectController {
     try {
       const { id } = req.userAuth.decodedToken
       const projects = await this.projectByUserIdQuery.execute({ userId: id })
-      res.status(200).json({ projects: projects.map(this.mapper.toResponse) })
+      res.status(200).json({ projects: projects.map(this.mapper.toResponse.bind(this)) })
     } catch (error) {
       next(error)
     }

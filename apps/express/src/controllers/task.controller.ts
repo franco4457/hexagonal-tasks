@@ -42,7 +42,7 @@ export class TaskController {
       const tasksCreated = await this.createTask.execute(
         data.map(({ task }) => new TaskCreateCommand({ task, userId }))
       )
-      res.status(201).json({ tasks: tasksCreated.map(this.mapper.toResponse) })
+      res.status(201).json({ tasks: tasksCreated.map(this.mapper.toResponse.bind(this)) })
     } catch (error) {
       next(error)
     }

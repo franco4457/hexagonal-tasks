@@ -1,7 +1,9 @@
 import {
   UserByUserIdQuery,
   UserByUserIdQueryHandler,
+  UserLoginCommand,
   UserLoginService,
+  UserRegisterCommand,
   UserRegisterService
 } from '@application/user'
 import { UserMapper, type UserRepository } from '@domain/user'
@@ -23,7 +25,15 @@ export class UserController {
   async register(req: Request, res: Response, next: NextFunction): Promise<void> {
     const body = req.body
     try {
-      const user = await this.userRegister.execute(body)
+      const user = await this.userRegister.execute(
+        new UserRegisterCommand({
+          email: body.email,
+          password: body.password,
+          username: body.username,
+          lastname: body.lastname,
+          name: body.name
+        })
+      )
       const token = UserAuthorizationBearer.create({ id: user.id })
       res.status(200).json({ token })
     } catch (error) {
@@ -34,7 +44,9 @@ export class UserController {
   async login(req: Request, res: Response, next: NextFunction): Promise<void> {
     const body = req.body
     try {
-      const user = await this.userLogin.execute(body)
+      const user = await this.userLogin.execute(
+        new UserLoginCommand({ email: body.email, password: body.password })
+      )
       const token = UserAuthorizationBearer.create({ id: user.id })
       res.status(200).json({ token })
     } catch (error) {

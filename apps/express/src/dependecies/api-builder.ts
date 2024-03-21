@@ -96,10 +96,10 @@ export class ApiBuilderExpress implements IApiBuilder {
 
     this.api.build(
       new MainRouter(
-        this.container.resolve('userRepository'),
-        this.container.resolve('taskRepository'),
-        this.container.resolve('timerRepository'),
-        this.container.resolve('projectRepository')
+        this.container.resolve('userRepository') as UserRepository,
+        this.container.resolve('taskRepository') as TaskRepository,
+        this.container.resolve('timerRepository') as TimerRepository,
+        this.container.resolve('projectRepository') as ProjectRepository
       )
     )
     return this.api

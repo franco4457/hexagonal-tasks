@@ -1,4 +1,4 @@
-import { UserAuthorizationBearer } from '@infrastructure/authorization'
+import type { UserAuthorizationBearer } from '@infrastructure/authorization'
 
 declare global {
   namespace Express {
