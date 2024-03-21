@@ -25,7 +25,7 @@ module.exports = {
       }
     }
   },
-  ignorePatterns: ['node_modules/', 'dist/', 'build/'],
+  ignorePatterns: ['node_modules/', '.eslintrc.js', 'vistes.config.ts', 'dist/', 'build/'],
   rules: {
     '@typescript-eslint/space-before-function-paren': 'off',
     '@typescript-eslint/no-misused-promises': 'off',
