@@ -2,9 +2,15 @@
   "name": "@infrastructure/repository-postgres",
   "version": "0.0.0",
   "description": "Postgres repository for Pomodoro App",
-  "main": "src/index.ts",
-  "scripts": {
-    "lint": "eslint --ext .ts,.tsx ."
+  "main": "dist/index.js",
+  "types": "src/index.ts",
+  "scripts": {},
+  "tsup": {
+    "entry": [
+      "src/index.ts"
+    ],
+    "splitting": false,
+    "sourcemap": false
   },
   "dependencies": {
     "@domain/core": "workspace:*",
@@ -15,10 +21,11 @@
     "@infrastructure/logger": "workspace:*",
     "pg": "^8.11.3",
     "reflect-metadata": "^0.2.1",
-    "typeorm": "^0.3.17"
+    "typeorm": "^0.3.20"
   },
   "devDependencies": {
     "@config/eslint": "workspace:*",
-    "@config/typescript": "workspace:*"
+    "@config/typescript": "workspace:*",
+    "tsup": "^8.0.2"
   }
 }
