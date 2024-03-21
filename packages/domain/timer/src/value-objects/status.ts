@@ -33,7 +33,7 @@ export class Status extends ValueObject<StatusEnum> {
   }
 
   protected validate(value: any): void {
-    if (!Object.values(StatusEnum).includes(value)) {
+    if (!Object.values(StatusEnum).includes(value as StatusEnum)) {
       throw new Error('Invalid timer status')
     }
   }
