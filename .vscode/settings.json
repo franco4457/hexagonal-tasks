@@ -25,6 +25,7 @@
     "infra/repo-in-memory",
     "infra/repo-mongo",
     "infra/repo-postgres",
-    "apps/express"
+    "apps/express",
+    "config/test"
   ]
 }

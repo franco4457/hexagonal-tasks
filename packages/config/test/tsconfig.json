@@ -1,0 +1,8 @@
+{
+  "extends": "@config/typescript/base.json",
+  "include": ["utils"],
+  "compilerOptions": {
+    "baseUrl": "./",
+    "rootDir": "./"
+  }
+}

@@ -1,0 +1,8 @@
+{
+  "resolve": {
+    "alias": [{ "find": "@", "replacement": "src" }]
+  },
+  "test": {
+    "globals": true
+  }
+}

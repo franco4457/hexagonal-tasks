@@ -1,0 +1,15 @@
+{
+  "name": "@config/test",
+  "version": "0.0.0",
+  "description": "Test config",
+  "private": true,
+  "bin": {
+    "exec-test": "./bin/test"
+  },
+  "devDependencies": {
+    "@config/eslint": "workspace:^",
+    "@config/typescript": "workspace:^",
+    "eventemitter2": "^6.4.9",
+    "vitest": "^1.4.0"
+  }
+}
