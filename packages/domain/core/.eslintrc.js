@@ -5,5 +5,7 @@ module.exports = {
     tsconfigRootDir: __dirname,
     project: './tsconfig.json'
   },
-  rules: {}
+  rules: {
+    'import/no-duplicates': 'off'
+  }
 }
