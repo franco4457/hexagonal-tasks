@@ -1,4 +1,6 @@
 export * from './connect'
+export * from './project'
 export * from './seeds'
 export * from './task'
+export * from './timer'
 export * from './user'
