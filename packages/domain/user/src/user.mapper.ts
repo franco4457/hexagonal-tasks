@@ -8,8 +8,8 @@ export class UserMapper implements Mapper<User, UserModel, UserResponseDto> {
   readonly templateMapper = new TemplateMapper()
   readonly labelMapper = new LabelMapper()
   toDomain(record: UserModel): User {
-    const labels = record.labels.map(this.labelMapper.toDomain)
-    const templates = record.templates.map(this.templateMapper.toDomain)
+    const labels = record.labels.map(this.labelMapper.toDomain.bind(this.labelMapper))
+    const templates = record.templates.map(this.templateMapper.toDomain.bind(this.labelMapper))
     const user = new User({
       id: record.id,
       props: {
@@ -35,8 +35,8 @@ export class UserMapper implements Mapper<User, UserModel, UserResponseDto> {
       name: copy.name,
       lastname: copy.lastname,
       username: copy.username,
-      labels: copy.labels.map(this.labelMapper.toPersistence),
-      templates: copy.templates.map(this.templateMapper.toPersistence),
+      labels: copy.labels.map(this.labelMapper.toPersistence.bind(this.labelMapper)),
+      templates: copy.templates.map(this.templateMapper.toPersistence.bind(this.labelMapper)),
       password: copy.password.value,
       createdAt: copy.createdAt,
       updatedAt: copy.updatedAt
