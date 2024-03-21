@@ -4,6 +4,9 @@
     "turbo:express": {
       "dependsOn": ["^dev"]
     },
+    "build": {
+      "dependsOn": ["^lint", "^typecheck"]
+    },
     "dev": {
       "cache": false
     },
