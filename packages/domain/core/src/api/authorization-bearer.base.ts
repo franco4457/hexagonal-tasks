@@ -1,7 +1,7 @@
 import { Unauthorized } from '../exeptions'
 import { isEmpty } from '../guard'
 import { JsonWebTokenError, sign, verify } from 'jsonwebtoken'
-import { JWT_SECRET } from '@/config'
+import { JWT_SECRET } from '../config'
 
 type AuthorizationBearerProps = `Bearer ${string}` | string
 export class AuthorizationBearer<DataToken extends Record<string, unknown>> {
