@@ -25,6 +25,7 @@
   },
   "devDependencies": {
     "@config/eslint": "workspace:*",
+    "@config/test": "workspace:^",
     "@config/typescript": "workspace:*",
     "tsup": "^8.0.2"
   }

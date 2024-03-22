@@ -1,5 +1,5 @@
-import { TEST_ID } from './../utils/constants'
-import { ValidationError } from '@/domain/core'
+import { TEST_ID } from '@config/test/utils'
+import { ValidationError } from '@domain/core'
 import {
   Label,
   Pomodoro,
@@ -15,7 +15,7 @@ import {
   TaskUpdateActualPomodoroEvent,
   TaskUpdateEstimatedPomodoroEvent,
   TaskSetProjectEvent
-} from '@/domain/task'
+} from '../src'
 
 const baseTask = {
   description: 'test',
