@@ -1,6 +1,6 @@
-import { Project, ProjectCreateEvent, ProjectSumPomodoroCountEvent } from '@/domain/project'
-import { TEST_ID } from '../utils/constants'
-import { ValidationError } from '@/domain/core'
+import { Project, ProjectCreateEvent, ProjectSumPomodoroCountEvent } from '../src'
+import { ValidationError } from '@domain/core'
+import { TEST_ID } from '@config/test/utils'
 
 const TEST_PROPS = {
   name: 'Project name',
