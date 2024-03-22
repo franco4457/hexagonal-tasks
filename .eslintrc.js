@@ -1,5 +1,9 @@
 module.exports = {
   root: true,
   extends: ['@config/eslint'].map(require.resolve),
-  ignorePatterns: ['vistes.config.ts']
+  parserOptions: {
+    include: ['*.ts', '*.tsx', '*.d.ts'],
+    tsconfigRootDir: __dirname,
+    project: ['./tsconfig.json']
+  }
 }
