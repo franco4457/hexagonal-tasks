@@ -13,9 +13,9 @@ import {
   InvalidCurrentStage,
   TimerFieldRequired,
   TimerChangeStageEvent
-} from '@/domain/timer'
-import { TEST_ID } from '../utils'
-import { ValidationError } from '@/domain/core'
+} from '../src'
+import { TEST_ID } from '@config/test/utils'
+import { ValidationError } from '@domain/core'
 
 const TEST_STATUS = new Status(StatusEnum.READY)
 const TEST_DURATION = Duration.create({})
