@@ -1,4 +1,4 @@
-import { ValidationError } from '@/domain/core'
+import { ValidationError } from '@domain/core'
 import {
   Label,
   Password,
@@ -12,8 +12,8 @@ import {
   UserRemoveLabelEvent,
   UserRemoveTemplateEvent,
   UserUpdateTemplateEvent
-} from '@/domain/user'
-import { TEST_ID } from '../utils/constants'
+} from '../src'
+import { TEST_ID } from '@config/test/utils'
 
 const baseProps = {
   name: 'test',

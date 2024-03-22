@@ -6,6 +6,7 @@
   "types": "src/index.ts",
   "scripts": {
     "lint": "eslint --ext .ts,.tsx .",
+    "test": "exec-test",
     "typecheck": "ts-check",
     "dev": "tsup --dts "
   },
@@ -24,6 +25,7 @@
   },
   "devDependencies": {
     "@config/eslint": "workspace:*",
+    "@config/test": "workspace:*",
     "@config/typescript": "workspace:*",
     "@types/bcrypt": "^5.0.2",
     "tsup": "^8.0.2"
