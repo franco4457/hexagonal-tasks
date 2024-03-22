@@ -6,6 +6,7 @@
   "types": "src/index.ts",
   "scripts": {
     "lint": "eslint --ext .ts,.tsx .",
+    "test": "exec-test",
     "typecheck": "ts-check",
     "dev": "tsup --watch",
     "build": "tsup"
