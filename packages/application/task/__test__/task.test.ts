@@ -1,4 +1,4 @@
-import { REPO_CONFIG, TEST_ID } from './../utils/constants'
+import { REPO_CONFIG, TEST_ID } from '@config/test/utils'
 import {
   ListTasks,
   TaskCreateService,
@@ -11,10 +11,10 @@ import {
   TaskRemoveLabelCommand,
   TaskSetProjectCommand,
   TaskRemoveProjectCommand
-} from '@/application/task'
-import { ValidationError } from '@/domain/core'
-import { Label, Project, Task, type TaskModel } from '@/domain/task'
-import { InMemoryTaskRepository } from '@/infraestructure/repository/in-memory'
+} from '../src'
+import { ValidationError } from '@domain/core'
+import { Label, Project, Task, type TaskModel } from '@domain/task'
+import { InMemoryTaskRepository } from '@infrastructure/repository-in-memory'
 
 const taskConfig = REPO_CONFIG
 
@@ -42,6 +42,7 @@ const TASK_MODEL: TaskModel = {
   updatedAt: new Date()
 }
 
+// FIXME: Check instances of Task
 describe.concurrent('task', () => {
   it.concurrent('Create task', async () => {
     const taskRepository = new InMemoryTaskRepository({
