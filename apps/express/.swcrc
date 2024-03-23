@@ -7,10 +7,7 @@
       "decorators": true
     },
     "target": "es2022",
-    "baseUrl": "./",
-    "paths": {
-      "#/*": ["src/*"]
-    }
+    "baseUrl": "./"
   },
   "module": {
     "type": "commonjs"

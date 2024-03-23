@@ -1,6 +1,6 @@
 import request from 'supertest'
 
-import api from '@/infraestructure/express/app'
+import api from '../src/app'
 const app = (await api).getInstance()
 
 describe('Health', () => {

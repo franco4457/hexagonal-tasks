@@ -1,6 +1,6 @@
 import request from 'supertest'
-import api from '@/infraestructure/express/app'
-import { MOCK_TOKEN, TEST_ID } from '../../utils'
+import api from '../src/app'
+import { MOCK_TOKEN, TEST_ID } from '@config/test/utils'
 
 const testTask = {
   title: 'title',

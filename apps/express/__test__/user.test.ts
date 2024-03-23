@@ -1,7 +1,7 @@
 import request from 'supertest'
 
-import api from '@/infraestructure/express/app'
-import { TEST_ID } from '../../utils'
+import api from '../src/app'
+import { TEST_ID } from '@config/test/utils'
 const testUser = {
   email: 'test@email.com',
   name: 'test1',
@@ -273,10 +273,11 @@ describe.sequential('User', async () => {
         .post('/api/v1/user/label')
         .send({ name: 'test' })
         .set('Authorization', 'Bearer ' + token)
-      const labelId = res1.body.id
+      const labelId = res1.body.label.id
       const res = await request(app)
         .delete(`/api/v1/user/label/${labelId}`)
         .set('Authorization', 'Bearer ' + token)
+      console.log(res.body)
       expect(res.status).toBe(201)
 
       const res2 = await request(app)

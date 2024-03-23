@@ -1,5 +1,5 @@
 import request from 'supertest'
-import api from '@/infraestructure/express/app'
+import api from '../src/app'
 
 describe('Timer', async () => {
   const app = (await api).getInstance()
@@ -43,7 +43,7 @@ describe('Timer', async () => {
     const { body } = await request(app).get('/api/v1/timer').set('Authorization', `Bearer ${token}`)
     const timer = body.timer
     expect(timer.status).toBe('RUNNING')
-    expect(Date.now() + timer.fullDuration).toBeGreaterThanOrEqual(timer.duration)
+    expect(Date.now() + timer.fullDuration).toBeGreaterThanOrEqual(timer.duration as number)
     expect(timer.pomodoroCounter).toBe(0)
     expect(timer.currentStage).toBe('pomodoro')
   })

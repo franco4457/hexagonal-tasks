@@ -6,6 +6,7 @@
   "description": "Express backend for Pomodoro App",
   "scripts": {
     "lint": "eslint --ext .ts,.tsx .",
+    "test": "exec-test",
     "start": "node build/src/index.js",
     "typecheck": "ts-check",
     "build": "swc src -d build"
@@ -33,9 +34,12 @@
   },
   "devDependencies": {
     "@config/eslint": "workspace:*",
+    "@config/test": "workspace:^",
     "@config/typescript": "workspace:*",
     "@swc/cli": "^0.3.10",
     "@swc/core": "^1.4.8",
-    "@types/express": "^4.17.21"
+    "@types/express": "^4.17.21",
+    "@types/supertest": "^6.0.2",
+    "supertest": "^6.3.4"
   }
 }
