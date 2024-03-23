@@ -1,17 +1,8 @@
-import { InMemoryTimerRepository } from '@/infraestructure/repository/in-memory'
-import { REPO_CONFIG, TEST_ID } from './../utils/constants'
-import { UserCreateEvent } from '@/domain/user'
-import { TimerCreateOnCreateUserEventHandler } from '@/application/timer/handlers/timer-create-on-create-user.event-handler'
+import { InMemoryTimerRepository } from '@infrastructure/repository-in-memory'
+import { REPO_CONFIG, TEST_ID } from '@config/test/utils'
+import { UserCreateEvent } from '@domain/user'
 import {
-  Duration,
-  Stage,
-  StageEnum,
-  Status,
-  StatusEnum,
-  Timer,
-  TimerFieldRequired
-} from '@/domain/timer'
-import {
+  TimerCreateOnCreateUserEventHandler,
   TimerFinishCommand,
   TimerFinishService,
   TimerResumeCommand,
@@ -20,7 +11,16 @@ import {
   TimerStartCommand,
   TimerStopCommand,
   TimerStopService
-} from '@/application/timer'
+} from '../src'
+import {
+  Duration,
+  Stage,
+  StageEnum,
+  Status,
+  StatusEnum,
+  Timer,
+  TimerFieldRequired
+} from '@domain/timer'
 
 const TIMER_BASE = {
   userId: TEST_ID,
@@ -33,6 +33,7 @@ const TIMER_BASE = {
   duration: Duration.create({})
 }
 
+// FIXME: Fix the test
 describe.concurrent('Timer', async () => {
   let timerRepository: InMemoryTimerRepository = new InMemoryTimerRepository(REPO_CONFIG)
   let now = Date.now()
