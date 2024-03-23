@@ -2,10 +2,10 @@ import { ApiExpress } from '../api'
 import { asClass, asValue, createContainer } from 'awilix'
 import { eventsHandlers } from './events-handlers'
 import { MainRouter } from '../routes'
-import { ProjectRepository } from '@domain/project'
-import { TaskRepository } from '@domain/task'
-import { TimerRepository } from '@domain/timer'
-import { UserRepository } from '@domain/user'
+import { type ProjectRepository } from '@domain/project'
+import { type TaskRepository } from '@domain/task'
+import { type TimerRepository } from '@domain/timer'
+import { type UserRepository } from '@domain/user'
 import EventEmitter2 from 'eventemitter2'
 import type { IApiBuilder } from '@application/api'
 
@@ -70,16 +70,16 @@ export class ApiBuilderExpress implements IApiBuilder {
   }
 
   build(): ApiExpress {
-    if (!(this.container.resolve('taskRepository') instanceof TaskRepository)) {
+    if (this.container.resolve('taskRepository').repositoryName !== 'TaskRepository') {
       throw new Error('TaskRepository not set')
     }
-    if (!(this.container.resolve('userRepository') instanceof UserRepository)) {
+    if (this.container.resolve('userRepository').repositoryName !== 'UserRepository') {
       throw new Error('UserRepository not set')
     }
-    if (!(this.container.resolve('timerRepository') instanceof TimerRepository)) {
+    if (this.container.resolve('timerRepository').repositoryName !== 'TimerRepository') {
       throw new Error('TimerRepository not set')
     }
-    if (!(this.container.resolve('projectRepository') instanceof ProjectRepository)) {
+    if (this.container.resolve('projectRepository').repositoryName !== 'ProjectRepository') {
       throw new Error('ProjectRepository not set')
     }
 
