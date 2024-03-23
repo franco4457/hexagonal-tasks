@@ -14,6 +14,7 @@ export class DomainError extends Error {
 }
 
 export class ValidationError extends DomainError {
+  IS_VALIDATION_ERROR = true
   issues: ZodIssue[] = []
   constructor(message: string, issues?: ZodIssue[]) {
     if (issues != null) {
