@@ -7,7 +7,7 @@ import {
   MongoProjectRepository,
   MongoTimerRepository
 } from '@infrastructure/repository-mongo'
-import { NODE_ENV } from '#/config'
+import { NODE_ENV } from '../config'
 
 export const createMongoApi = async (): Promise<ApiExpress> => {
   if (NODE_ENV === 'test') await testMongoSeeds()

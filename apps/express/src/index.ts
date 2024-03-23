@@ -1,5 +1,5 @@
-import app from '#/app'
-import { PORT, HOST } from '#/config'
+import app from './app'
+import { PORT, HOST } from './config'
 
 app
   .then((api) => {
