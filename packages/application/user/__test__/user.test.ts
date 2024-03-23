@@ -13,8 +13,8 @@ import {
   UserRemoveTemplateCommand,
   UserUpdateTemplateCommand,
   UserRemoveLabelCommand
-} from '@/application/user'
-import { ValidationError } from '@/domain/core'
+} from '../src'
+import { ValidationError } from '@domain/core'
 import {
   type UserPropsLoginInput,
   User,
@@ -23,10 +23,9 @@ import {
   Template,
   TaskTemplate,
   UserNotFound
-} from '@/domain/user'
-import { InMemoryUserRepository } from '@/infraestructure/repository/in-memory'
-import { TEST_ID } from '__test__/utils'
-import EventEmitter2 from 'eventemitter2'
+} from '@domain/user'
+import { InMemoryUserRepository } from '@infrastructure/repository-in-memory'
+import { TEST_ID, REPO_CONFIG } from '@config/test/utils'
 
 const newUser = {
   email: 'new@mail.com',
@@ -42,11 +41,6 @@ const userMock: UserPropsLoginInput = {
   password: 'Pass1234'
 }
 
-const repoConfig = {
-  appContext: 'TEST',
-  eventEmitter: new EventEmitter2()
-}
-
 const MOCK_TASK_TEMPLATE = {
   name: 'test-task',
   description: 'test-description',
@@ -54,6 +48,7 @@ const MOCK_TASK_TEMPLATE = {
   pomodoroEstimated: 1,
   projectId: null
 }
+// FIXME: Pass test
 describe.concurrent('User', async () => {
   const DEFAULT_USER = {
     id: TEST_ID,
@@ -65,7 +60,7 @@ describe.concurrent('User', async () => {
     updatedAt: new Date()
   }
   it.concurrent('login user', async () => {
-    const inMemoryUserRepository = new InMemoryUserRepository(repoConfig)
+    const inMemoryUserRepository = new InMemoryUserRepository(REPO_CONFIG)
 
     const userLogin = new UserLoginService(inMemoryUserRepository)
     const user = await userLogin.execute(new UserLoginCommand(userMock))
@@ -85,7 +80,7 @@ describe.concurrent('User', async () => {
   it.concurrent('register user', async () => {
     const expectResult = { ...newUser }
 
-    const inMemoryUserRepository = new InMemoryUserRepository(repoConfig)
+    const inMemoryUserRepository = new InMemoryUserRepository(REPO_CONFIG)
 
     const userRegister = new UserRegisterService(inMemoryUserRepository)
     const user = await userRegister.execute(new UserRegisterCommand(newUser))
@@ -102,7 +97,7 @@ describe.concurrent('User', async () => {
     expect(user).instanceOf(User)
   })
   it.concurrent('Add label to user', async () => {
-    const inMemoryUserRepository = new InMemoryUserRepository(repoConfig)
+    const inMemoryUserRepository = new InMemoryUserRepository(REPO_CONFIG)
     const addLablel = new UserAddLabelService(inMemoryUserRepository)
     await addLablel.execute(
       new UserAddLabelCommand({ userId: TEST_ID, label: { name: 'test-label' } })
@@ -126,7 +121,7 @@ describe.concurrent('User', async () => {
       updatedAt: now
     }
     const inMemoryUserRepository = new InMemoryUserRepository({
-      ...repoConfig,
+      ...REPO_CONFIG,
       users: [
         {
           ...DEFAULT_USER,
@@ -159,7 +154,7 @@ describe.concurrent('User', async () => {
     expect(label.id).toBe(TEST_ID.replace('1', '2'))
   })
   it.concurrent('Add template to User', async () => {
-    const inMemoryUserRepository = new InMemoryUserRepository(repoConfig)
+    const inMemoryUserRepository = new InMemoryUserRepository(REPO_CONFIG)
     const addTemplate = new UserAddTemplateService(inMemoryUserRepository)
     const newTemp = {
       name: 'test-template',
@@ -190,7 +185,7 @@ describe.concurrent('User', async () => {
       updatedAt: now
     }
     const inMemoryUserRepository = new InMemoryUserRepository({
-      ...repoConfig,
+      ...REPO_CONFIG,
       users: [
         {
           ...DEFAULT_USER,
@@ -234,7 +229,7 @@ describe.concurrent('User', async () => {
       updatedAt: now
     }
     const inMemoryUserRepository = new InMemoryUserRepository({
-      ...repoConfig,
+      ...REPO_CONFIG,
       users: [
         {
           ...DEFAULT_USER,
@@ -295,7 +290,7 @@ describe.concurrent('User', async () => {
   })
   describe.concurrent('Exceptions', async () => {
     it.concurrent('should throw error when user not found', async () => {
-      const inMemoryUserRepository = new InMemoryUserRepository(repoConfig)
+      const inMemoryUserRepository = new InMemoryUserRepository(REPO_CONFIG)
 
       const userLogin = new UserLoginService(inMemoryUserRepository)
       try {
@@ -306,7 +301,7 @@ describe.concurrent('User', async () => {
       }
     })
     it.concurrent('should throw error when password is invalid', async () => {
-      const inMemoryUserRepository = new InMemoryUserRepository(repoConfig)
+      const inMemoryUserRepository = new InMemoryUserRepository(REPO_CONFIG)
 
       const userLogin = new UserLoginService(inMemoryUserRepository)
       try {
@@ -318,7 +313,7 @@ describe.concurrent('User', async () => {
       }
     })
     it.concurrent('should thorw a validation error if dont send required fields', async () => {
-      const inMemoryUserRepository = new InMemoryUserRepository(repoConfig)
+      const inMemoryUserRepository = new InMemoryUserRepository(REPO_CONFIG)
       const userRegister = new UserRegisterService(inMemoryUserRepository)
       try {
         // @ts-expect-error Testing invalid input
@@ -331,7 +326,7 @@ describe.concurrent('User', async () => {
       }
     })
     it.concurrent('should thorw a validation error if send invalid fields', async () => {
-      const inMemoryUserRepository = new InMemoryUserRepository(repoConfig)
+      const inMemoryUserRepository = new InMemoryUserRepository(REPO_CONFIG)
       const userRegister = new UserRegisterService(inMemoryUserRepository)
 
       try {
@@ -356,7 +351,7 @@ describe.concurrent('User', async () => {
     })
     it.concurrent('should throw error when user already exists', async () => {
       const inMemoryUserRepository = new InMemoryUserRepository({
-        ...repoConfig,
+        ...REPO_CONFIG,
         users: [
           {
             ...newUser,
