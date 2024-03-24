@@ -34,14 +34,14 @@ const TIMER_BASE = {
 }
 
 // FIXME: Fix the test
-describe.concurrent('Timer', async () => {
+describe('Timer', async () => {
   let timerRepository: InMemoryTimerRepository = new InMemoryTimerRepository(REPO_CONFIG)
   let now = Date.now()
   afterEach(async () => {
     timerRepository = new InMemoryTimerRepository(REPO_CONFIG)
     now = Date.now()
   })
-  it.concurrent('create timer on create user', async () => {
+  it('create timer on create user', async () => {
     const userCreateEvent = new UserCreateEvent({
       aggregateId: TEST_ID,
       email: 'test@mail.com',
@@ -50,7 +50,7 @@ describe.concurrent('Timer', async () => {
     const eventHandler = new TimerCreateOnCreateUserEventHandler({ timerRepository })
     await eventHandler.handle(userCreateEvent)
     const timer = await timerRepository.getTimerByUserId(TEST_ID)
-    expect(timer).toBeInstanceOf(Timer)
+    expect(Timer.isEntity(timer)).toBe(true)
     expect(timer.getProps()).toEqual({
       ...TIMER_BASE,
       id: expect.any(String),
@@ -59,7 +59,7 @@ describe.concurrent('Timer', async () => {
     })
   })
 
-  it.concurrent('start timer', async () => {
+  it('start timer', async () => {
     await timerRepository.create(new Timer({ id: TEST_ID, props: { ...TIMER_BASE } }))
     const startTimer = new TimerStartService(timerRepository)
     await startTimer.execute(new TimerStartCommand({ userId: TEST_ID }))
@@ -70,11 +70,11 @@ describe.concurrent('Timer', async () => {
     expect(props.pomodoroCounter).toBe(0)
     expect(props.stage.currentStage).toBe(StageEnum.POMODORO)
 
-    expect(props.status).toBeInstanceOf(Status)
+    expect(Status.isValueObject(props.status)).toBe(true)
     expect(props.status.isRunning()).toBe(true)
     expect(props.currentTaskId).toBeNull()
   })
-  it.concurrent('stop timer', async () => {
+  it('stop timer', async () => {
     const newTimer = new Timer({ id: TEST_ID, props: { ...TIMER_BASE } })
     newTimer.start()
     await timerRepository.create(newTimer)
@@ -90,10 +90,10 @@ describe.concurrent('Timer', async () => {
     expect(stoppedProps.stoppedAt).toBeGreaterThanOrEqual(stoppedProps.startedAt)
     expect(stoppedProps.pomodoroCounter).toBe(0)
     expect(stoppedProps.stage.currentStage).toBe(StageEnum.POMODORO)
-    expect(stoppedProps.status).toBeInstanceOf(Status)
+    expect(Status.isValueObject(stoppedProps.status)).toBe(true)
     expect(stoppedProps.status.isPaused()).toBe(true)
   })
-  it.concurrent('resume timer', async () => {
+  it('resume timer', async () => {
     await timerRepository.create(
       new Timer({
         id: TEST_ID,
@@ -118,10 +118,10 @@ describe.concurrent('Timer', async () => {
 
     expect(resumedProps.pomodoroCounter).toBe(0)
     expect(resumedProps.stage.currentStage).toBe(StageEnum.POMODORO)
-    expect(resumedProps.status).toBeInstanceOf(Status)
+    expect(Status.isValueObject(resumedProps.status)).toBe(true)
     expect(resumedProps.status.isRunning()).toBe(true)
   })
-  it.concurrent('finish timer', async () => {
+  it('finish timer', async () => {
     const newTimer = new Timer({ id: TEST_ID, props: { ...TIMER_BASE } })
     newTimer.start()
     await timerRepository.create(newTimer)
@@ -136,10 +136,10 @@ describe.concurrent('Timer', async () => {
     expect(finishedProps.stoppedAt).toBe(0)
     expect(finishedProps.pomodoroCounter).toBe(1)
     expect(finishedProps.stage.currentStage).toBe(StageEnum.SHORT_BREAK)
-    expect(finishedProps.status).toBeInstanceOf(Status)
+    expect(Status.isValueObject(finishedProps.status)).toBe(true)
     expect(finishedProps.status.isReady()).toBe(true)
   })
-  it.concurrent('finish timer with long break', async () => {
+  it('finish timer with long break', async () => {
     const newTimer = new Timer({ id: TEST_ID, props: { ...TIMER_BASE, pomodoroCounter: 3 } })
     newTimer.start()
     await timerRepository.create(newTimer)
@@ -154,11 +154,11 @@ describe.concurrent('Timer', async () => {
     expect(finishedProps.stoppedAt).toBe(0)
     expect(finishedProps.pomodoroCounter).toBe(4)
     expect(finishedProps.stage.currentStage).toBe(StageEnum.LONG_BREAK)
-    expect(finishedProps.status).toBeInstanceOf(Status)
+    expect(Status.isValueObject(finishedProps.status)).toBe(true)
     expect(finishedProps.status.isReady()).toBe(true)
   })
-  describe.concurrent('Exceptions', async () => {
-    it.concurrent('should throw an error if event dont have userId', async () => {
+  describe('Exceptions', async () => {
+    it('should throw an error if event dont have userId', async () => {
       const eventHandler = new TimerCreateOnCreateUserEventHandler({ timerRepository })
       try {
         await eventHandler.handle(
