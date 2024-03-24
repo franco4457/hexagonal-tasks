@@ -52,7 +52,7 @@ describe.concurrent('task', () => {
     const task = await createTask.execute(
       new TaskCreateCommand({ task: baseTask, userId: TEST_ID })
     )
-    expect(task).toBeInstanceOf(Task)
+    expect(Task.isEntity(task)).toBeTruthy()
     const taskProps = task.getProps()
     expect(taskProps.title).toEqual('title')
     expect(taskProps.description).toEqual('description')
@@ -113,7 +113,7 @@ describe.concurrent('task', () => {
         userId: TEST_ID
       })
     )
-    expect(task).toBeInstanceOf(Task)
+    expect(Task.isEntity(task)).toBeTruthy()
     const taskProps = task.getProps()
     expect(taskProps.title).toEqual('title')
     expect(taskProps.description).toEqual('description')
@@ -140,7 +140,7 @@ describe.concurrent('task', () => {
     expect(tasks).toBeInstanceOf(Array)
     expect(tasks).toHaveLength(10)
     tasks.forEach((task, i) => {
-      expect(task).toBeInstanceOf(Task)
+      expect(Task.isEntity(task)).toBeTruthy()
       const taskProps = task.getProps()
       expect(taskProps.title).toBe(`test-title-${i}`)
       expect(taskProps.description).toBe(`test-desc-${i}`)
@@ -175,7 +175,7 @@ describe.concurrent('task', () => {
     expect(tasks).toBeInstanceOf(Array)
     expect(tasks).toHaveLength(3)
     tasks.forEach((task, i) => {
-      expect(task).toBeInstanceOf(Task)
+      expect(Task.isEntity(task)).toBeTruthy()
       const taskProps = task.getProps()
       expect(taskProps.title).toBe(`test-title-${i}`)
       expect(taskProps.description).toBe(`test-desc-${i}`)
@@ -208,7 +208,7 @@ describe.concurrent('task', () => {
     expect(tasks).toBeInstanceOf(Array)
     expect(tasks).toHaveLength(10)
     tasks.forEach((task, i) => {
-      expect(task).toBeInstanceOf(Task)
+      expect(Task.isEntity(task)).toBeTruthy()
       const taskProps = task.getProps()
       expect(taskProps.title).toBe(`test-title-${i}`)
       expect(taskProps.description).toBe(`test-desc-${i}`)
@@ -245,12 +245,12 @@ describe.concurrent('task', () => {
     const [task, task2] = tasks
     const taskP = task.getProps()
     const taskP2 = task2.getProps()
-    expect(task).toBeInstanceOf(Task)
+    expect(Task.isEntity(task)).toBeTruthy()
     expect(taskP.title).toBe('test-title-0')
     expect(taskP.description).toBe('test-desc-0')
     expect(taskP.userId).toBe(TEST_ID.slice(0, -1) + 0)
     expect(task.id).toBeTypeOf('string')
-    expect(task2).toBeInstanceOf(Task)
+    expect(Task.isEntity(task2)).toBeTruthy()
     expect(taskP2.title).toBe('test-title-10')
     expect(taskP2.description).toBe('test-desc-10')
     expect(taskP2.userId).toBe(TEST_ID.slice(0, -1) + 0)
@@ -269,7 +269,7 @@ describe.concurrent('task', () => {
       ]
     })
     let task = await taskRepository.getTask(TEST_ID)
-    expect(task).toBeInstanceOf(Task)
+    expect(Task.isEntity(task)).toBeTruthy()
     expect(task.getProps().labels).toHaveLength(0)
 
     const addLabel = new TaskAddLabelsService(taskRepository)
@@ -280,10 +280,10 @@ describe.concurrent('task', () => {
       })
     )
     task = await taskRepository.getTask(TEST_ID)
-    expect(task).toBeInstanceOf(Task)
+    expect(Task.isEntity(task)).toBeTruthy()
     expect(task.getProps().labels).toHaveLength(1)
     const label = task.getProps().labels[0]
-    expect(label).toBeInstanceOf(Label)
+    expect(Label.isValueObject(label)).toBeTruthy()
     expect(label).toEqual(new Label({ name: 'label' }))
   })
   it.concurrent('Add labels to task', async () => {
@@ -299,7 +299,7 @@ describe.concurrent('task', () => {
       ]
     })
     let task = await taskRepository.getTask(TEST_ID)
-    expect(task).toBeInstanceOf(Task)
+    expect(Task.isEntity(task)).toBeTruthy()
     expect(task.getProps().labels).toHaveLength(0)
 
     const addLabel = new TaskAddLabelsService(taskRepository)
@@ -310,12 +310,12 @@ describe.concurrent('task', () => {
       })
     )
     task = await taskRepository.getTask(TEST_ID)
-    expect(task).toBeInstanceOf(Task)
+    expect(Task.isEntity(task)).toBeTruthy()
     expect(task.getProps().labels).toHaveLength(2)
     const [label, label2] = task.getProps().labels
-    expect(label).toBeInstanceOf(Label)
+    expect(Label.isValueObject(label)).toBeTruthy()
     expect(label).toEqual(new Label({ name: 'label' }))
-    expect(label2).toBeInstanceOf(Label)
+    expect(Label.isValueObject(label2)).toBeTruthy()
     expect(label2).toEqual(new Label({ name: 'label2' }))
   })
   it.concurrent('Remove label to task', async () => {
@@ -332,7 +332,7 @@ describe.concurrent('task', () => {
       ]
     })
     let task = await taskRepository.getTask(TEST_ID)
-    expect(task).toBeInstanceOf(Task)
+    expect(Task.isEntity(task)).toBeTruthy()
     expect(task.getProps().labels).toHaveLength(2)
 
     const addLabel = new TaskRemoveLabelService(taskRepository)
@@ -343,10 +343,10 @@ describe.concurrent('task', () => {
       })
     )
     task = await taskRepository.getTask(TEST_ID)
-    expect(task).toBeInstanceOf(Task)
+    expect(Task.isEntity(task)).toBeTruthy()
     expect(task.getProps().labels).toHaveLength(1)
     const label = task.getProps().labels[0]
-    expect(label).toBeInstanceOf(Label)
+    expect(Label.isValueObject(label)).toBeTruthy()
     expect(label).toEqual(new Label({ name: 'label-rot-remove' }))
   })
   it.concurrent('Set project to task', async () => {
@@ -356,7 +356,7 @@ describe.concurrent('task', () => {
     })
 
     let task = await InMemoryUserRepository.getTask(TEST_ID)
-    expect(task).toBeInstanceOf(Task)
+    expect(Task.isEntity(task)).toBeTruthy()
     expect(task.getProps().project).toBe(null)
 
     const setProject = new TaskSetProjectService(InMemoryUserRepository)
@@ -368,7 +368,7 @@ describe.concurrent('task', () => {
     )
 
     task = await InMemoryUserRepository.getTask(TEST_ID)
-    expect(task.getProps().project).toBeInstanceOf(Project)
+    expect(Project.isValueObject(task.getProps().project)).toBeTruthy()
     expect(task.getProps().project).toEqual(new Project({ name: 'project' }))
   })
   it.concurrent('Remove project to task', async () => {
@@ -378,8 +378,8 @@ describe.concurrent('task', () => {
     })
 
     let task = await InMemoryUserRepository.getTask(TEST_ID)
-    expect(task).toBeInstanceOf(Task)
-    expect(task.getProps().project).toBeInstanceOf(Project)
+    expect(Task.isEntity(task)).toBeTruthy()
+    expect(Project.isValueObject(task.getProps().project)).toBeTruthy()
     expect(task.getProps().project).toEqual(new Project({ name: 'project' }))
 
     const removeProject = new TaskRemoveProjectService(InMemoryUserRepository)
@@ -406,7 +406,7 @@ describe.concurrent('task', () => {
         )
         expect(true).toBe(false)
       } catch (e) {
-        expect(e).toBeInstanceOf(ValidationError)
+        expect((e as ValidationError).IS_VALIDATION_ERROR).toBe(true)
         expect((e as Error).message).toBe(
           '["Title is required","Description is required","Order is required","Pomodoro is required","Labels is required"]'
         )
@@ -438,10 +438,9 @@ describe.concurrent('task', () => {
           })
         )
         expect(true).toBe(false)
-      } catch (error) {
-        expect(error).toBeInstanceOf(ValidationError)
-        const e = error as ValidationError
-        expect(e.message).toBe(
+      } catch (e) {
+        expect((e as ValidationError).IS_VALIDATION_ERROR).toBe(true)
+        expect((e as Error).message).toBe(
           '["Invalid type on \'title\'. expected string, received number","Invalid type on \'description\'. expected string, received number","Invalid type on \'order\'. expected number, received string","Invalid type on \'project.name\'. expected string, received object","Invalid type on \'pomodoro\'. expected object, received string","Invalid type on \'labels\'. expected array, received string"]'
         )
       }
@@ -463,7 +462,7 @@ describe.concurrent('task', () => {
         )
         expect(true).toBe(false)
       } catch (e) {
-        expect(e).toBeInstanceOf(ValidationError)
+        expect((e as ValidationError).IS_VALIDATION_ERROR).toBe(true)
         expect((e as Error).message).toBe(
           '["Title should be at least 3 characters","Description should be at least 3 characters","Order should be equals or greater than 0"]'
         )
