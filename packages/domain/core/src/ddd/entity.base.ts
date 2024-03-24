@@ -47,6 +47,10 @@ export abstract class Entity<EntityProps> {
     return this._updatedAt
   }
 
+  static isEntity(entity: unknown): entity is Entity<unknown> {
+    return entity instanceof Entity
+  }
+
   getProps(): EntityProps & BaseEntityProps {
     const propsCopy = {
       id: this._id,
