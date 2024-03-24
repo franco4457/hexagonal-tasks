@@ -6,7 +6,8 @@
   "description": "Express backend for Pomodoro App",
   "scripts": {
     "lint": "eslint --ext .ts,.tsx .",
-    "test": "exec-test",
+    "test": "exec-test run",
+    "test:watch": "exec-test watch",
     "start": "node build/src/index.js",
     "typecheck": "ts-check",
     "build": "swc src -d build"
