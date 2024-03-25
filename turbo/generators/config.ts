@@ -1,4 +1,4 @@
-import { PlopTypes } from '@turbo/gen'
+import { type PlopTypes } from '@turbo/gen'
 
 const generators = ['domain', 'application', 'infrastructure']
 
@@ -18,7 +18,7 @@ export default function generator(plop: PlopTypes.NodePlopAPI): void {
             if (input.includes(' ')) {
               return `${gen} name cannot include spaces`
             }
-            if (!input) {
+            if (input == null) {
               return `${gen} name is required`
             }
             return true
@@ -32,21 +32,21 @@ export default function generator(plop: PlopTypes.NodePlopAPI): void {
       ],
       actions(answers) {
         const actions: PlopTypes.ActionType[] = []
-        if (!answers) return actions
+        if (answers == null) return actions
 
         const { description } = answers
         const generatorName = answers[`${gen}Name`] ?? ''
 
         const data = {
-          [`${gen}Name`]: generatorName,
+          packageName: generatorName,
           description,
-          outDir: gen
+          package: gen
         }
         actions.push({
           type: 'addMany',
-          destination: `{{ turbo.paths.root }}/packages/{{outDir}}/{{dashCase ${gen}Name}}`,
-          templateFiles: `{{ turbo.paths.root }}/turbo/generators/templates/${gen}/**`,
-          base: `{{ turbo.paths.root }}/turbo/generators/templates/${gen}`,
+          destination: '{{ turbo.paths.root }}/packages/{{package}}/{{dashCase packageName}}',
+          templateFiles: '{{ turbo.paths.root }}/turbo/generators/templates/package/**',
+          base: '{{ turbo.paths.root }}/turbo/generators/templates/package/',
           data,
           abortOnFail: true,
           globOptions: { dot: true }
