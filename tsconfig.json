@@ -1,12 +1,7 @@
 {
   "extends": "@config/typescript/base.json",
-  "include": ["src", "vitest.config.ts"],
   "compilerOptions": {
     "baseUrl": "./",
-    "rootDir": "./",
-    "outDir": "./build",
-    "paths": {
-      "@/*": ["./src/*"]
-    }
+    "rootDir": "./"
   }
 }

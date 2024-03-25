@@ -5,5 +5,8 @@ module.exports = {
     include: ['*.ts', '*.tsx', '*.d.ts'],
     tsconfigRootDir: __dirname,
     project: ['./tsconfig.json']
+  },
+  rules: {
+    'import/no-duplicates': 'off'
   }
 }
