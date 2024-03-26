@@ -1,0 +1,12 @@
+{
+  "extends": "@config/typescript/base.json",
+  "exclude": ["*.js"],
+  "compilerOptions": {
+    "baseUrl": "./",
+    "rootDir": "./",
+    "outDir": "./build",
+    "paths": {
+      "@/*": ["./src/*"]
+    }
+  }
+}

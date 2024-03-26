@@ -1,0 +1,29 @@
+{
+  "name": "@infrastructure/event-bus-in-memory",
+  "version": "0.0.0",
+  "description": "In memory event bus for async event dispaching",
+  "main": "dist/index.js",
+  "types": "src/index.ts",
+  "scripts": {
+    "lint": "eslint --ext .ts,.tsx .",
+    "typecheck": "ts-check",
+    "dev": "tsup --watch",
+    "build": "tsup"
+  },
+  "tsup": {
+    "entry": [
+      "src/index.ts"
+    ],
+    "splitting": false,
+    "sourcemap": false
+  },
+  "dependencies": {
+    "@domain/core": "workspace:*",
+    "eventemitter2": "^6.4.9"
+  },
+  "devDependencies": {
+    "@config/eslint": "workspace:*",
+    "@config/typescript": "workspace:*",
+    "tsup": "^8.0.2"
+  }
+}
