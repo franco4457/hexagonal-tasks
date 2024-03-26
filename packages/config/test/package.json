@@ -9,7 +9,7 @@
   "devDependencies": {
     "@config/eslint": "workspace:^",
     "@config/typescript": "workspace:^",
-    "eventemitter2": "^6.4.9",
+    "@infrastructure/event-bus-in-memory": "workspace:^",
     "vitest": "^1.4.0"
   }
 }
