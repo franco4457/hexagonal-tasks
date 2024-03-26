@@ -1,5 +1,4 @@
-import type EventEmitter2 from 'eventemitter2'
-import { type LoggerPort, RepositoryBase } from '@domain/core'
+import { type LoggerPort, RepositoryBase, type EventBus } from '@domain/core'
 import { type ProjectModel, type Project } from './project.entity'
 import { ProjectMapper } from './project.mapper'
 
@@ -17,7 +16,7 @@ export abstract class ProjectRepository
   implements IProjectRepository
 {
   readonly repositoryName = 'ProjectRepository'
-  constructor(props: { logger: LoggerPort; eventEmitter: EventEmitter2 }) {
+  constructor(props: { logger: LoggerPort; eventBus: EventBus }) {
     super({ ...props, mapper: new ProjectMapper() })
   }
   abstract create(project: Project): Promise<void>
