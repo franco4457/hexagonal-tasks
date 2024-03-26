@@ -1,5 +1,9 @@
-import type EventEmitter2 from 'eventemitter2'
-import { type LoggerPort, RepositoryBase, type RepositoryQueryConfig } from '@domain/core'
+import {
+  type LoggerPort,
+  type RepositoryQueryConfig,
+  type EventBus,
+  RepositoryBase
+} from '@domain/core'
 import type { User, UserModel } from './user.entity'
 import { UserMapper } from './user.mapper'
 import { type TemplateModel, type Label, type Template, type LabelModel } from './entities'
@@ -33,7 +37,7 @@ export abstract class UserRepository
   implements IUserRepository
 {
   readonly repositoryName = 'UserRepository'
-  constructor(props: { logger: LoggerPort; eventEmitter: EventEmitter2 }) {
+  constructor(props: { logger: LoggerPort; eventBus: EventBus }) {
     super({ ...props, mapper: new UserMapper() })
   }
 
