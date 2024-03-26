@@ -1,5 +1,9 @@
-import type EventEmitter2 from 'eventemitter2'
-import { type LoggerPort, RepositoryBase, type RepositoryQueryConfig } from '@domain/core'
+import {
+  type LoggerPort,
+  type RepositoryQueryConfig,
+  type EventBus,
+  RepositoryBase
+} from '@domain/core'
 import type { User } from '@domain/user'
 import { type Task, type TaskModel } from './task.entity'
 import { TaskMapper } from './task.mapper'
@@ -35,7 +39,7 @@ export abstract class TaskRepository
 {
   readonly repositoryName = 'TaskRepository'
   protected readonly mapper = new TaskMapper()
-  constructor({ ...props }: { logger: LoggerPort; eventEmitter: EventEmitter2 }) {
+  constructor({ ...props }: { logger: LoggerPort; eventBus: EventBus }) {
     super({ ...props, mapper: new TaskMapper() })
   }
   abstract getTasks(): Promise<Task[]>

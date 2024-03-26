@@ -22,7 +22,6 @@
   "dependencies": {
     "@domain/core": "workspace:*",
     "@domain/user": "workspace:*",
-    "eventemitter2": "^6.4.9",
     "zod": "^3.22.4"
   },
   "devDependencies": {
