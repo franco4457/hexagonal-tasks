@@ -1,6 +1,6 @@
 import type { LoggerPort } from '../logger.port'
 import type { DomainEvent } from './domain-event.base'
-import type { EventEmitter2 } from 'eventemitter2'
+import type { EventBus } from './event-bus'
 import { Entity } from './entity.base'
 
 export abstract class AggregateRoot<EntityProps> extends Entity<EntityProps> {
@@ -18,13 +18,13 @@ export abstract class AggregateRoot<EntityProps> extends Entity<EntityProps> {
     this._domainEvents = []
   }
 
-  public async publishEvents(eventEmitter: EventEmitter2, logger: LoggerPort): Promise<void> {
+  public async publishEvents(eventBus: EventBus, logger: LoggerPort): Promise<void> {
     await Promise.all(
       this.domainEvents.map(async (event) => {
         logger.debug(
           `"${event.constructor.name}" event published for aggregate ${this.constructor.name} : ${this.id}`
         )
-        return await eventEmitter.emitAsync(event.constructor.name, event)
+        await eventBus.publish(event)
       })
     )
     this.clearEvents()

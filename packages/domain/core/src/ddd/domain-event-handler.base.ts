@@ -7,7 +7,7 @@ export type Repositories =
   | 'timerRepository'
 
 export abstract class EventHandler {
-  static EVENT_NAME: string
+  abstract EVENT_NAME: string
   static repositoriesToInject: Repositories[]
   abstract handle(event: DomainEvent): Promise<void>
 }

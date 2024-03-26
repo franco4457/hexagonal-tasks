@@ -1,5 +1,4 @@
-import type EventEmitter2 from 'eventemitter2'
-import type { AggregateRoot } from '../ddd'
+import type { AggregateRoot, EventBus } from '../ddd'
 import type { LoggerPort } from '../logger.port'
 import type { RepositoryPort } from '../repository.port'
 import type { Mapper } from '../mapper'
@@ -15,19 +14,19 @@ export abstract class RepositoryBase<
   protected abstract readonly repositoryName: string
   protected readonly logger: LoggerPort
   protected readonly mapper: Mapper<Aggregate, DbModel>
-  private readonly eventEmitter: EventEmitter2
+  private readonly eventBus: EventBus
   constructor(props: {
     logger: LoggerPort
-    eventEmitter: EventEmitter2
+    eventBus: EventBus
     mapper: Mapper<Aggregate, DbModel>
   }) {
     this.logger = props.logger
     this.mapper = props.mapper
-    this.eventEmitter = props.eventEmitter
+    this.eventBus = props.eventBus
   }
 
   async save(entity: Aggregate, cb: () => Promise<void>): Promise<void> {
-    await entity.publishEvents(this.eventEmitter, this.logger)
+    await entity.publishEvents(this.eventBus, this.logger)
     await cb()
   }
 
