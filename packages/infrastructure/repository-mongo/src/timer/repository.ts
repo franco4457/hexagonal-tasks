@@ -1,6 +1,6 @@
 import { type Timer, TimerRepository, TimerNotFound } from '@domain/timer'
 import { Logger } from '@infrastructure/logger'
-import type EventEmitter2 from 'eventemitter2'
+import type { EventBus } from '@domain/core'
 import { conn } from '../connect'
 import type mongoose from 'mongoose'
 import { TimerMongoModel } from './model'
@@ -8,10 +8,10 @@ import { TimerMongoModel } from './model'
 export class MongoTimerRepository extends TimerRepository {
   private mongoose: typeof mongoose | null = null
   private readonly timers = TimerMongoModel
-  constructor({ appContext, eventEmitter }: { appContext?: string; eventEmitter: EventEmitter2 }) {
+  constructor({ appContext, eventBus }: { appContext?: string; eventBus: EventBus }) {
     super({
       logger: new Logger({ appContext, context: MongoTimerRepository.name }),
-      eventEmitter
+      eventBus
     })
   }
 

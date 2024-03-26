@@ -1,17 +1,17 @@
 import { type Project, ProjectNotFound, ProjectRepository } from '@domain/project'
 import { ProjectMongoModel } from './model'
 import { Logger } from '@infrastructure/logger'
-import type EventEmitter2 from 'eventemitter2'
+import type { EventBus } from '@domain/core'
 import type mongoose from 'mongoose'
 import { conn } from '../connect'
 
 export class MongoProjectRepository extends ProjectRepository {
   private mongoose: typeof mongoose | null = null
   private readonly projectModel = ProjectMongoModel
-  constructor({ appContext, eventEmitter }: { appContext?: string; eventEmitter: EventEmitter2 }) {
+  constructor({ appContext, eventBus }: { appContext?: string; eventBus: EventBus }) {
     super({
       logger: new Logger({ appContext, context: MongoProjectRepository.name }),
-      eventEmitter
+      eventBus
     })
   }
 

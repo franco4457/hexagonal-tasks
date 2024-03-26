@@ -8,9 +8,8 @@ import {
 import { conn } from '../connect'
 import { TaskMongoModel } from './model'
 import { type User } from '@domain/user'
-import type EventEmitter2 from 'eventemitter2'
 import { Logger } from '@infrastructure/logger'
-import { type RepositoryQueryConfig } from '@domain/core'
+import type { EventBus, RepositoryQueryConfig } from '@domain/core'
 import type mongoose from 'mongoose'
 
 type TypedReturn<T extends SortOptions> = T['raw'] extends true ? TaskModel[] : Task[]
@@ -22,15 +21,15 @@ export class MongoTaskRepository extends TaskRepository {
   constructor({
     tasks = [],
     appContext,
-    eventEmitter
+    eventBus
   }: {
     tasks?: TaskModel[]
     appContext?: string
-    eventEmitter: EventEmitter2
+    eventBus: EventBus
   }) {
     super({
       logger: new Logger({ appContext, context: MongoTaskRepository.name }),
-      eventEmitter
+      eventBus
     })
     this.taskModel.insertMany(tasks).catch((error) => {
       this.logger.error('Error inserting tasks', error)

@@ -24,7 +24,6 @@
     "@domain/timer": "workspace:*",
     "@domain/user": "workspace:*",
     "@infrastructure/logger": "workspace:*",
-    "eventemitter2": "^6.4.9",
     "mongoose": "^8.2.2"
   },
   "devDependencies": {

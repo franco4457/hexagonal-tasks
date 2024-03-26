@@ -11,9 +11,8 @@ import {
 import { conn } from '../connect'
 import type mongoose from 'mongoose'
 import { UserModel } from './model'
-import type EventEmitter2 from 'eventemitter2'
 import { Logger } from '@infrastructure/logger'
-import { type RepositoryQueryConfig } from '@domain/core'
+import type { EventBus, RepositoryQueryConfig } from '@domain/core'
 import { LabelMongoModel } from './label'
 import { TemplateMongoModel } from './template'
 
@@ -22,7 +21,7 @@ export class MongoUserRepository extends UserRepository {
   private readonly users = UserModel
   private readonly labels = LabelMongoModel
   private readonly templates = TemplateMongoModel
-  constructor({ ...props }: { appContext?: string; eventEmitter: EventEmitter2 }) {
+  constructor({ ...props }: { appContext?: string; eventBus: EventBus }) {
     super({
       ...props,
       logger: new Logger({ context: MongoUserRepository.name, appContext: props.appContext })
