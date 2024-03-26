@@ -3,7 +3,7 @@ import { type ProjectRepository } from '@domain/project'
 import { TaskUpdateActualPomodoroEvent } from '@domain/task'
 
 export class ProjectAddPomodoroCountEventHandler extends EventHandler {
-  static EVENT_NAME = TaskUpdateActualPomodoroEvent.name
+  EVENT_NAME = TaskUpdateActualPomodoroEvent.name
   static repositoriesToInject = ['projectRepository' as Repositories]
   private readonly projectRepository: ProjectRepository
 

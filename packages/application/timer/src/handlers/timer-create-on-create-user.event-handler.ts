@@ -3,7 +3,7 @@ import { Timer, type TimerRepository } from '@domain/timer'
 import { UserCreateEvent } from '@domain/user'
 
 export class TimerCreateOnCreateUserEventHandler extends EventHandler {
-  static EVENT_NAME = UserCreateEvent.name
+  EVENT_NAME = UserCreateEvent.name
   static repositoriesToInject = ['timerRepository' as Repositories]
   private readonly timerRepository: TimerRepository
 
