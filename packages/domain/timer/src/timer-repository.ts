@@ -1,7 +1,6 @@
-import { RepositoryBase, type AggregateID, type LoggerPort } from '@domain/core'
+import { RepositoryBase, type AggregateID, type LoggerPort, type EventBus } from '@domain/core'
 import { type TimerModel, type Timer } from './timer.entity'
 import { TimerMapper } from './timer.mapper'
-import type EventEmitter2 from 'eventemitter2'
 
 export interface ITimerRepository {
   create: (props: Timer) => Promise<Timer>
@@ -15,7 +14,7 @@ export abstract class TimerRepository
   implements ITimerRepository
 {
   readonly repositoryName = 'TimerRepository'
-  constructor(props: { logger: LoggerPort; eventEmitter: EventEmitter2 }) {
+  constructor(props: { logger: LoggerPort; eventBus: EventBus }) {
     super({ ...props, mapper: new TimerMapper() })
   }
   abstract create(props: Timer): Promise<Timer>
