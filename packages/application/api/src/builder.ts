@@ -1,13 +1,13 @@
-import { type ProjectRepository } from '@domain/project'
-import { type TaskRepository } from '@domain/task'
-import { type TimerRepository } from '@domain/timer'
-import { type UserRepository } from '@domain/user'
-import type EventEmitter2 from 'eventemitter2'
+import type { EventBus } from '@domain/core'
+import type { ProjectRepository } from '@domain/project'
+import type { TaskRepository } from '@domain/task'
+import type { TimerRepository } from '@domain/timer'
+import type { UserRepository } from '@domain/user'
 
 export interface IApiBuilder {
   reset: () => IApiBuilder
   getRepoConfig: () => {
-    eventEmitter: EventEmitter2
+    eventBus: EventBus
     appContext?: string
   }
   setProjectRepository: (projectRepository: ProjectRepository) => IApiBuilder

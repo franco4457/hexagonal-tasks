@@ -18,11 +18,11 @@
     "sourcemap": false
   },
   "dependencies": {
+    "@domain/core": "workspace:^",
     "@domain/project": "workspace:*",
     "@domain/task": "workspace:*",
     "@domain/timer": "workspace:*",
-    "@domain/user": "workspace:*",
-    "eventemitter2": "^6.4.9"
+    "@domain/user": "workspace:*"
   },
   "devDependencies": {
     "@config/eslint": "workspace:*",
