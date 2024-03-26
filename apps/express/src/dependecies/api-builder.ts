@@ -6,15 +6,9 @@ import { type ProjectRepository } from '@domain/project'
 import { type TaskRepository } from '@domain/task'
 import { type TimerRepository } from '@domain/timer'
 import { type UserRepository } from '@domain/user'
-import EventEmitter2 from 'eventemitter2'
 import type { IApiBuilder } from '@application/api'
-
-class EventEmitter extends EventEmitter2 {
-  // eslint-disable-next-line @typescript-eslint/no-useless-constructor
-  constructor() {
-    super()
-  }
-}
+import { InMemoryEventBus } from '@infrastructure/event-bus-in-memory'
+import { type EventHandler, type EventBus } from '@domain/core'
 
 export class ApiBuilderExpress implements IApiBuilder {
   private api: ApiExpress
@@ -23,15 +17,15 @@ export class ApiBuilderExpress implements IApiBuilder {
 
   constructor() {
     this.container.register({
-      eventEmitter: asClass(EventEmitter).singleton(),
+      eventBus: asClass(InMemoryEventBus).singleton(),
       appContext: asValue(this.appContext)
     })
     this.api = new ApiExpress()
   }
 
-  getRepoConfig(): { eventEmitter: EventEmitter2; appContext?: string } {
+  getRepoConfig(): { eventBus: EventBus; appContext?: string } {
     return {
-      eventEmitter: this.container.resolve('eventEmitter'),
+      eventBus: this.container.resolve('eventBus'),
       appContext: this.appContext
     }
   }
@@ -82,16 +76,14 @@ export class ApiBuilderExpress implements IApiBuilder {
     if (this.container.resolve('projectRepository').repositoryName !== 'ProjectRepository') {
       throw new Error('ProjectRepository not set')
     }
-
+    const eventBus = this.container.resolve('eventBus') as EventBus
     eventsHandlers.forEach((handler) => {
-      const instance = this.container
+      const instance: EventHandler = this.container
         .register({
           [handler.name]: asClass(handler).singleton()
         })
         .resolve(handler.name)
-      this.container
-        .resolve('eventEmitter')
-        .on((handler as any).EVENT_NAME, instance.handle.bind(instance))
+      eventBus.subscribe(instance)
     })
 
     this.api.build(

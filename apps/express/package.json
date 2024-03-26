@@ -24,6 +24,7 @@
     "@domain/timer": "workspace:*",
     "@domain/user": "workspace:*",
     "@infrastructure/authorization": "workspace:*",
+    "@infrastructure/event-bus-in-memory": "workspace:^",
     "@infrastructure/logger": "workspace:*",
     "@infrastructure/repository-in-memory": "workspace:*",
     "@infrastructure/repository-mongo": "workspace:*",
