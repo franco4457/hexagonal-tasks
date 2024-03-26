@@ -1,3 +1,4 @@
+import { type EventBus } from '@domain/core'
 import {
   type ProjectModel,
   ProjectRepository,
@@ -5,14 +6,13 @@ import {
   ProjectNotFound
 } from '@domain/project'
 import { Logger } from '@infrastructure/logger'
-import type EventEmitter2 from 'eventemitter2'
 
 export class InMemoryProjectRepository extends ProjectRepository {
   private readonly projects: ProjectModel[] = []
-  constructor({ appContext, eventEmitter }: { appContext?: string; eventEmitter: EventEmitter2 }) {
+  constructor({ appContext, eventBus }: { appContext?: string; eventBus: EventBus }) {
     super({
       logger: new Logger({ appContext, context: InMemoryProjectRepository.name }),
-      eventEmitter
+      eventBus
     })
   }
 

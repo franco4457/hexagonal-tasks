@@ -1,4 +1,4 @@
-import { type RepositoryQueryConfig } from '@domain/core'
+import type { EventBus, RepositoryQueryConfig } from '@domain/core'
 import {
   type Task,
   TaskRepository,
@@ -8,7 +8,6 @@ import {
 } from '@domain/task'
 import { type User } from '@domain/user'
 import { Logger } from '@infrastructure/logger'
-import type EventEmitter2 from 'eventemitter2'
 
 // Temporary workaround to avoid type errors
 type TypedReturn<T extends SortOptions> = T['raw'] extends true ? TaskModel[] : Task[]
@@ -17,15 +16,15 @@ export class InMemoryTaskRepository extends TaskRepository {
   constructor({
     tasks = [],
     appContext,
-    eventEmitter
+    eventBus
   }: {
     tasks?: TaskModel[]
     appContext?: string
-    eventEmitter: EventEmitter2
+    eventBus: EventBus
   }) {
     super({
       logger: new Logger({ appContext, context: InMemoryTaskRepository.name }),
-      eventEmitter
+      eventBus
     })
     this.tasks = tasks
   }

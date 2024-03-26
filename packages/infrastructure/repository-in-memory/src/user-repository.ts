@@ -1,4 +1,4 @@
-import { type RepositoryQueryConfig } from '@domain/core'
+import type { EventBus, RepositoryQueryConfig } from '@domain/core'
 import {
   UserRepository,
   type User,
@@ -10,7 +10,6 @@ import {
 } from '@domain/user'
 import { UserAlreadyExist, UserNotFound, UserPropNotFound } from '@domain/user'
 import { Logger } from '@infrastructure/logger'
-import type EventEmitter2 from 'eventemitter2'
 
 export class InMemoryUserRepository extends UserRepository {
   private readonly users: UserModel[] = [
@@ -34,7 +33,7 @@ export class InMemoryUserRepository extends UserRepository {
   }: {
     users?: UserModel[]
     appContext?: string
-    eventEmitter: EventEmitter2
+    eventBus: EventBus
   }) {
     super({
       ...props,

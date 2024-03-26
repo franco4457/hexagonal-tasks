@@ -1,3 +1,4 @@
+import { type EventBus } from '@domain/core'
 import {
   type Timer,
   TimerRepository,
@@ -6,14 +7,13 @@ import {
   TimerNotFound
 } from '@domain/timer'
 import { Logger } from '@infrastructure/logger'
-import type EventEmitter2 from 'eventemitter2'
 
 export class InMemoryTimerRepository extends TimerRepository {
   private readonly timers: TimerModel[] = []
-  constructor({ appContext, eventEmitter }: { appContext?: string; eventEmitter: EventEmitter2 }) {
+  constructor({ appContext, eventBus }: { appContext?: string; eventBus: EventBus }) {
     super({
       logger: new Logger({ appContext, context: InMemoryTimerRepository.name }),
-      eventEmitter
+      eventBus
     })
   }
 

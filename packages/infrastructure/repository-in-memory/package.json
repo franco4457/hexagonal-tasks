@@ -23,8 +23,7 @@
     "@domain/task": "workspace:*",
     "@domain/timer": "workspace:*",
     "@domain/user": "workspace:*",
-    "@infrastructure/logger": "workspace:*",
-    "eventemitter2": "^6.4.9"
+    "@infrastructure/logger": "workspace:*"
   },
   "devDependencies": {
     "@config/eslint": "workspace:*",
