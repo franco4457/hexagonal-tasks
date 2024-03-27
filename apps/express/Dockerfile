@@ -25,7 +25,12 @@ RUN pnpm add -g turbo
 
 RUN turbo build --filter=@app/express...
 RUN --mount=type=cache,id=pnpm,target=~/.pnpm-store pnpm prune --prod --no-optional
+
+# Remove unnecessary files from the final image to reduce its size
 RUN rm -rf ./packages/**/*/src
+RUN rm -rf ./packages/**/*/__tests__
+RUN rm -rf ./apps/*/src
+RUN rm -rf ./apps/*/__tests__
 
 FROM base as prod
 WORKDIR /app
