@@ -3,9 +3,11 @@ services:
   hextasks:
     build:
       context: ..
-      dockerfile: ./docker/Dockerfile.dev
+      dockerfile: ./apps/express/Dockerfile
       target: dev
     ports:
       - '3000:3000'
+    environment:
+      - JWT_SECRET=secret
     volumes:
       - ..:/app
