@@ -18,12 +18,11 @@ FROM base as builder
 WORKDIR /app
 COPY --from=pruned /app/out/json .
 COPY --from=pruned /app/out/pnpm-lock.yaml  .
-RUN --mount=type=cache,id=pnpm,target=~/.pnpm-store pnpm install --frozen-lockfile
+RUN --mount=type=cache,id=pnpm,target=~/.pnpm-store pnpm install 
 
 COPY --from=pruned /app/out/full .
-RUN pnpm add -g turbo
 
-RUN turbo build --filter=@app/express...
+RUN turbo build --no-cache --force --filter=@app/express...
 RUN --mount=type=cache,id=pnpm,target=~/.pnpm-store pnpm prune --prod --no-optional
 
 # Remove unnecessary files from the final image to reduce its size
@@ -36,8 +35,16 @@ FROM base as prod
 WORKDIR /app
 ENV NODE_ENV production
 COPY --from=builder /app .
-COPY .env /app
 
 EXPOSE 3000
 
 CMD node apps/express/build/src/index.js
+
+FROM base as dev
+WORKDIR /app
+COPY . .
+RUN --mount=type=cache,id=pnpm,target=~/.pnpm-store pnpm install --frozen-lockfile
+
+EXPOSE 3000
+
+CMD pnpm dev:express
