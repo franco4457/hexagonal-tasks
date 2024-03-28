@@ -20,10 +20,9 @@
   ],
   "scripts": {
     "build": "turbo build",
-    "start:express": "node build/src/index.js",
-    "dev:express": "tsup --watch --onSuccess \"node dist/index.js\"",
-    "lint": "turbo lint",
-    "typecheck": "turbo typecheck",
+    "dev:express": "turbo run dev:express",
+    "lint": "turbo run lint",
+    "typecheck": "turbo run typecheck",
     "test": "turbo run test",
     "test:watch": "turbo run test:watch",
     "create:domain": "turbo gen domain",
