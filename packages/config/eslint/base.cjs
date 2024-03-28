@@ -31,6 +31,7 @@ module.exports = {
     '@typescript-eslint/no-misused-promises': 'off',
     '@typescript-eslint/indent': 'off',
     '@typescript-eslint/brace-style': 'off',
-    '@typescript-eslint/member-delimiter-style': 'off'
+    '@typescript-eslint/member-delimiter-style': 'off',
+    'import/no-duplicates': 'off'
   }
 }
