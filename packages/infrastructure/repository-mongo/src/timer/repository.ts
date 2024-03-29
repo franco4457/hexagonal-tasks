@@ -18,13 +18,14 @@ export class MongoTimerRepository extends TimerRepository {
   private async conn(): Promise<typeof mongoose> {
     if (this.mongoose != null) return this.mongoose
     this.mongoose = await conn()
+    await this.timers.init()
     return this.mongoose
   }
 
   async getTimer(id: string): Promise<Timer> {
     try {
       await this.conn()
-      const repoTimer = await this.timers.findById(id)
+      const repoTimer = await this.timers.findOne({ id })
       if (repoTimer == null) throw new TimerNotFound(id)
       return this.mapper.toDomain(repoTimer)
     } catch (error) {
@@ -50,8 +51,7 @@ export class MongoTimerRepository extends TimerRepository {
     try {
       await this.save(timer, async () => {
         await this.conn()
-        const repoTimer = this.mapper.toPersistence(timer)
-        await this.timers.create({ ...repoTimer, _id: repoTimer.id })
+        await this.timers.create(this.mapper.toPersistence(timer))
       })
       return timer
     } catch (error) {
@@ -64,7 +64,7 @@ export class MongoTimerRepository extends TimerRepository {
     this.logger.debug(`updating entity to "timer" table: ${props.id}`)
     await this.save(props, async () => {
       await this.conn()
-      await this.timers.findByIdAndUpdate(props.id, this.mapper.toPersistence(props))
+      await this.timers.findOneAndUpdate({ id: props.id }, this.mapper.toPersistence(props))
     })
     return props
   }

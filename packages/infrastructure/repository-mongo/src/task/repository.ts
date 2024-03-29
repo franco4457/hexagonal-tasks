@@ -39,6 +39,7 @@ export class MongoTaskRepository extends TaskRepository {
   private async conn(): Promise<typeof mongoose> {
     if (this.mongoose != null) return this.mongoose
     this.mongoose = await conn()
+    await this.taskModel.init()
     return this.mongoose
   }
 
@@ -57,7 +58,7 @@ export class MongoTaskRepository extends TaskRepository {
   async getTask(id: string): Promise<Task> {
     try {
       await this.conn()
-      const repoTask = await this.taskModel.findById(id)
+      const repoTask = await this.taskModel.findOne({ id })
       if (repoTask == null) throw new TaskNotFound(id)
       return this.mapper.toDomain(repoTask)
     } catch (error) {
@@ -109,12 +110,14 @@ export class MongoTaskRepository extends TaskRepository {
     )
     const tasks = Array.isArray(task) ? task : [task]
     try {
-      tasks.forEach(async (t) => {
-        await this.save(t, async () => {
-          await this.conn()
-          await this.taskModel.create({ ...this.mapper.toPersistence(t), _id: t.id })
+      await Promise.all(
+        tasks.map(async (t) => {
+          await this.save(t, async () => {
+            await this.conn()
+            await this.taskModel.create({ ...this.mapper.toPersistence(t) })
+          })
         })
-      })
+      )
       return task
     } catch (error) {
       console.log('MONGO_TASK create', error)
@@ -127,7 +130,7 @@ export class MongoTaskRepository extends TaskRepository {
     try {
       await this.save(props.task, async () => {
         await this.conn()
-        const task = await this.taskModel.findById(props.task.id)
+        const task = await this.taskModel.findOne({ id: props.task.id })
         if (task == null) throw new TaskNotFound(props.task.id)
         task.labels = props.task.getProps().labels.map((label) => ({ name: label.name }))
         await task.save()
@@ -143,7 +146,7 @@ export class MongoTaskRepository extends TaskRepository {
     try {
       await this.save(props.task, async () => {
         await this.conn()
-        const task = await this.taskModel.findById(props.task.id)
+        const task = await this.taskModel.findOne({ id: props.task.id })
         if (task == null) throw new TaskNotFound(props.task.id)
         task.project_name = props.task.getProps().project?.name ?? null
         await task.save()

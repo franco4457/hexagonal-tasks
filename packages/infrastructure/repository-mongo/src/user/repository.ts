@@ -37,7 +37,7 @@ export class MongoUserRepository extends UserRepository {
   async getById(id: string): Promise<User> {
     try {
       await this.conn()
-      const repoUser = await this.users.findById(id).populate('labels').populate('templates')
+      const repoUser = await this.users.findOne({ id }).populate('labels').populate('templates')
       if (repoUser == null) throw new UserNotFound(id)
       const user = this.mapper.toDomain(repoUser)
       return user
@@ -78,7 +78,7 @@ export class MongoUserRepository extends UserRepository {
     userId: string,
     config?: RepositoryQueryConfig
   ): Promise<Label[] | LabelModel[]> {
-    const user = await this.users.findById(userId).populate('labels').exec()
+    const user = await this.users.findOne({ id: userId }).populate('labels').exec()
     if (user == null) throw new UserNotFound(userId)
     return config?.raw === true
       ? user.labels.map(({ createdAt, updatedAt, id, name }) => ({
@@ -96,7 +96,7 @@ export class MongoUserRepository extends UserRepository {
     userId: string,
     config?: RepositoryQueryConfig
   ): Promise<TemplateModel[] | Template[]> {
-    const user = await this.users.findById(userId).populate('templates').exec()
+    const user = await this.users.findOne({ id: userId }).populate('templates').exec()
     if (user == null) throw new UserNotFound(userId)
     const templates = user.templates
     // FIXME: this is a workaround to avoid a bug in the mapper
@@ -119,12 +119,14 @@ export class MongoUserRepository extends UserRepository {
 
   /* ------ COMMANDS METHODS ------ */
   async create(user: User): Promise<User> {
+    this.logger.debug(`creating user with email: ${user.getProps().email}`)
+    await this.conn()
     const exist = await this.users.findOne({ email: user.getProps().email })
     if (exist != null) throw new UserAlreadyExist(user.getProps().email, 'email')
     const newUser = this.mapper.toPersistence(user)
     await this.save(user, async () => {
       await this.conn()
-      await this.users.create({ ...newUser, _id: newUser.id })
+      await this.users.create({ ...newUser })
     })
     return user
   }
@@ -134,7 +136,7 @@ export class MongoUserRepository extends UserRepository {
     try {
       await this.save(props.user, async () => {
         await this.conn()
-        const user = await this.users.findById(props.user.id)
+        const user = await this.users.findOne({ id: props.user.id })
         if (user == null) throw new UserNotFound(props.user.id)
         const newTemplate = await this.templates.create(
           this.mapper.templateMapper.toPersistence(props.template)
@@ -185,7 +187,7 @@ export class MongoUserRepository extends UserRepository {
     try {
       await this.save(props.user, async () => {
         await this.conn()
-        const user = await this.users.findById(props.user.id)
+        const user = await this.users.findOne({ id: props.user.id })
         if (user == null) throw new UserNotFound(props.user.id)
         const newLabel = await this.labels.create({
           ...this.mapper.labelMapper.toPersistence(props.label)

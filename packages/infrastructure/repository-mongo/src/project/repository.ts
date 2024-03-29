@@ -18,12 +18,13 @@ export class MongoProjectRepository extends ProjectRepository {
   private async conn(): Promise<typeof mongoose> {
     if (this.mongoose != null) return this.mongoose
     this.mongoose = await conn()
+    await this.projectModel.init()
     return this.mongoose
   }
 
   async getById(projectId: string): Promise<Project> {
     await this.conn()
-    const project = await this.projectModel.findById(projectId)
+    const project = await this.projectModel.findOne({ id: projectId })
     if (project == null) throw new ProjectNotFound(projectId, 'id')
     return this.mapper.toDomain(project)
   }
@@ -46,13 +47,13 @@ export class MongoProjectRepository extends ProjectRepository {
     await this.save(project, async () => {
       await this.conn()
       const newProject = this.mapper.toPersistence(project)
-      await this.projectModel.create({ ...newProject, _id: newProject.id })
+      await this.projectModel.create({ ...newProject })
     })
   }
 
   async delete(id: string): Promise<void> {
     this.logger.debug(`deleting entity from "project" table: ${id}`)
-    const project = await this.projectModel.findById(id)
+    const project = await this.projectModel.findOne({ id })
     if (project == null) throw new ProjectNotFound(id, 'id')
     await this.save(this.mapper.toDomain(project), async () => {
       await this.conn()
