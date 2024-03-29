@@ -3,7 +3,7 @@ services:
   hextasks-mongo:
     build:
       context: ../..
-      dockerfile: ./docker/Dockerfile.dev
+      dockerfile: ./apps/express/Dockerfile
       target: dev
     ports:
       - '3000:3000'
@@ -12,6 +12,7 @@ services:
     volumes:
       - ../..:/app
     environment:
+      - JWT_SECRET=secret
       - DIALECT=MONGODB
       - DB_URL=mongodb://admin:secret@mongo:27017/hextasks?authSource=admin
   mongo:
