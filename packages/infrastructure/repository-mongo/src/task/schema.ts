@@ -2,13 +2,8 @@ import { type TaskModel } from '@domain/task'
 import { Schema } from 'mongoose'
 import { USER_DI_REF } from '../user/model'
 
-export const taskSchema = new Schema<TaskModel & { _id: TaskModel['id'] }>(
+export const taskSchema = new Schema<TaskModel>(
   {
-    _id: {
-      type: 'string',
-      required: true,
-      unique: true
-    },
     id: {
       type: 'string',
       required: true,
@@ -51,7 +46,6 @@ export const taskSchema = new Schema<TaskModel & { _id: TaskModel['id'] }>(
     }
   },
   {
-    _id: false,
     timestamps: true
   }
 )

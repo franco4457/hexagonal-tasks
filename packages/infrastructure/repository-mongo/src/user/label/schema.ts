@@ -1,7 +1,7 @@
 import { type LabelModel } from '@domain/user'
 import { Schema } from 'mongoose'
 
-export const labelSchema = new Schema<LabelModel & { _id: string }>(
+export const labelSchema = new Schema<LabelModel>(
   {
     id: {
       type: 'string',

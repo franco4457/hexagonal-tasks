@@ -2,13 +2,8 @@ import { type ProjectModel } from '@domain/project'
 import { Schema } from 'mongoose'
 import { USER_DI_REF } from '../user/model'
 
-export const projectSchema = new Schema<ProjectModel & { _id: ProjectModel['id'] }>(
+export const projectSchema = new Schema<ProjectModel>(
   {
-    _id: {
-      type: 'string',
-      required: true,
-      unique: true
-    },
     id: {
       type: 'string',
       required: true,
@@ -32,7 +27,6 @@ export const projectSchema = new Schema<ProjectModel & { _id: ProjectModel['id']
     }
   },
   {
-    _id: false,
     timestamps: true
   }
 )

@@ -3,9 +3,8 @@ import { Schema } from 'mongoose'
 import { USER_DI_REF } from '../user/model'
 import { TASK_DI_REF } from '../task/model'
 
-export const timerSchema = new Schema<TimerModel & { _id: TimerModel['id'] }>(
+export const timerSchema = new Schema<TimerModel>(
   {
-    _id: { type: 'string', required: true, unique: true },
     id: { type: 'string', required: true, unique: true, index: true },
     userId: { type: 'string', ref: USER_DI_REF },
     currentTaskId: { type: 'string', ref: TASK_DI_REF },
@@ -20,7 +19,6 @@ export const timerSchema = new Schema<TimerModel & { _id: TimerModel['id'] }>(
     currentStage: { type: 'string', enum: Object.keys(StageEnum) }
   },
   {
-    _id: false,
     timestamps: true
   }
 )

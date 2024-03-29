@@ -1,7 +1,7 @@
 import { type TemplateModel } from '@domain/user'
 import { Schema } from 'mongoose'
 
-export const templateSchema = new Schema<TemplateModel & { _id: string }>(
+export const templateSchema = new Schema<TemplateModel>(
   {
     id: {
       type: 'string',
