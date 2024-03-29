@@ -51,8 +51,9 @@ export class TaskController {
   // TODO: Normalize the responses
   async getAll(_req: Request, res: Response, next: NextFunction): Promise<void> {
     try {
+      console.log('GET ALL TASKS')
       const tasks = await this.listTasks.getAll()
-      res.status(200).json({ tasks: tasks.map((task) => this.mapper.toResponse(task)) })
+      res.status(200).json({ tasks: tasks.map(this.mapper.toResponse.bind(this)) })
     } catch (error) {
       next(error)
     }
@@ -72,7 +73,7 @@ export class TaskController {
         userId: this.resolveUserId(req),
         sortByOrder: sort === 'true'
       })
-      const tasks = this.queryByUserId.execute(query)
+      const tasks = await this.queryByUserId.execute(query)
       res.status(200).json({ tasks })
     } catch (error) {
       next(error)
