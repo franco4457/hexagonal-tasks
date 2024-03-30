@@ -48,3 +48,10 @@ RUN --mount=type=cache,id=pnpm,target=~/.pnpm-store pnpm install --frozen-lockfi
 EXPOSE 3000
 
 CMD pnpm dev:express
+
+FROM base as test
+WORKDIR /app
+COPY . .
+RUN --mount=type=cache,id=pnpm,target=~/.pnpm-store pnpm install
+
+CMD turbo test --force --no-cache --filter=@app/express...
